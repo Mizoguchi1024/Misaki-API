@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mizoguchi.misaki.mapper.ConversationMapper">
+    <select id="selectConversationByIdAndUserId" resultType="org.mizoguchi.misaki.entity.Conversation">
+        SELECT * FROM conversation WHERE id = #{id} AND user_id = #{userId} AND delete_flag = 0
+    </select>
+
+    <select id="selectConversationsByUserId" resultType="org.mizoguchi.misaki.entity.Conversation">
+        SELECT * FROM conversation WHERE user_id = #{userId} AND delete_flag = 0 ORDER BY create_time
+    </select>
+
+    <insert id="insertConversation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO conversation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="title != null">title,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="title != null">#{title},</if>
+        </trim>
+    </insert>
+
+    <update id="updateConversation">
+        UPDATE conversation
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="deleteFlag != null">delete_flag = #{deleteFlag},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+</mapper>

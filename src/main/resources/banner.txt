@@ -1,0 +1,13 @@
+${AnsiColor.BLUE}
+       ____
+   ___/\   \        ##b           d##  ##                         ##         ##
+  / \/  \   \       ###b         d###  ""                         ##         ""
+  \     /   /__     ##`#b       d#'##                             ##
+  /     \_/\   \    ## `#b     d#' ##  ##  ,adPPYba,  ,adPPYYba,  ##   ,d#   ##
+ /          \___\   ##  `#b   d#'  ##  ##  I#[    ""  ""     `Y#  ## ,a#"    ##
+ \  _       /   /   ##   `#b d#'   ##  ##   `"Y#ba,   ,adPPPPP##  ####[      ##
+  \/_|     /___/    ##    `###'    ##  ##  aa    ]#I  ##,    ,##  ##`"Yba,   ##
+     /     \___\    ##     `#'     ##  ##  `"YbbdP"'  `"#bbdP"Y#  ##   `Y#a  ##
+     \  /\_/___/
+      \/___/        Developed by Mizoguchi                    Version 1.0.0-Dev
+${AnsiColor.DEFAULT}
