@@ -7,13 +7,11 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.ConversationNotExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteConversationException;
-import org.mizoguchi.misaki.entity.Conversation;
-import org.mizoguchi.misaki.entity.Message;
-import org.mizoguchi.misaki.entity.Setting;
-import org.mizoguchi.misaki.entity.User;
+import org.mizoguchi.misaki.entity.*;
 import org.mizoguchi.misaki.mapper.ConversationMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
+import org.mizoguchi.misaki.service.AssistantService;
 import org.mizoguchi.misaki.service.ChatService;
 import org.mizoguchi.misaki.service.UserService;
 import org.springframework.ai.chat.client.ChatClient;
@@ -34,13 +32,12 @@ public class ChatServiceImpl implements ChatService {
     private final ChatClient chatClient;
     private final ChatClient statelessChatClient;
     private final UserService userService;
-    private final UserMapper userMapper;
+    private final AssistantService assistantService;
     private final ConversationMapper conversationMapper;
     private final MessageMapper messageMapper;
 
     @Override
-    public Long createConversation(String email) {
-        Long userId = userMapper.selectUserByEmail(email).getId();
+    public Long createConversation(Long userId) {
         Conversation conversation = Conversation.builder()
                 .userId(userId)
                 .build();
@@ -50,32 +47,32 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Conversation getConversation(String email, Long conversationId) {
-        Long userId = userMapper.selectUserByEmail(email).getId();
-
-        return conversationMapper.selectConversationByIdAndUserId(conversationId, userId);
+    public Conversation getConversation(Long userId, Long conversationId) {
+        Conversation conversation = conversationMapper.selectConversationById(conversationId);
+        if (conversation.getUserId().equals(userId)) {
+            return conversation;
+        }
+        return null;
     }
 
     @Override
-    public List<Conversation> getConversations(String email) {
-        Long userId = userMapper.selectUserByEmail(email).getId();
-
+    public List<Conversation> getConversations(Long userId) {
         return conversationMapper.selectConversationsByUserId(userId);
     }
 
     @Override
-    public Flux<String> sendMessage(String email, Long conversationId, String content, String prefix) {
-        if(getConversation(email, conversationId) == null) {
+    public Flux<String> sendMessage(Long userId, Long assistantId, Long conversationId, String content, String prefix) {
+        if(getConversation(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
 
-        User user = userService.getProfile(email);
-        Setting setting = userService.getSetting(email);
+        User user = userService.getProfile(userId);
+        Assistant assistant = assistantService.getAssistant(userId, assistantId);
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
-                        "personality", setting.getPersonality(),
-                        "herName",setting.getHerName(),
+                        "personality", assistant.getPersonality(),
+                        "herName",assistant.getName(),
                         "username", user.getUsername(),
                         "gender", user.getGender() != GenderEnum.UNKNOWN.getCode()
                                 ? "用户的性别是" + GenderEnum.fromCode(user.getGender()).getGender() + "。" : "",
@@ -99,8 +96,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Message> getMessages(String email, Long conversationId) {
-        if(getConversation(email, conversationId) == null) {
+    public List<Message> getMessages(Long userId, Long conversationId) {
+        if(getConversation(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
 
@@ -108,8 +105,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public String getTitle(String email, Long conversationId) {
-        Conversation conversation = getConversation(email, conversationId);
+    public String getTitle(Long userId, Long conversationId) {
+        Conversation conversation = getConversation(userId, conversationId);
         if(conversation == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
@@ -118,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
             return conversation.getTitle();
         }
 
-        List<Message> messages = getMessages(email, conversationId);
+        List<Message> messages = getMessages(userId, conversationId);
         Message userMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
                 .findFirst()

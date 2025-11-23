@@ -8,9 +8,9 @@ public interface UserService {
     LoginDto login(LoginRequest loginRequest);
     void register(RegisterRequest registerRequest);
     void resetPassword(ResetPasswordRequest resetPasswordRequest);
-    User getProfile(String email);
-    void editProfile(String email, EditProfileRequest editProfileRequest);
-    Setting getSetting(String email);
-    void editSetting(String email, EditSettingRequest editSettingRequest);
-    void deleteUser(String email);
+    User getProfile(Long userId);
+    void editProfile(Long userId, EditProfileRequest editProfileRequest);
+    Setting getSetting(Long userId);
+    void editSetting(Long userId, EditSettingRequest editSettingRequest);
+    void deleteUser(Long userId);
 }

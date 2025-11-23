@@ -22,7 +22,7 @@ public class UserProfileVo {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    private String avatarUrl;
+    private String avatarPath;
 
     private String occupation;
 

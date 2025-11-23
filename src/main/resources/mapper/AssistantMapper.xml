@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mizoguchi.misaki.mapper.AssistantMapper">
+    <select id="selectAssistantById" resultType="org.mizoguchi.misaki.entity.Assistant">
+        SELECT * FROM assistant WHERE id = #{id} AND delete_flag = 0
+    </select>
+
+    <select id="selectAssistantsByOwnerId" resultType="org.mizoguchi.misaki.entity.Assistant">
+        SELECT * FROM assistant WHERE owner_id = #{ownerId} AND delete_flag = 0
+    </select>
+
+    <insert id="insertAssistant" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO assistant
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="personality != null">personality,</if>
+            <if test="gender != null">gender,</if>"
+            <if test="birthday != null">birthday,</if>"
+            <if test="avatarPath != null">avatar_path,</if>"
+            <if test="modelId != null">model_id,</if>"
+            <if test="moe != null">moe,</if>"
+            <if test="creatorId != null">creator_id,</if>"
+            <if test="ownerId != null">owner_id,</if>
+            <if test="publicFlag != null">public_flag,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="personality != null">#{personality},</if>
+            <if test="gender != null">#{gender},</if>"
+            <if test="birthday != null">#{birthday},</if>"
+            <if test="avatarPath != null">#{avatarPath},</if>"
+            <if test="modelId != null">#{modelId},</if>"
+            <if test="moe != null">#{moe},</if>
+            <if test="creatorId != null">#{creatorId},</if>"
+            <if test="ownerId != null">#{ownerId},</if>
+            <if test="publicFlag != null">#{publicFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAssistantById">
+        UPDATE assistant
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="personality != null">personality = #{personality},</if>
+            <if test="gender != null">gender = #{gender},</if>"
+            <if test="birthday != null">birthday = #{birthday},</if>"
+            <if test="avatarPath != null">avatar_path = #{avatarPath},</if>"
+            <if test="modelId != null">model_id = #{modelId},</if>"
+            <if test="moe != null">moe = #{moe},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>"
+            <if test="ownerId != null">owner_id = #{ownerId},</if>
+            <if test="publicFlag != null">public_flag = #{publicFlag},</if>
+            <if test="deleteFlag != null">delete_flag = #{deleteFlag},</if>
+        </set>
+    </update>
+
+</mapper>

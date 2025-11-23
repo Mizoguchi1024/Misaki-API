@@ -22,9 +22,5 @@ public class UserSettingVo {
 
     private Integer borderRadius;
 
-    private String backgroundImageUrl;
-
-    private String herName;
-
-    private String personality;
+    private String backgroundImagePath;
 }

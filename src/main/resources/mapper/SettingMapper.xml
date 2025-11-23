@@ -33,7 +33,7 @@
                 <if test="personality != null">#{personality},</if>
             </trim>
     </insert>
-    <update id="updateSetting">
+    <update id="updateSettingByUserId">
         UPDATE setting
         <set>
             <if test="appearance != null">appearance = #{appearance},</if>

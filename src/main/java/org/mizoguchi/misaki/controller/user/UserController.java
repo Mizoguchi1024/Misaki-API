@@ -30,7 +30,7 @@ public class UserController {
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
     public Result<UserProfileVo> getProfile(@AuthenticationPrincipal UserDetails authUser){
-        User user = userService.getProfile(authUser.getUsername());
+        User user = userService.getProfile(Long.valueOf(authUser.getUsername()));
 
         UserProfileVo userProfileVo = new UserProfileVo();
         BeanUtils.copyProperties(user, userProfileVo);
@@ -42,7 +42,7 @@ public class UserController {
     @PutMapping("/profiles")
     public Result<Void> editProfile(@AuthenticationPrincipal UserDetails authUser,
                                     @RequestBody @Validated EditProfileRequest editProfileRequest){
-        userService.editProfile(authUser.getUsername(), editProfileRequest);
+        userService.editProfile(Long.valueOf(authUser.getUsername()), editProfileRequest);
 
         return Result.success();
     }
@@ -50,7 +50,7 @@ public class UserController {
     @Operation(summary = "获取设定")
     @GetMapping("/settings")
     public Result<UserSettingVo> getSetting(@AuthenticationPrincipal UserDetails authUser){
-        Setting setting = userService.getSetting(authUser.getUsername());
+        Setting setting = userService.getSetting(Long.valueOf(authUser.getUsername()));
 
         UserSettingVo userSettingVo = new UserSettingVo();
         BeanUtils.copyProperties(setting, userSettingVo);
@@ -62,7 +62,7 @@ public class UserController {
     @PutMapping("/settings")
     public Result<Void> editSetting(@AuthenticationPrincipal UserDetails authUser,
                                     @RequestBody @Validated EditSettingRequest editSettingRequest){
-        userService.editSetting(authUser.getUsername(), editSettingRequest);
+        userService.editSetting(Long.valueOf(authUser.getUsername()), editSettingRequest);
 
         return Result.success();
     }
@@ -70,7 +70,7 @@ public class UserController {
     @Operation(summary = "注销账号")
     @DeleteMapping
     public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails authUser){
-        userService.deleteUser(authUser.getUsername());
+        userService.deleteUser(Long.valueOf(authUser.getUsername()));
 
         return Result.success();
     }

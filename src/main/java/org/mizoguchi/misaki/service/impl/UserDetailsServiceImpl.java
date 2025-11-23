@@ -20,8 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        User user = userMapper.selectUserByEmail(email);
+    public UserDetails loadUserByUsername(String userId) {
+        User user = userMapper.selectUserById(Long.valueOf(userId));
 
         if (user == null) {
             throw new UserNotExistsException(MessageConstant.USER_NOT_EXISTS);

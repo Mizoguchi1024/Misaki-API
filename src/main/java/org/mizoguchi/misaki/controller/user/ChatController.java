@@ -32,7 +32,7 @@ public class ChatController {
     @Operation(summary = "新建会话")
     @PostMapping()
     public Result<Long> createConversation(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(chatService.createConversation(authUser.getUsername()));
+        return Result.success(chatService.createConversation(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "发送消息")
@@ -40,19 +40,20 @@ public class ChatController {
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails authUser,
                                     @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageRequest sendMessageRequest) {
-        return chatService.sendMessage(authUser.getUsername(), id, sendMessageRequest.getContent(), sendMessageRequest.getPrefix());
+        return chatService.sendMessage(Long.valueOf(authUser.getUsername()), sendMessageRequest.getAssistantId(), id,
+                sendMessageRequest.getContent(), sendMessageRequest.getPrefix());
     }
 
     @Operation(summary = "获取会话标题")
     @GetMapping("/{id}/title")
     public Result<String> getTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
-        return Result.success(chatService.getTitle(authUser.getUsername(), id));
+        return Result.success(chatService.getTitle(Long.valueOf(authUser.getUsername()), id));
     }
 
     @Operation(summary = "获取历史会话")
     @GetMapping()
     public Result<List<UserConversationVo>> getConversations(@AuthenticationPrincipal UserDetails authUser){
-        List<UserConversationVo> conversations = chatService.getConversations(authUser.getUsername()).stream()
+        List<UserConversationVo> conversations = chatService.getConversations(Long.valueOf(authUser.getUsername())).stream()
                 .map(conversation -> {
                     UserConversationVo userConversationVo = new UserConversationVo();
                     BeanUtils.copyProperties(conversation, userConversationVo);
@@ -66,7 +67,7 @@ public class ChatController {
     @GetMapping(value = "/{id}/messages")
     public Result<List<UserMessageVo>> getMessages(@AuthenticationPrincipal UserDetails authUser,
                                                    @PathVariable @Positive Long id){
-        List<UserMessageVo> messages = chatService.getMessages(authUser.getUsername(), id).stream()
+        List<UserMessageVo> messages = chatService.getMessages(Long.valueOf(authUser.getUsername()), id).stream()
                 .map(message -> {
                     UserMessageVo userMessageVo = new UserMessageVo();
                     BeanUtils.copyProperties(message, userMessageVo);

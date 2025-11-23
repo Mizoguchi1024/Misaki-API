@@ -38,10 +38,10 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setLastLoginTime(LocalDateTime.now());
-        userMapper.updateUser(user);
+        userMapper.updateUserById(user);
 
         return LoginDto.builder()
-                .token(jwtUtil.generateToken(user.getEmail(), user.getAuthRole()))
+                .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
                 .authRole(user.getAuthRole())
                 .build();
     }
@@ -97,44 +97,44 @@ public class UserServiceImpl implements UserService {
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
 
         user.setPassword(encryptPassword);
-        userMapper.updateUser(user);
+        userMapper.updateUserById(user);
     }
 
     @Override
-    public void deleteUser(String email) {
+    public void deleteUser(Long userId) {
         User user = User.builder()
-                .email(email)
+                .id(userId)
                 .deleteFlag(1)
                 .build();
 
-        userMapper.updateUser(user);
+        userMapper.updateUserById(user);
     }
 
     @Override
-    public User getProfile(String email) {
-        return userMapper.selectUserByEmail(email);
+    public User getProfile(Long userId) {
+        return userMapper.selectUserById(userId);
     }
 
     @Override
-    public void editProfile(String email, EditProfileRequest editProfileRequest) {
+    public void editProfile(Long userId, EditProfileRequest editProfileRequest) {
         User user = new User();
-        user.setEmail(email);
+        user.setId(userId);
         BeanUtils.copyProperties(editProfileRequest, user);
 
-        userMapper.updateUser(user);
+        userMapper.updateUserById(user);
     }
 
     @Override
-    public Setting getSetting(String email) {
-        return settingMapper.selectSettingByUserId(userMapper.selectUserByEmail(email).getId());
+    public Setting getSetting(Long userId) {
+        return settingMapper.selectSettingByUserId(userId);
     }
 
     @Override
-    public void editSetting(String email, EditSettingRequest editSettingRequest) {
+    public void editSetting(Long userId, EditSettingRequest editSettingRequest) {
         Setting setting = new Setting();
-        setting.setUserId(userMapper.selectUserByEmail(email).getId());
+        setting.setUserId(userId);
         BeanUtils.copyProperties(editSettingRequest, setting);
 
-        settingMapper.updateSetting(setting);
+        settingMapper.updateSettingByUserId(setting);
     }
 }

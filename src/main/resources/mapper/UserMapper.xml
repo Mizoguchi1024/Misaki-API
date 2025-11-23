@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.mizoguchi.misaki.mapper.UserMapper">
+    <select id="selectUserById" resultType="org.mizoguchi.misaki.entity.User">
+        SELECT * FROM user
+        WHERE id = #{id} AND delete_flag = 0
+    </select>
+
     <select id="selectUserByEmail" resultType="org.mizoguchi.misaki.entity.User">
         SELECT * FROM user
         WHERE email = #{email} AND delete_flag = 0
@@ -35,9 +40,10 @@
             </trim>
     </insert>
 
-    <update id="updateUser">
+    <update id="updateUserById">
         UPDATE user
         <set>
+            <if test="email != null">email = #{email},</if>
             <if test="password != null">password = #{password},</if>
             <if test="username != null">username = #{username},</if>
             <if test="gender != null">gender = #{gender},</if>
@@ -47,8 +53,8 @@
             <if test="detail != null">detail = #{detail},</if>
             <if test="authRole != null">auth_role = #{authRole},</if>
             <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
-            <if test="deleteFlag != null">delete_flag = #{deleteFlag}</if>
+            <if test="deleteFlag != null">delete_flag = #{deleteFlag},</if>
         </set>
-        WHERE email = #{email} AND delete_flag = 0
+        WHERE id = #{id} AND delete_flag = 0
     </update>
 </mapper>

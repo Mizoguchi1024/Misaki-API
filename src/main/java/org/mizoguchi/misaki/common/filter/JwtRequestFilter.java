@@ -49,11 +49,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
-        String email;
+        String userId;
         Integer roleCode;
 
         try {
-            email = jwtUtil.getSubjectFromToken(jwt);
+            userId = jwtUtil.getSubjectFromToken(jwt);
             roleCode = jwtUtil.getRoleFromToken(jwt);
         } catch (ExpiredJwtException e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
@@ -67,9 +67,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
                 if (jwtUtil.validateToken(jwt)) {
                     AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(roleCode);

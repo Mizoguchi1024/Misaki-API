@@ -32,11 +32,7 @@ public class Setting {
 
     private Integer borderRadius;
 
-    private String backgroundImageUrl;
-
-    private String herName;
-
-    private String personality;
+    private String backgroundImagePath;
 
     private LocalDateTime createTime;
 

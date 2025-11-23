@@ -7,10 +7,10 @@ import reactor.core.publisher.Flux;
 import java.util.List;
 
 public interface ChatService {
-    Long createConversation(String email);
-    Conversation getConversation(String email, Long conversationId);
-    List<Conversation> getConversations(String email);
-    Flux<String> sendMessage(String email, Long conversationId, String content, String prefix);
-    List<Message> getMessages(String email, Long conversationId);
-    String getTitle(String email, Long conversationId);
+    Long createConversation(Long userId);
+    Conversation getConversation(Long userId, Long conversationId);
+    List<Conversation> getConversations(Long userId);
+    Flux<String> sendMessage(Long userId, Long assistantId, Long conversationId, String content, String prefix);
+    List<Message> getMessages(Long userId, Long conversationId);
+    String getTitle(Long userId, Long conversationId);
 }
