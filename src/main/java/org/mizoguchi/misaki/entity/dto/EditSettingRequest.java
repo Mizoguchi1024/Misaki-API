@@ -36,13 +36,7 @@ public class EditSettingRequest {
     @Max(value = 16)
     private Integer borderRadius;
 
-    private String backgroundImageUrl;
+    private String backgroundImagePath;
 
-    @NotBlank
-    @Size(min = 1, max = 20)
-    private String herName;
-
-    @NotBlank
-    @Size(min = 1, max = 20)
-    private String personality;
+    private Long enabledAssistantId;
 }

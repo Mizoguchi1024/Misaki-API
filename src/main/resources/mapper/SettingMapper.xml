@@ -5,6 +5,7 @@
         SELECT * FROM setting
         WHERE user_id = #{userId}
     </select>
+
     <insert id="insertSetting" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO setting
             <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -15,9 +16,8 @@
                 <if test="fontSize != null">font_size,</if>
                 <if test="colorPrimary != null">color_primary,</if>
                 <if test="borderRadius != null">border_radius,</if>
-                <if test="backgroundImageUrl != null">background_image_url,</if>
-                <if test="herName != null">her_name,</if>
-                <if test="personality != null">personality,</if>
+                <if test="backgroundImagePath != null">background_image_path,</if>
+                <if test="enabledAssistantId != null">enabled_assistant_id,</if>
             </trim>
         VALUES
             <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -28,9 +28,8 @@
                 <if test="fontSize != null">#{font_size},</if>
                 <if test="colorPrimary != null">#{color_primary},</if>
                 <if test="borderRadius != null">#{border_radius},</if>
-                <if test="backgroundImageUrl != null">#{background_image_url},</if>
-                <if test="herName != null">#{her_name},</if>
-                <if test="personality != null">#{personality},</if>
+                <if test="backgroundImagePath != null">#{background_image_path},</if>
+                <if test="enabledAssistantId != null">#{enabled_assistant_id},</if>
             </trim>
     </insert>
     <update id="updateSettingByUserId">
@@ -42,9 +41,8 @@
             <if test="fontSize !=null">font_size = #{fontSize},</if>
             <if test="colorPrimary != null">color_primary = #{colorPrimary},</if>
             <if test="borderRadius != null">border_radius = #{borderRadius},</if>
-            <if test="backgroundImageUrl != null">background_image_url = #{backgroundImageUrl}</if>
-            <if test="herName != null">herName = #{her_name},</if>
-            <if test="personality != null">personality = #{personality},</if>
+            <if test="backgroundImagePath != null">background_image_path = #{backgroundImagePath}</if>
+            <if test="enabledAssistantId != null">enabled_assistant_id = #{enabledAssistantId},</if>
         </set>
         WHERE user_id = #{userId}
     </update>

@@ -40,8 +40,8 @@ public class ChatController {
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails authUser,
                                     @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageRequest sendMessageRequest) {
-        return chatService.sendMessage(Long.valueOf(authUser.getUsername()), sendMessageRequest.getAssistantId(), id,
-                sendMessageRequest.getContent(), sendMessageRequest.getPrefix());
+        return chatService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageRequest.getContent(),
+                sendMessageRequest.getPrefix());
     }
 
     @Operation(summary = "获取会话标题")

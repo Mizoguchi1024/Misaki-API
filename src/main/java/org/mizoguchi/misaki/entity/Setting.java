@@ -34,6 +34,8 @@ public class Setting {
 
     private String backgroundImagePath;
 
+    private Long enabledAssistantId;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;

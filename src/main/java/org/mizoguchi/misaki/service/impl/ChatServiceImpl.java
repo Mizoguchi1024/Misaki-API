@@ -61,13 +61,14 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Flux<String> sendMessage(Long userId, Long assistantId, Long conversationId, String content, String prefix) {
+    public Flux<String> sendMessage(Long userId, Long conversationId, String content, String prefix) {
         if(getConversation(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
 
         User user = userService.getProfile(userId);
-        Assistant assistant = assistantService.getAssistant(userId, assistantId);
+        Setting setting = userService.getSetting(userId);
+        Assistant assistant = assistantService.getAssistant(userId, setting.getEnabledAssistantId());
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
