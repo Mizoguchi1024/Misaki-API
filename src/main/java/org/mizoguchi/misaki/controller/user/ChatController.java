@@ -7,10 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.entity.dto.SendMessageRequest;
-import org.mizoguchi.misaki.entity.vo.UserConversationVo;
-import org.mizoguchi.misaki.entity.vo.UserMessageVo;
+import org.mizoguchi.misaki.entity.vo.UserConversationResponse;
+import org.mizoguchi.misaki.entity.vo.UserMessageResponse;
 import org.mizoguchi.misaki.service.ChatService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -52,28 +50,14 @@ public class ChatController {
 
     @Operation(summary = "获取历史会话")
     @GetMapping()
-    public Result<List<UserConversationVo>> getConversations(@AuthenticationPrincipal UserDetails authUser){
-        List<UserConversationVo> conversations = chatService.getConversations(Long.valueOf(authUser.getUsername())).stream()
-                .map(conversation -> {
-                    UserConversationVo userConversationVo = new UserConversationVo();
-                    BeanUtils.copyProperties(conversation, userConversationVo);
-                    return userConversationVo;
-                }).collect(Collectors.toList());
-
-        return Result.success(conversations);
+    public Result<List<UserConversationResponse>> getConversations(@AuthenticationPrincipal UserDetails authUser){
+        return Result.success(chatService.getConversations(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "获取会话中的所有消息")
     @GetMapping(value = "/{id}/messages")
-    public Result<List<UserMessageVo>> getMessages(@AuthenticationPrincipal UserDetails authUser,
-                                                   @PathVariable @Positive Long id){
-        List<UserMessageVo> messages = chatService.getMessages(Long.valueOf(authUser.getUsername()), id).stream()
-                .map(message -> {
-                    UserMessageVo userMessageVo = new UserMessageVo();
-                    BeanUtils.copyProperties(message, userMessageVo);
-                    return userMessageVo;
-                }).collect(Collectors.toList());
-
-        return Result.success(messages);
+    public Result<List<UserMessageResponse>> getMessages(@AuthenticationPrincipal UserDetails authUser,
+                                                         @PathVariable @Positive Long id){
+        return Result.success(chatService.getMessages(Long.valueOf(authUser.getUsername()), id));
     }
 }

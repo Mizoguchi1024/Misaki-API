@@ -5,6 +5,9 @@ import org.mizoguchi.misaki.common.constant.MessageConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.entity.Setting;
 import org.mizoguchi.misaki.entity.dto.*;
+import org.mizoguchi.misaki.entity.vo.LoginResponse;
+import org.mizoguchi.misaki.entity.vo.UserProfileResponse;
+import org.mizoguchi.misaki.entity.vo.UserSettingResponse;
 import org.mizoguchi.misaki.mapper.SettingMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.entity.User;
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public LoginDto login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         User user = userMapper.selectUserByEmail(loginRequest.getEmail());
 
         if (user == null) {
@@ -40,7 +43,7 @@ public class UserServiceImpl implements UserService {
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.updateUserById(user);
 
-        return LoginDto.builder()
+        return LoginResponse.builder()
                 .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
                 .authRole(user.getAuthRole())
                 .build();
@@ -111,8 +114,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getProfile(Long userId) {
+    public User getUserEntity(Long userId) {
         return userMapper.selectUserById(userId);
+    }
+
+    @Override
+    public UserProfileResponse getProfile(Long userId) {
+        User user = getUserEntity(userId);
+
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        BeanUtils.copyProperties(user, userProfileResponse);
+
+        return userProfileResponse;
     }
 
     @Override
@@ -125,8 +138,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Setting getSetting(Long userId) {
+    public Setting getSettingEntity(Long userId) {
         return settingMapper.selectSettingByUserId(userId);
+    }
+
+    @Override
+    public UserSettingResponse getSetting(Long userId) {
+        Setting setting = getSettingEntity(userId);
+
+        UserSettingResponse userSettingResponse = new UserSettingResponse();
+        BeanUtils.copyProperties(setting, userSettingResponse);
+
+        return userSettingResponse;
     }
 
     @Override

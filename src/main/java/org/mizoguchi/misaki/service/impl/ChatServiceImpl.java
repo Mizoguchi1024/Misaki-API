@@ -8,9 +8,10 @@ import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.ConversationNotExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteConversationException;
 import org.mizoguchi.misaki.entity.*;
+import org.mizoguchi.misaki.entity.vo.UserConversationResponse;
+import org.mizoguchi.misaki.entity.vo.UserMessageResponse;
 import org.mizoguchi.misaki.mapper.ConversationMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
-import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.service.AssistantService;
 import org.mizoguchi.misaki.service.ChatService;
 import org.mizoguchi.misaki.service.UserService;
@@ -20,11 +21,13 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +50,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Conversation getConversation(Long userId, Long conversationId) {
+    public Conversation getConversationEntity(Long userId, Long conversationId) {
         Conversation conversation = conversationMapper.selectConversationById(conversationId);
         if (conversation.getUserId().equals(userId)) {
             return conversation;
@@ -56,19 +59,26 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Conversation> getConversations(Long userId) {
-        return conversationMapper.selectConversationsByUserId(userId);
+    public List<UserConversationResponse> getConversations(Long userId) {
+        List<UserConversationResponse> conversations = conversationMapper.selectConversationsByUserId(userId).stream()
+                .map(conversation -> {
+                    UserConversationResponse userConversationResponse = new UserConversationResponse();
+                    BeanUtils.copyProperties(conversation, userConversationResponse);
+                    return userConversationResponse;
+                }).collect(Collectors.toList());
+
+        return conversations;
     }
 
     @Override
     public Flux<String> sendMessage(Long userId, Long conversationId, String content, String prefix) {
-        if(getConversation(userId, conversationId) == null) {
+        if(getConversationEntity(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
 
-        User user = userService.getProfile(userId);
-        Setting setting = userService.getSetting(userId);
-        Assistant assistant = assistantService.getAssistant(userId, setting.getEnabledAssistantId());
+        User user = userService.getUserEntity(userId);
+        Setting setting = userService.getSettingEntity(userId);
+        Assistant assistant = assistantService.getAssistantEntity(userId, setting.getEnabledAssistantId());
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
@@ -97,8 +107,8 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Message> getMessages(Long userId, Long conversationId) {
-        if(getConversation(userId, conversationId) == null) {
+    public List<Message> getMessagesEntity(Long userId, Long conversationId) {
+        if(getConversationEntity(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
 
@@ -106,8 +116,20 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public List<UserMessageResponse> getMessages(Long userId, Long conversationId) {
+        List<UserMessageResponse> messages = getMessagesEntity(userId, conversationId).stream()
+                .map(message -> {
+                    UserMessageResponse userMessageResponse = new UserMessageResponse();
+                    BeanUtils.copyProperties(message, userMessageResponse);
+                    return userMessageResponse;
+                }).collect(Collectors.toList());
+
+        return messages;
+    }
+
+    @Override
     public String getTitle(Long userId, Long conversationId) {
-        Conversation conversation = getConversation(userId, conversationId);
+        Conversation conversation = getConversationEntity(userId, conversationId);
         if(conversation == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
@@ -116,7 +138,7 @@ public class ChatServiceImpl implements ChatService {
             return conversation.getTitle();
         }
 
-        List<Message> messages = getMessages(userId, conversationId);
+        List<Message> messages = getMessagesEntity(userId, conversationId);
         Message userMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
                 .findFirst()

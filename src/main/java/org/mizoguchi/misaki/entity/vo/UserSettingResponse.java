@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSettingVo {
+public class UserSettingResponse {
     private Integer appearance;
 
     private Integer language;

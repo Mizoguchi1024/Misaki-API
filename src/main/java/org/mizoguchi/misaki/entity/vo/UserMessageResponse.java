@@ -12,11 +12,17 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserConversationVo {
+public class UserMessageResponse {
     private Long id;
 
-    private String title;
+    private Long conversationId;
+
+    private String type;
+
+    private String content;
+
+    private Integer mcpEnabled;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
+    private LocalDateTime timestamp;
 }

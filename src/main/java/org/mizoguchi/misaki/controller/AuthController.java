@@ -6,14 +6,12 @@ import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
-import org.mizoguchi.misaki.entity.dto.LoginDto;
 import org.mizoguchi.misaki.entity.dto.LoginRequest;
 import org.mizoguchi.misaki.entity.dto.RegisterRequest;
 import org.mizoguchi.misaki.entity.dto.ResetPasswordRequest;
-import org.mizoguchi.misaki.entity.vo.LoginVo;
+import org.mizoguchi.misaki.entity.vo.LoginResponse;
 import org.mizoguchi.misaki.service.EmailService;
 import org.mizoguchi.misaki.service.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,20 +31,14 @@ public class AuthController {
 
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public Result<LoginVo> login(@RequestBody @Validated LoginRequest loginRequest) {
-        LoginDto loginDto = userService.login(loginRequest);
-
-        LoginVo loginVo = new LoginVo();
-        BeanUtils.copyProperties(loginDto, loginVo);
-
-        return Result.success(loginVo);
+    public Result<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
+        return Result.success(userService.login(loginRequest));
     }
 
     @Operation(summary = "注册")
     @PostMapping("/register")
     public Result<Void> register(@RequestBody @Validated RegisterRequest registerRequest) {
         userService.register(registerRequest);
-
         return Result.success();
     }
 
@@ -54,7 +46,6 @@ public class AuthController {
     @PostMapping("/reset-password")
     public Result<Void> resetPassword(@RequestBody @Validated ResetPasswordRequest resetPasswordRequest){
         userService.resetPassword(resetPasswordRequest);
-
         return Result.success();
     }
 

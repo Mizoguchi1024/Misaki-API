@@ -5,14 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
-import org.mizoguchi.misaki.entity.Setting;
-import org.mizoguchi.misaki.entity.User;
 import org.mizoguchi.misaki.entity.dto.EditProfileRequest;
 import org.mizoguchi.misaki.entity.dto.EditSettingRequest;
-import org.mizoguchi.misaki.entity.vo.UserProfileVo;
-import org.mizoguchi.misaki.entity.vo.UserSettingVo;
+import org.mizoguchi.misaki.entity.vo.UserProfileResponse;
+import org.mizoguchi.misaki.entity.vo.UserSettingResponse;
 import org.mizoguchi.misaki.service.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -29,13 +26,10 @@ public class UserController {
 
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
-    public Result<UserProfileVo> getProfile(@AuthenticationPrincipal UserDetails authUser){
-        User user = userService.getProfile(Long.valueOf(authUser.getUsername()));
+    public Result<UserProfileResponse> getProfile(@AuthenticationPrincipal UserDetails authUser){
 
-        UserProfileVo userProfileVo = new UserProfileVo();
-        BeanUtils.copyProperties(user, userProfileVo);
 
-        return Result.success(userProfileVo);
+        return Result.success(userService.getProfile(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "修改个人资料")
@@ -49,13 +43,8 @@ public class UserController {
 
     @Operation(summary = "获取设定")
     @GetMapping("/settings")
-    public Result<UserSettingVo> getSetting(@AuthenticationPrincipal UserDetails authUser){
-        Setting setting = userService.getSetting(Long.valueOf(authUser.getUsername()));
-
-        UserSettingVo userSettingVo = new UserSettingVo();
-        BeanUtils.copyProperties(setting, userSettingVo);
-
-        return Result.success(userSettingVo);
+    public Result<UserSettingResponse> getSetting(@AuthenticationPrincipal UserDetails authUser){
+        return Result.success(userService.getSetting(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "修改设定")

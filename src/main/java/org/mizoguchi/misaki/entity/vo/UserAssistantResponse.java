@@ -7,27 +7,36 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileVo {
-    private String email;
+public class UserAssistantResponse {
+    private Long id;
 
-    private String username;
+    private String name;
+
+    private String personality;
 
     private Integer gender;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     private String avatarPath;
 
-    private String occupation;
+    private Long modelId;
 
-    private String detail;
+    private Long creatorId;
+
+    private Long moe;
+
+    private Integer publicFlag;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private String createTime;
+    private LocalDateTime createTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 }
