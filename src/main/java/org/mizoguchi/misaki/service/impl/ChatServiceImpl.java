@@ -8,8 +8,8 @@ import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.ConversationNotExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteConversationException;
 import org.mizoguchi.misaki.entity.*;
-import org.mizoguchi.misaki.entity.vo.UserConversationResponse;
-import org.mizoguchi.misaki.entity.vo.UserMessageResponse;
+import org.mizoguchi.misaki.entity.vo.front.ConversationFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.mapper.ConversationMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.service.AssistantService;
@@ -40,7 +40,7 @@ public class ChatServiceImpl implements ChatService {
     private final MessageMapper messageMapper;
 
     @Override
-    public Long createConversation(Long userId) {
+    public Long addConversation(Long userId) {
         Conversation conversation = Conversation.builder()
                 .userId(userId)
                 .build();
@@ -59,12 +59,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<UserConversationResponse> getConversations(Long userId) {
-        List<UserConversationResponse> conversations = conversationMapper.selectConversationsByUserId(userId).stream()
+    public List<ConversationFrontResponse> listConversationsFrontResponse(Long userId) {
+        List<ConversationFrontResponse> conversations = conversationMapper.selectConversationsByUserId(userId).stream()
                 .map(conversation -> {
-                    UserConversationResponse userConversationResponse = new UserConversationResponse();
-                    BeanUtils.copyProperties(conversation, userConversationResponse);
-                    return userConversationResponse;
+                    ConversationFrontResponse conversationFrontResponse = new ConversationFrontResponse();
+                    BeanUtils.copyProperties(conversation, conversationFrontResponse);
+                    return conversationFrontResponse;
                 }).collect(Collectors.toList());
 
         return conversations;
@@ -107,7 +107,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Message> getMessagesEntity(Long userId, Long conversationId) {
+    public List<Message> listMessagesEntity(Long userId, Long conversationId) {
         if(getConversationEntity(userId, conversationId) == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
         }
@@ -116,19 +116,19 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<UserMessageResponse> getMessages(Long userId, Long conversationId) {
-        List<UserMessageResponse> messages = getMessagesEntity(userId, conversationId).stream()
+    public List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long conversationId) {
+        List<MessageFrontResponse> messages = listMessagesEntity(userId, conversationId).stream()
                 .map(message -> {
-                    UserMessageResponse userMessageResponse = new UserMessageResponse();
-                    BeanUtils.copyProperties(message, userMessageResponse);
-                    return userMessageResponse;
+                    MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
+                    BeanUtils.copyProperties(message, messageFrontResponse);
+                    return messageFrontResponse;
                 }).collect(Collectors.toList());
 
         return messages;
     }
 
     @Override
-    public String getTitle(Long userId, Long conversationId) {
+    public String getConversationTitle(Long userId, Long conversationId) {
         Conversation conversation = getConversationEntity(userId, conversationId);
         if(conversation == null) {
             throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
@@ -138,7 +138,7 @@ public class ChatServiceImpl implements ChatService {
             return conversation.getTitle();
         }
 
-        List<Message> messages = getMessagesEntity(userId, conversationId);
+        List<Message> messages = listMessagesEntity(userId, conversationId);
         Message userMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
                 .findFirst()

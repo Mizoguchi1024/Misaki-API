@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.dto;
+package org.mizoguchi.misaki.entity.dto.front;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class SendMessageRequest {
+public class SendMessageFrontRequest {
     @NotBlank
     @Size(min = 1, max = 5000)
     private String content;

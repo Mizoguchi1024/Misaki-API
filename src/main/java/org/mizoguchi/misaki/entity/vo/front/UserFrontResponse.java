@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo;
+package org.mizoguchi.misaki.entity.vo.front;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileResponse {
+public class UserFrontResponse {
     private String email;
 
     private String username;

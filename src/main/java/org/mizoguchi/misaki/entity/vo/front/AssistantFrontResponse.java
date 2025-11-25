@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo;
+package org.mizoguchi.misaki.entity.vo.front;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAssistantResponse {
+public class AssistantFrontResponse {
     private Long id;
 
     private String name;

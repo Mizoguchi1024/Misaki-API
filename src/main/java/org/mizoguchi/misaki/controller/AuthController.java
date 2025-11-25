@@ -51,7 +51,7 @@ public class AuthController {
 
     @Operation(summary = "发送电子邮箱验证码")
     @GetMapping("/verify/{email}")
-    public Result<Void> verify(@PathVariable @Email() String email){
+    public Result<Void> sendVerifyCode(@PathVariable @Email() String email){
         String code = String.valueOf((int) ((Math.random() * 9 + 1) * 100000)); //六位验证码
         emailService.sendVerificationEmail(email, code);
         redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(5));

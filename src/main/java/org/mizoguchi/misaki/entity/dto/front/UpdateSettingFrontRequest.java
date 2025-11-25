@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.dto;
+package org.mizoguchi.misaki.entity.dto.front;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -6,7 +6,7 @@ import org.mizoguchi.misaki.common.constant.MessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 
 @Data
-public class EditSettingRequest {
+public class UpdateSettingFrontRequest {
     @NotNull
     @Min(0)
     @Max(2)

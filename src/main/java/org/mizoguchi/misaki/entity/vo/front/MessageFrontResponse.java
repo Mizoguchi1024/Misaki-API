@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo;
+package org.mizoguchi.misaki.entity.vo.front;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,11 +12,17 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserConversationResponse {
+public class MessageFrontResponse {
     private Long id;
 
-    private String title;
+    private Long conversationId;
+
+    private String type;
+
+    private String content;
+
+    private Integer mcpEnabled;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
+    private LocalDateTime timestamp;
 }

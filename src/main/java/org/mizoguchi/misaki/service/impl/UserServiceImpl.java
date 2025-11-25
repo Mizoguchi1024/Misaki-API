@@ -5,9 +5,11 @@ import org.mizoguchi.misaki.common.constant.MessageConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.entity.Setting;
 import org.mizoguchi.misaki.entity.dto.*;
+import org.mizoguchi.misaki.entity.dto.front.UpdateSettingFrontRequest;
+import org.mizoguchi.misaki.entity.dto.front.UpdateUserFrontRequest;
 import org.mizoguchi.misaki.entity.vo.LoginResponse;
-import org.mizoguchi.misaki.entity.vo.UserProfileResponse;
-import org.mizoguchi.misaki.entity.vo.UserSettingResponse;
+import org.mizoguchi.misaki.entity.vo.front.UserFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.SettingFrontResponse;
 import org.mizoguchi.misaki.mapper.SettingMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.entity.User;
@@ -104,7 +106,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId) {
+    public void deleteAccount(Long userId) {
         User user = User.builder()
                 .id(userId)
                 .deleteFlag(1)
@@ -119,20 +121,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileResponse getProfile(Long userId) {
+    public UserFrontResponse getUserFrontResponse(Long userId) {
         User user = getUserEntity(userId);
 
-        UserProfileResponse userProfileResponse = new UserProfileResponse();
-        BeanUtils.copyProperties(user, userProfileResponse);
+        UserFrontResponse userFrontResponse = new UserFrontResponse();
+        BeanUtils.copyProperties(user, userFrontResponse);
 
-        return userProfileResponse;
+        return userFrontResponse;
     }
 
     @Override
-    public void editProfile(Long userId, EditProfileRequest editProfileRequest) {
+    public void updateUser(Long userId, UpdateUserFrontRequest updateUserFrontRequest) {
         User user = new User();
         user.setId(userId);
-        BeanUtils.copyProperties(editProfileRequest, user);
+        BeanUtils.copyProperties(updateUserFrontRequest, user);
 
         userMapper.updateUserById(user);
     }
@@ -143,20 +145,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserSettingResponse getSetting(Long userId) {
+    public SettingFrontResponse getSettingFrontResponse(Long userId) {
         Setting setting = getSettingEntity(userId);
 
-        UserSettingResponse userSettingResponse = new UserSettingResponse();
-        BeanUtils.copyProperties(setting, userSettingResponse);
+        SettingFrontResponse settingFrontResponse = new SettingFrontResponse();
+        BeanUtils.copyProperties(setting, settingFrontResponse);
 
-        return userSettingResponse;
+        return settingFrontResponse;
     }
 
     @Override
-    public void editSetting(Long userId, EditSettingRequest editSettingRequest) {
+    public void updateSetting(Long userId, UpdateSettingFrontRequest updateSettingFrontRequest) {
         Setting setting = new Setting();
         setting.setUserId(userId);
-        BeanUtils.copyProperties(editSettingRequest, setting);
+        BeanUtils.copyProperties(updateSettingFrontRequest, setting);
 
         settingMapper.updateSettingByUserId(setting);
     }

@@ -1,15 +1,13 @@
-package org.mizoguchi.misaki.entity.dto;
+package org.mizoguchi.misaki.entity.dto.front;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
-import org.mizoguchi.misaki.common.constant.RegexConstant;
 
 import java.time.LocalDate;
 
 @Data
-public class EditProfileRequest {
+public class UpdateUserFrontRequest {
     @NotBlank
     @Size(min = 2, max = 20)
     private String username;

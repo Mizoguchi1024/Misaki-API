@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.dto;
+package org.mizoguchi.misaki.entity.dto.front;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class EditAssistantRequest {
+public class UpdateAssistantFrontRequest {
     private String name;
 
     private String personality;

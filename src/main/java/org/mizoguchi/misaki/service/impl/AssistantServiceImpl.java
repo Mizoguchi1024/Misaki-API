@@ -2,15 +2,17 @@ package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.entity.Assistant;
-import org.mizoguchi.misaki.entity.dto.CreateAssistantRequest;
-import org.mizoguchi.misaki.entity.dto.EditAssistantRequest;
-import org.mizoguchi.misaki.entity.vo.UserAssistantResponse;
+import org.mizoguchi.misaki.entity.dto.front.AddAssistantFrontRequest;
+import org.mizoguchi.misaki.entity.dto.front.UpdateAssistantFrontRequest;
+import org.mizoguchi.misaki.entity.vo.front.AssistantFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.service.AssistantService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,32 +31,46 @@ public class AssistantServiceImpl implements AssistantService {
     }
 
     @Override
-    public UserAssistantResponse getAssistant(Long userId, Long assistantId) {
+    public List<Assistant> listAssistantsEntity(Long userId) {
+        return assistantMapper.selectAssistantsByOwnerId(userId);
+    }
+
+    @Override
+    public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
         Assistant assistant = getAssistantEntity(userId, assistantId);
-        UserAssistantResponse userAssistantResponse = new UserAssistantResponse();
-        BeanUtils.copyProperties(assistant, userAssistantResponse);
+        AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
+        BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
-        return userAssistantResponse;
+        return assistantFrontResponse;
     }
 
     @Override
-    public List<UserAssistantResponse> getAssistants(Long userId) {
-//        return assistantMapper.selectAssistantsByOwnerId(userId); TODO
+    public List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId) {
+        List<AssistantFrontResponse> assistants = listAssistantsEntity(userId).stream()
+                .map(assistant -> {
+                    AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
+                    BeanUtils.copyProperties(assistant, assistantFrontResponse);
+                    return assistantFrontResponse;
+                }).collect(Collectors.toList());
+
+        return assistants;
+    }
+
+    @Override
+    public List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId) {
         return List.of();
     }
 
     @Override
-    public List<UserAssistantResponse> getPublicAssistants(Long userId) {
-        return List.of();
+    public void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest) {
+        Assistant assistant = new Assistant();
+        BeanUtils.copyProperties(addAssistantFrontRequest, assistant);
+        assistant.setOwnerId(userId);
+        assistantMapper.insertAssistant(assistant);
     }
 
     @Override
-    public void createAssistant(Long userId, CreateAssistantRequest createAssistantRequest) {
-
-    }
-
-    @Override
-    public void editAssistant(EditAssistantRequest editAssistantRequest) {
+    public void updateAssistant(UpdateAssistantFrontRequest updateAssistantFrontRequest) {
 
     }
 }

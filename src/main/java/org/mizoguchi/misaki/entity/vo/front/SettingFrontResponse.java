@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo;
+package org.mizoguchi.misaki.entity.vo.front;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSettingResponse {
+public class SettingFrontResponse {
     private Integer appearance;
 
     private Integer language;
