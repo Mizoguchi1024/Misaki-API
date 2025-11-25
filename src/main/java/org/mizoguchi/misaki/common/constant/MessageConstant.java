@@ -1,6 +1,9 @@
 package org.mizoguchi.misaki.common.constant;
 
 public class MessageConstant {
+    public static final String MISSING_HEADERS = "缺少请求头";
+    public static final String REQUEST_EXPIRED = "请求已过期";
+    public static final String REPLAY_ATTACK_DETECTED = "检测到重放攻击";
     public static final String USER_ALREADY_EXISTS = "该用户已存在";
     public static final String USER_NOT_EXISTS = "该用户不存在";
     public static final String JWT_EXPIRED = "JWT已过期";

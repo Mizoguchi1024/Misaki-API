@@ -15,6 +15,7 @@ import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.service.impl.UserDetailsServiceImpl;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,14 +35,41 @@ import java.util.Map;
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final RedisTemplate<String, Object> redisTemplate;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-
+        final String timestampHeader = request.getHeader(WebConstant.HEADER_TIMESTAMP);
+        final String nonceHeader = request.getHeader(WebConstant.HEADER_NONCE);
         final String authHeader = request.getHeader(WebConstant.HEADER_AUTHORIZATION);
+
+        if (timestampHeader == null || nonceHeader == null) {
+            log.warn("{} | IP={} | URI={} | Method={}",
+                    MessageConstant.MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.MISSING_HEADERS);
+            return;
+        }
+
+        if (Math.abs(System.currentTimeMillis() - Long.parseLong(timestampHeader)) > WebConstant.REQUEST_EXPIRE_TIME){
+            log.warn("{} | IP={} | URI={} | Method={}",
+                    MessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.REQUEST_EXPIRED);
+            return;
+        }
+
+        String redisKey = "nonce:" + nonceHeader;
+
+        if (redisTemplate.hasKey(redisKey)) {
+            log.warn("{} | IP={} | URI={} | Method={}",
+                    MessageConstant.REPLAY_ATTACK_DETECTED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.REPLAY_ATTACK_DETECTED);
+            return;
+        }
+
+        redisTemplate.opsForValue().set(redisKey, "1", WebConstant.REQUEST_EXPIRE_TIME);
 
         if (authHeader == null || !authHeader.startsWith(WebConstant.BEARER_PREFIX)) {
             chain.doFilter(request, response);
