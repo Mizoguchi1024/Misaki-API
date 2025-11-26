@@ -47,6 +47,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String nonceHeader = request.getHeader(WebConstant.HEADER_NONCE);
         final String authHeader = request.getHeader(WebConstant.HEADER_AUTHORIZATION);
 
+        if (request.getRequestURI().startsWith("/api/swagger-ui") || request.getRequestURI().startsWith("/api/v3/api-docs")){
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (timestampHeader == null || nonceHeader == null) {
             log.warn("{} | IP={} | URI={} | Method={}",
