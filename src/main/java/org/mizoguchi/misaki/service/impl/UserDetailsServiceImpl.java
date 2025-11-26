@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(user.getAuthRole());
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getId().toString(),
                 user.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority(authRoleEnum.getRoleName()))
         );

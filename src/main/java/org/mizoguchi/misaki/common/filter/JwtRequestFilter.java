@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String timestampHeader = request.getHeader(WebConstant.HEADER_TIMESTAMP);
         final String nonceHeader = request.getHeader(WebConstant.HEADER_NONCE);
         final String authHeader = request.getHeader(WebConstant.HEADER_AUTHORIZATION);
+
 
         if (timestampHeader == null || nonceHeader == null) {
             log.warn("{} | IP={} | URI={} | Method={}",
@@ -69,7 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        redisTemplate.opsForValue().set(redisKey, "1", WebConstant.REQUEST_EXPIRE_TIME);
+        redisTemplate.opsForValue().set(redisKey, timestampHeader, Duration.ofMillis(WebConstant.REQUEST_EXPIRE_TIME));
 
         if (authHeader == null || !authHeader.startsWith(WebConstant.BEARER_PREFIX)) {
             chain.doFilter(request, response);
