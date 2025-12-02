@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo.front;
+package org.mizoguchi.misaki.pojo.vo.front;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

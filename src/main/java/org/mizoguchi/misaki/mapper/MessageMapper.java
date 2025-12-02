@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.mapper;
 
-import org.mizoguchi.misaki.entity.Message;
+import org.mizoguchi.misaki.pojo.entity.Message;
 
 import java.util.List;
 

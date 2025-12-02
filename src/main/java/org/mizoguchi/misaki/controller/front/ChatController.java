@@ -6,10 +6,11 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
-import org.mizoguchi.misaki.entity.dto.front.SendMessageFrontRequest;
-import org.mizoguchi.misaki.entity.vo.front.ChatFrontResponse;
-import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
+import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
+import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.ChatService;
+import org.mizoguchi.misaki.service.MessageService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +27,7 @@ import java.util.List;
 @Tag(name = "会话相关接口")
 public class ChatController {
     private final ChatService chatService;
+    private final MessageService messageService;
 
     @Operation(summary = "新建会话")
     @PostMapping()
@@ -38,7 +40,7 @@ public class ChatController {
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails authUser,
                                     @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
-        return chatService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageFrontRequest.getContent(),
+        return messageService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageFrontRequest.getContent(),
                 sendMessageFrontRequest.getPrefix());
     }
 
@@ -58,6 +60,6 @@ public class ChatController {
     @GetMapping(value = "/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails authUser,
                                                            @PathVariable @Positive Long id){
-        return Result.success(chatService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()), id));
+        return Result.success(messageService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()), id));
     }
 }

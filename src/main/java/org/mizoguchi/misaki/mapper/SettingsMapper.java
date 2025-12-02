@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.mapper;
 
-import org.mizoguchi.misaki.entity.Settings;
+import org.mizoguchi.misaki.pojo.entity.Settings;
 
 public interface SettingsMapper {
     Settings selectSettingsByUserId(Long userId);

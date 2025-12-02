@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.mapper;
 
-import org.mizoguchi.misaki.entity.Chat;
+import org.mizoguchi.misaki.pojo.entity.Chat;
 
 import java.util.List;
 

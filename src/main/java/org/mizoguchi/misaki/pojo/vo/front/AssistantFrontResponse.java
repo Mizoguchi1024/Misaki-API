@@ -1,15 +1,19 @@
-package org.mizoguchi.misaki.entity;
+package org.mizoguchi.misaki.pojo.vo.front;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class Assistant {
-    @TableId(type = IdType.AUTO)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class AssistantFrontResponse {
     private Long id;
 
     private String name;
@@ -26,15 +30,13 @@ public class Assistant {
 
     private Long creatorId;
 
-    private Long ownerId;
-
     private Long moe;
 
     private Integer publicFlag;
 
-    private Integer deleteFlag;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

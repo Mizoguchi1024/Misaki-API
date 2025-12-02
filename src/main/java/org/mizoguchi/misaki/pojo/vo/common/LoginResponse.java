@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.vo.common;
+package org.mizoguchi.misaki.pojo.vo.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

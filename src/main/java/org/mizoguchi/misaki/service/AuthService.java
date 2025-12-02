@@ -1,9 +1,9 @@
 package org.mizoguchi.misaki.service;
 
-import org.mizoguchi.misaki.entity.dto.common.LoginRequest;
-import org.mizoguchi.misaki.entity.dto.common.RegisterRequest;
-import org.mizoguchi.misaki.entity.dto.common.ResetPasswordRequest;
-import org.mizoguchi.misaki.entity.vo.common.LoginResponse;
+import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
+import org.mizoguchi.misaki.pojo.dto.common.RegisterRequest;
+import org.mizoguchi.misaki.pojo.dto.common.ResetPasswordRequest;
+import org.mizoguchi.misaki.pojo.vo.common.LoginResponse;
 
 public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);

@@ -19,4 +19,5 @@ public class MessageConstant {
     public static final String INVALID_ENUM_CODE = "非法的枚举代号";
     public static final String NOT_FOUND = "无法找到请求的资源";
     public static final String INCOMPLETE_CHAT = "会话不完整";
+    public static final String ASSISTANT_NOT_EXISTS = "该助手不存在";
 }

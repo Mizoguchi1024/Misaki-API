@@ -1,11 +1,10 @@
 package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.entity.Assistant;
-import org.mizoguchi.misaki.entity.dto.front.AddAssistantFrontRequest;
-import org.mizoguchi.misaki.entity.dto.front.UpdateAssistantFrontRequest;
-import org.mizoguchi.misaki.entity.vo.front.AssistantFrontResponse;
-import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
+import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
+import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.service.AssistantService;
 import org.springframework.beans.BeanUtils;

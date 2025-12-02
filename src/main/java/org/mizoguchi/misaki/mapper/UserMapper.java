@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.mapper;
 
-import org.mizoguchi.misaki.entity.User;
+import org.mizoguchi.misaki.pojo.entity.User;
 
 public interface UserMapper {
     User selectUserById(Long id);

@@ -1,9 +1,9 @@
 package org.mizoguchi.misaki.service;
 
-import org.mizoguchi.misaki.entity.Assistant;
-import org.mizoguchi.misaki.entity.dto.front.AddAssistantFrontRequest;
-import org.mizoguchi.misaki.entity.dto.front.UpdateAssistantFrontRequest;
-import org.mizoguchi.misaki.entity.vo.front.AssistantFrontResponse;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
+import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
+import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 
 import java.util.List;
 

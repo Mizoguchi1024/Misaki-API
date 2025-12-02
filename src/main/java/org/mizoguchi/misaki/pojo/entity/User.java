@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity;
+package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;

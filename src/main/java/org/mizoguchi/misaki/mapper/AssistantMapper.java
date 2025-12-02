@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.mapper;
 
-import org.mizoguchi.misaki.entity.Assistant;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
 
 import java.util.List;
 

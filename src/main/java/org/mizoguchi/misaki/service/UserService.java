@@ -1,11 +1,11 @@
 package org.mizoguchi.misaki.service;
 
-import org.mizoguchi.misaki.entity.Settings;
-import org.mizoguchi.misaki.entity.User;
-import org.mizoguchi.misaki.entity.dto.front.UpdateSettingFrontRequest;
-import org.mizoguchi.misaki.entity.dto.front.UpdateUserFrontRequest;
-import org.mizoguchi.misaki.entity.vo.front.UserFrontResponse;
-import org.mizoguchi.misaki.entity.vo.front.SettingFrontResponse;
+import org.mizoguchi.misaki.pojo.entity.Settings;
+import org.mizoguchi.misaki.pojo.entity.User;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
+import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 
 public interface UserService {
     void deleteAccount(Long userId);

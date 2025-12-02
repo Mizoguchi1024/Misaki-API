@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
-import org.mizoguchi.misaki.entity.dto.common.TtsRequest;
+import org.mizoguchi.misaki.pojo.dto.common.TtsRequest;
 import org.mizoguchi.misaki.service.FileService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

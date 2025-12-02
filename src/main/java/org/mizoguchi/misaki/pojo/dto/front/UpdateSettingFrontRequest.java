@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.dto.front;
+package org.mizoguchi.misaki.pojo.dto.front;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

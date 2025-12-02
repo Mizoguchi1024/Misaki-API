@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity;
+package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,17 +13,21 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
+public class Message {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long userId;
+    private Long chatId;
 
-    private String title;
+    private String type;
+
+    private String content;
+
+    private Integer tokens;
+
+    private Integer mcpEnabled;
 
     private Integer deleteFlag;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
+    private LocalDateTime timestamp;
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.MessageConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
-import org.mizoguchi.misaki.entity.User;
+import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
