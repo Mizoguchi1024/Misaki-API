@@ -17,7 +17,7 @@ public class Message {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long conversationId;
+    private Long chatId;
 
     private String type;
 

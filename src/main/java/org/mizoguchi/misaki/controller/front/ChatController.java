@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.controller.user;
+package org.mizoguchi.misaki.controller.front;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.entity.dto.front.SendMessageFrontRequest;
-import org.mizoguchi.misaki.entity.vo.front.ConversationFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.ChatService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/front/conversations")
+@RequestMapping("/front/chats")
 @RequiredArgsConstructor
 @Tag(name = "会话相关接口")
 public class ChatController {
@@ -29,8 +29,8 @@ public class ChatController {
 
     @Operation(summary = "新建会话")
     @PostMapping()
-    public Result<Long> createConversation(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(chatService.addConversation(Long.valueOf(authUser.getUsername())));
+    public Result<Long> createChat(@AuthenticationPrincipal UserDetails authUser){
+        return Result.success(chatService.addChat(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "发送消息")
@@ -44,14 +44,14 @@ public class ChatController {
 
     @Operation(summary = "获取会话标题")
     @GetMapping("/{id}/title")
-    public Result<String> getConversationTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
-        return Result.success(chatService.getConversationTitle(Long.valueOf(authUser.getUsername()), id));
+    public Result<String> getChatTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
+        return Result.success(chatService.getChatTitle(Long.valueOf(authUser.getUsername()), id));
     }
 
     @Operation(summary = "获取历史会话")
     @GetMapping()
-    public Result<List<ConversationFrontResponse>> listConversations(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(chatService.listConversationsFrontResponse(Long.valueOf(authUser.getUsername())));
+    public Result<List<ChatFrontResponse>> listChats(@AuthenticationPrincipal UserDetails authUser){
+        return Result.success(chatService.listChatsFrontResponse(Long.valueOf(authUser.getUsername())));
     }
 
     @Operation(summary = "获取会话中的所有消息")

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.mizoguchi.misaki.mapper.SettingMapper">
-    <select id="selectSettingByUserId" resultType="org.mizoguchi.misaki.entity.Setting">
-        SELECT * FROM setting
+<mapper namespace="org.mizoguchi.misaki.mapper.SettingsMapper">
+    <select id="selectSettingsByUserId" resultType="org.mizoguchi.misaki.entity.Settings">
+        SELECT * FROM settings
         WHERE user_id = #{userId}
     </select>
 
-    <insert id="insertSetting" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO setting
+    <insert id="insertSettings" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO settings
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="userId != null">user_id,</if>
                 <if test="appearance != null">appearance,</if>
@@ -32,8 +32,8 @@
                 <if test="enabledAssistantId != null">#{enabled_assistant_id},</if>
             </trim>
     </insert>
-    <update id="updateSettingByUserId">
-        UPDATE setting
+    <update id="updateSettingsByUserId">
+        UPDATE settings
         <set>
             <if test="appearance != null">appearance = #{appearance},</if>
             <if test="language != null">language = #{language},</if>

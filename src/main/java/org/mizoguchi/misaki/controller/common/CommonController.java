@@ -1,9 +1,10 @@
-package org.mizoguchi.misaki.controller;
+package org.mizoguchi.misaki.controller.common;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
+import org.mizoguchi.misaki.entity.dto.common.TtsRequest;
 import org.mizoguchi.misaki.service.FileService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ public class CommonController {
 
     @Operation(summary = "文字转语音")
     @GetMapping("/tts")
-    public Result<MultipartFile> textToSpeech(@RequestParam() String text) {
+    public Result<MultipartFile> textToSpeech(TtsRequest ttsRequest) {
         // TODO TTS功能
         return Result.success(null);
     }

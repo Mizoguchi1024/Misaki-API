@@ -15,8 +15,8 @@ public class MessageConstant {
     public static final String INVALID_PARAMETER = "非法的请求参数";
     public static final String SENDING_EMAIL_FAILED = "邮件发送失败";
     public static final String INTERNAL_SERVER_ERROR = "服务器内部错误";
-    public static final String CONVERSATION_NOT_EXISTS = "该会话不存在";
+    public static final String CHAT_NOT_EXISTS = "该会话不存在";
     public static final String INVALID_ENUM_CODE = "非法的枚举代号";
     public static final String NOT_FOUND = "无法找到请求的资源";
-    public static final String INCOMPLETE_CONVERSATION = "会话不完整";
+    public static final String INCOMPLETE_CHAT = "会话不完整";
 }

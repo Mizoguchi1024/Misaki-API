@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.controller.user;
+package org.mizoguchi.misaki.controller.front;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

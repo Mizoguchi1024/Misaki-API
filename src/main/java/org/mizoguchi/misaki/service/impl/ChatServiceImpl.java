@@ -5,12 +5,12 @@ import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.MessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
-import org.mizoguchi.misaki.common.exception.ConversationNotExistsException;
-import org.mizoguchi.misaki.common.exception.IncompleteConversationException;
+import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
+import org.mizoguchi.misaki.common.exception.IncompleteChatException;
 import org.mizoguchi.misaki.entity.*;
-import org.mizoguchi.misaki.entity.vo.front.ConversationFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
-import org.mizoguchi.misaki.mapper.ConversationMapper;
+import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.service.AssistantService;
 import org.mizoguchi.misaki.service.ChatService;
@@ -36,49 +36,49 @@ public class ChatServiceImpl implements ChatService {
     private final ChatClient statelessChatClient;
     private final UserService userService;
     private final AssistantService assistantService;
-    private final ConversationMapper conversationMapper;
+    private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
 
     @Override
-    public Long addConversation(Long userId) {
-        Conversation conversation = Conversation.builder()
+    public Long addChat(Long userId) {
+        Chat chat = Chat.builder()
                 .userId(userId)
                 .build();
-        conversationMapper.insertConversation(conversation);
+        chatMapper.insertChat(chat);
 
-        return conversation.getId();
+        return chat.getId();
     }
 
     @Override
-    public Conversation getConversationEntity(Long userId, Long conversationId) {
-        Conversation conversation = conversationMapper.selectConversationById(conversationId);
-        if (conversation.getUserId().equals(userId)) {
-            return conversation;
+    public Chat getChatEntity(Long userId, Long chatId) {
+        Chat chat = chatMapper.selectChatById(chatId);
+        if (chat.getUserId().equals(userId)) {
+            return chat;
         }
         return null;
     }
 
     @Override
-    public List<ConversationFrontResponse> listConversationsFrontResponse(Long userId) {
-        List<ConversationFrontResponse> conversations = conversationMapper.selectConversationsByUserId(userId).stream()
-                .map(conversation -> {
-                    ConversationFrontResponse conversationFrontResponse = new ConversationFrontResponse();
-                    BeanUtils.copyProperties(conversation, conversationFrontResponse);
-                    return conversationFrontResponse;
+    public List<ChatFrontResponse> listChatsFrontResponse(Long userId) {
+        List<ChatFrontResponse> chats = chatMapper.selectChatsByUserId(userId).stream()
+                .map(chat -> {
+                    ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
+                    BeanUtils.copyProperties(chat, chatFrontResponse);
+                    return chatFrontResponse;
                 }).collect(Collectors.toList());
 
-        return conversations;
+        return chats;
     }
 
     @Override
-    public Flux<String> sendMessage(Long userId, Long conversationId, String content, String prefix) {
-        if(getConversationEntity(userId, conversationId) == null) {
-            throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
+    public Flux<String> sendMessage(Long userId, Long chatId, String content, String prefix) {
+        if(getChatEntity(userId, chatId) == null) {
+            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
         }
 
         User user = userService.getUserEntity(userId);
-        Setting setting = userService.getSettingEntity(userId);
-        Assistant assistant = assistantService.getAssistantEntity(userId, setting.getEnabledAssistantId());
+        Settings settings = userService.getSettingEntity(userId);
+        Assistant assistant = assistantService.getAssistantEntity(userId, settings.getEnabledAssistantId());
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(sp -> sp.params(Map.of(
@@ -91,7 +91,7 @@ public class ChatServiceImpl implements ChatService {
                                 ? "用户的职业是" + user.getOccupation() + "。" : "",
                         "detail", (user.getDetail() != null && !user.getDetail().isEmpty())
                                 ? "用户的详情是\"" + user.getDetail() + "\"。" : "")))
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId));
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId));
 
         // DeepSeek-对话前缀续写（Beta）-代码生成
         if (prefix != null && !prefix.trim().isEmpty() && prefix.startsWith(ChatConstant.CODE_QUOTE)) {
@@ -107,17 +107,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Message> listMessagesEntity(Long userId, Long conversationId) {
-        if(getConversationEntity(userId, conversationId) == null) {
-            throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
+    public List<Message> listMessagesEntity(Long userId, Long chatId) {
+        if(getChatEntity(userId, chatId) == null) {
+            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
         }
 
-        return messageMapper.selectMessagesByConversationId(conversationId);
+        return messageMapper.selectMessagesByChatId(chatId);
     }
 
     @Override
-    public List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long conversationId) {
-        List<MessageFrontResponse> messages = listMessagesEntity(userId, conversationId).stream()
+    public List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long chatId) {
+        List<MessageFrontResponse> messages = listMessagesEntity(userId, chatId).stream()
                 .map(message -> {
                     MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
                     BeanUtils.copyProperties(message, messageFrontResponse);
@@ -128,25 +128,25 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public String getConversationTitle(Long userId, Long conversationId) {
-        Conversation conversation = getConversationEntity(userId, conversationId);
-        if(conversation == null) {
-            throw new ConversationNotExistsException(MessageConstant.CONVERSATION_NOT_EXISTS);
+    public String getChatTitle(Long userId, Long chatId) {
+        Chat chat = getChatEntity(userId, chatId);
+        if(chat == null) {
+            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
         }
 
-        if (conversation.getTitle() != null && !conversation.getTitle().trim().isEmpty()) {
-            return conversation.getTitle();
+        if (chat.getTitle() != null && !chat.getTitle().trim().isEmpty()) {
+            return chat.getTitle();
         }
 
-        List<Message> messages = listMessagesEntity(userId, conversationId);
+        List<Message> messages = listMessagesEntity(userId, chatId);
         Message userMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
                 .findFirst()
-                .orElseThrow(() -> new IncompleteConversationException(MessageConstant.INCOMPLETE_CONVERSATION));
+                .orElseThrow(() -> new IncompleteChatException(MessageConstant.INCOMPLETE_CHAT));
         Message assistantMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_ASSISTANT.equals(message.getType()))
                 .findFirst()
-                .orElseThrow(() -> new IncompleteConversationException(MessageConstant.INCOMPLETE_CONVERSATION));
+                .orElseThrow(() -> new IncompleteChatException(MessageConstant.INCOMPLETE_CHAT));
 
         String title = statelessChatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)
@@ -160,8 +160,8 @@ public class ChatServiceImpl implements ChatService {
                     .replaceAll(RegexConstant.QUOTE_SUFFIX, "")
                     .replaceAll(RegexConstant.TITLE_INDICATION, "");
         }
-        conversation.setTitle(title);
-        conversationMapper.updateConversation(conversation);
+        chat.setTitle(title);
+        chatMapper.updateChat(chat);
 
         return title;
     }

@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.entity.dto;
+package org.mizoguchi.misaki.entity.dto.common;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

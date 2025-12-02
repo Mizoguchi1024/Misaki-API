@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConversationFrontResponse {
+public class ChatFrontResponse {
     private Long id;
 
     private String title;

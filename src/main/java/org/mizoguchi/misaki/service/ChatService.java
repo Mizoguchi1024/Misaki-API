@@ -1,20 +1,20 @@
 package org.mizoguchi.misaki.service;
 
-import org.mizoguchi.misaki.entity.Conversation;
+import org.mizoguchi.misaki.entity.Chat;
 import org.mizoguchi.misaki.entity.Message;
-import org.mizoguchi.misaki.entity.vo.front.ConversationFrontResponse;
+import org.mizoguchi.misaki.entity.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.entity.vo.front.MessageFrontResponse;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
 public interface ChatService {
-    Long addConversation(Long userId);
-    Conversation getConversationEntity(Long userId, Long conversationId);
-    List<ConversationFrontResponse> listConversationsFrontResponse(Long userId);
-    String getConversationTitle(Long userId, Long conversationId);
+    Long addChat(Long userId);
+    Chat getChatEntity(Long userId, Long chatId);
+    List<ChatFrontResponse> listChatsFrontResponse(Long userId);
+    String getChatTitle(Long userId, Long chatId);
 
-    Flux<String> sendMessage(Long userId, Long conversationId, String content, String prefix);
-    List<Message> listMessagesEntity(Long userId, Long conversationId);
-    List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long conversationId);
+    Flux<String> sendMessage(Long userId, Long chatId, String content, String prefix);
+    List<Message> listMessagesEntity(Long userId, Long chatId);
+    List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long chatId);
 }
