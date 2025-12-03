@@ -28,7 +28,7 @@ public class User {
 
     private LocalDate birthday;
 
-    private String avatarUrl;
+    private String avatarPath;
 
     private String occupation;
 
@@ -37,6 +37,16 @@ public class User {
     private Integer authRole;
 
     private LocalDateTime lastLoginTime;
+
+    private Long token;
+
+    private Integer crystal;
+
+    private Integer puzzle;
+
+    private Integer stardust;
+
+    private LocalDate lastCheckInTime;
 
     private Integer deleteFlag;
 

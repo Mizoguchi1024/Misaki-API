@@ -8,6 +8,7 @@ import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 
 public interface UserService {
+    void checkIn(Long userId);
     void deleteAccount(Long userId);
 
     User getUserEntity(Long userId);

@@ -2,7 +2,7 @@ package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteChatException;
@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
     public String getChatTitle(Long userId, Long chatId) {
         Chat chat = getChatEntity(userId, chatId);
         if(chat == null) {
-            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
         if (chat.getTitle() != null && !chat.getTitle().trim().isEmpty()) {
@@ -76,11 +76,11 @@ public class ChatServiceImpl implements ChatService {
         Message userMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
                 .findFirst()
-                .orElseThrow(() -> new IncompleteChatException(MessageConstant.INCOMPLETE_CHAT));
+                .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
         Message assistantMessage = messages.stream()
                 .filter(message -> ChatConstant.TYPE_ASSISTANT.equals(message.getType()))
                 .findFirst()
-                .orElseThrow(() -> new IncompleteChatException(MessageConstant.INCOMPLETE_CHAT));
+                .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
 
         String title = statelessChatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)

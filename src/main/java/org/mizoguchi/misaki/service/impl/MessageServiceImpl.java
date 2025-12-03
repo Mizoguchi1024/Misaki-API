@@ -2,7 +2,7 @@ package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
@@ -37,14 +37,14 @@ public class MessageServiceImpl implements MessageService {
     public Flux<String> sendMessage(Long userId, Long chatId, String content, String prefix) {
         Chat chat = chatMapper.selectChatById(chatId);
         if (chat == null || !chat.getUserId().equals(userId)) {
-            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
         User user = userMapper.selectUserById(userId);
         Settings settings = settingsMapper.selectSettingsByUserId(userId);
         Assistant assistant = assistantMapper.selectAssistantById(settings.getEnabledAssistantId());
         if (assistant == null || !assistant.getOwnerId().equals(userId)) {
-            throw  new AssistantNotExistsException(MessageConstant.ASSISTANT_NOT_EXISTS);
+            throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
@@ -77,7 +77,7 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> listMessagesEntity(Long userId, Long chatId) {
         Chat chat = chatMapper.selectChatById(chatId);
         if (chat == null || !chat.getUserId().equals(userId)) {
-            throw new ChatNotExistsException(MessageConstant.CHAT_NOT_EXISTS);
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
         return messageMapper.selectMessagesByChatId(chatId);

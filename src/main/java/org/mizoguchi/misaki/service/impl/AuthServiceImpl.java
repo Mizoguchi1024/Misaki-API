@@ -1,7 +1,7 @@
 package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.pojo.entity.Settings;
@@ -35,9 +35,9 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.selectUserByEmail(loginRequest.getEmail());
 
         if (user == null) {
-            throw new UserNotExistsException(MessageConstant.USER_NOT_EXISTS);
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         } else if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new WrongPasswordException(MessageConstant.WRONG_PASSWORD);
+            throw new WrongPasswordException(FailMessageConstant.WRONG_PASSWORD);
         }
 
         user.setLastLoginTime(LocalDateTime.now());
@@ -55,14 +55,14 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.selectUserByEmail(registerRequest.getEmail());
 
         if (user != null) {
-            throw new UserAlreadyExistsException(MessageConstant.USER_ALREADY_EXISTS);
+            throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
         String verifyCode = (String) redisTemplate.opsForValue().get(registerRequest.getEmail());
         if (verifyCode == null) {
-            throw new VerifyCodeExpiredException(MessageConstant.VERIFY_CODE_EXPIRED);
+            throw new VerifyCodeExpiredException(FailMessageConstant.VERIFY_CODE_EXPIRED);
         } else if (!verifyCode.equals(registerRequest.getVerifyCode())) {
-            throw new WrongVerifyCodeException(MessageConstant.WRONG_VERIFY_CODE);
+            throw new WrongVerifyCodeException(FailMessageConstant.WRONG_VERIFY_CODE);
         }
 
         String encryptPassword = passwordEncoder.encode(registerRequest.getPassword());
@@ -87,14 +87,14 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.selectUserByEmail(resetPasswordRequest.getEmail());
 
         if (user == null) {
-            throw new UserNotExistsException(MessageConstant.USER_NOT_EXISTS);
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         }
 
         String verifyCode = (String) redisTemplate.opsForValue().get(resetPasswordRequest.getEmail());
         if (verifyCode == null) {
-            throw new VerifyCodeExpiredException(MessageConstant.VERIFY_CODE_EXPIRED);
+            throw new VerifyCodeExpiredException(FailMessageConstant.VERIFY_CODE_EXPIRED);
         } else if (!verifyCode.equals(resetPasswordRequest.getVerifyCode())) {
-            throw new WrongVerifyCodeException(MessageConstant.WRONG_VERIFY_CODE);
+            throw new WrongVerifyCodeException(FailMessageConstant.WRONG_VERIFY_CODE);
         }
 
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());

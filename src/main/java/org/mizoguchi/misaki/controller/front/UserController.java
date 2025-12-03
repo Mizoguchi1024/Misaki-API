@@ -24,6 +24,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "每日签到")
+    @PutMapping("/check-in")
+    public Result<Void> checkIn(@AuthenticationPrincipal UserDetails authUser){
+        userService.checkIn(Long.valueOf(authUser.getUsername()));
+        return Result.success();
+    }
+
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
     public Result<UserFrontResponse> getProfile(@AuthenticationPrincipal UserDetails authUser){

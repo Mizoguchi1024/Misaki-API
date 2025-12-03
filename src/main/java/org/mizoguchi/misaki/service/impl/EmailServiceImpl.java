@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.SendingEmailFailedException;
 import org.mizoguchi.misaki.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
             log.info("邮件成功发送到{} | 主题={}", to, subject);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new SendingEmailFailedException(MessageConstant.SENDING_EMAIL_FAILED);
+            throw new SendingEmailFailedException(FailMessageConstant.SENDING_EMAIL_FAILED);
         }
     }
 
@@ -90,7 +90,7 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
             log.info("邮件成功发送到{} | 主题={}", to, subject);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new SendingEmailFailedException(MessageConstant.SENDING_EMAIL_FAILED);
+            throw new SendingEmailFailedException(FailMessageConstant.SENDING_EMAIL_FAILED);
         }
     }
 }

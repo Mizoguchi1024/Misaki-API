@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.WebConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
@@ -54,15 +54,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (timestampHeader == null || nonceHeader == null) {
             log.warn("{} | IP={} | URI={} | Method={}",
-                    MessageConstant.MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.MISSING_HEADERS);
+                    FailMessageConstant.MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.MISSING_HEADERS);
             return;
         }
 
         if (Math.abs(System.currentTimeMillis() - Long.parseLong(timestampHeader)) > WebConstant.REQUEST_EXPIRE_TIME){
             log.warn("{} | IP={} | URI={} | Method={}",
-                    MessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.REQUEST_EXPIRED);
+                    FailMessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REQUEST_EXPIRED);
             return;
         }
 
@@ -70,8 +70,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (redisTemplate.hasKey(redisKey)) {
             log.warn("{} | IP={} | URI={} | Method={}",
-                    MessageConstant.REPLAY_ATTACK_DETECTED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, MessageConstant.REPLAY_ATTACK_DETECTED);
+                    FailMessageConstant.REPLAY_ATTACK_DETECTED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REPLAY_ATTACK_DETECTED);
             return;
         }
 
@@ -91,13 +91,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             roleCode = jwtUtil.getRoleFromToken(jwt);
         } catch (ExpiredJwtException e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                    MessageConstant.JWT_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
-            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, MessageConstant.JWT_EXPIRED);
+                    FailMessageConstant.JWT_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, FailMessageConstant.JWT_EXPIRED);
             return;
         } catch (Exception e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
-                    MessageConstant.INVALID_JWT, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName(), e.getMessage());
-            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, MessageConstant.INVALID_JWT);
+                    FailMessageConstant.INVALID_JWT, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName(), e.getMessage());
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, FailMessageConstant.INVALID_JWT);
             return;
         }
 

@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.common.constant;
 
-public class MessageConstant {
+public class FailMessageConstant {
     public static final String MISSING_HEADERS = "缺少请求头";
     public static final String REQUEST_EXPIRED = "请求已过期";
     public static final String REPLAY_ATTACK_DETECTED = "检测到重放攻击";
@@ -20,4 +20,5 @@ public class MessageConstant {
     public static final String NOT_FOUND = "无法找到请求的资源";
     public static final String INCOMPLETE_CHAT = "会话不完整";
     public static final String ASSISTANT_NOT_EXISTS = "该助手不存在";
+    public static final String TODAY_ALREADY_CHECK_IN = "今日已签到";
 }

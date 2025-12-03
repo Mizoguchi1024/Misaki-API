@@ -62,6 +62,7 @@ public class AssistantServiceImpl implements AssistantService {
 
     @Override
     public void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest) {
+        // TODO 限制最大存档数量
         Assistant assistant = new Assistant();
         BeanUtils.copyProperties(addAssistantFrontRequest, assistant);
         assistant.setOwnerId(userId);
@@ -69,7 +70,12 @@ public class AssistantServiceImpl implements AssistantService {
     }
 
     @Override
-    public void updateAssistant(UpdateAssistantFrontRequest updateAssistantFrontRequest) {
+    public void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest) {
+
+    }
+
+    @Override
+    public void deleteAssistant(Long userId, Long assistantId) {
 
     }
 }

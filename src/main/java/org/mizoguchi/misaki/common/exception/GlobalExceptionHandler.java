@@ -4,11 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.result.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<Void>> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         String message = e.getBindingResult().getFieldError() != null
                 ? e.getBindingResult().getFieldError().getDefaultMessage()
-                : MessageConstant.INVALID_PARAMETER;
+                : FailMessageConstant.INVALID_PARAMETER;
         String field = e.getBindingResult().getFieldError().getField();
         String ip = request.getRemoteAddr();
         String uri = request.getRequestURI();
@@ -60,7 +59,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .findFirst()
                 .map(ConstraintViolation::getMessage)
-                .orElse(MessageConstant.INVALID_PARAMETER);
+                .orElse(FailMessageConstant.INVALID_PARAMETER);
         String ip = request.getRemoteAddr();
         String uri = request.getRequestURI();
         String method = request.getMethod();
@@ -81,9 +80,9 @@ public class GlobalExceptionHandler {
         String method = request.getMethod();
 
         log.warn("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
-                MessageConstant.NOT_FOUND, ip, uri, method, e.getClass().getSimpleName(), e.getMessage());
+                FailMessageConstant.NOT_FOUND, ip, uri, method, e.getClass().getSimpleName(), e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(404, MessageConstant.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(404, FailMessageConstant.NOT_FOUND));
     }
 
     /**
@@ -96,8 +95,8 @@ public class GlobalExceptionHandler {
         String method = request.getMethod();
 
         log.error("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
-                MessageConstant.INTERNAL_SERVER_ERROR, ip, uri, method, e.getClass().getSimpleName(), e.getMessage());
+                FailMessageConstant.INTERNAL_SERVER_ERROR, ip, uri, method, e.getClass().getSimpleName(), e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(500, MessageConstant.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(500, FailMessageConstant.INTERNAL_SERVER_ERROR));
     }
 }

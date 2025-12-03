@@ -1,7 +1,7 @@
 package org.mizoguchi.misaki.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.pojo.entity.User;
@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userMapper.selectUserById(Long.valueOf(userId));
 
         if (user == null) {
-            throw new UserNotExistsException(MessageConstant.USER_NOT_EXISTS);
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         }
 
         AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(user.getAuthRole());

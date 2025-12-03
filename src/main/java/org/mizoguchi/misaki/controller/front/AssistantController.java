@@ -31,7 +31,7 @@ public class AssistantController {
 
     @Operation(summary = "获取市场公开的助手")
     @GetMapping("/public")
-    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser){
+    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser){// TODO 分页
         return Result.success(assistantService.listPublicAssistantsFrontResponse(Long.valueOf(authUser.getUsername())));
     }
 
@@ -43,11 +43,30 @@ public class AssistantController {
         return Result.success();
     }
 
+    @Operation(summary = "复制助手设定")
+    @PostMapping("/{id}")
+    public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id){
+        return Result.success();
+    }
+
     @Operation(summary = "编辑助手设定")
     @PutMapping("/{id}")
     public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id,
                                         UpdateAssistantFrontRequest updateAssistantFrontRequest){
+        assistantService.updateAssistant(Long.valueOf(authUser.getUsername()), id, updateAssistantFrontRequest);
         return Result.success();
     }
 
+    @Operation(summary = "为公开助手设定点赞")
+    @PutMapping("/public/{id}")
+    public Result<Void> likesAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
+        return Result.success();
+    }
+
+    @Operation(summary = "删除助手设定")
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id){
+        assistantService.deleteAssistant(Long.valueOf(authUser.getUsername()), id);
+        return Result.success();
+    }
 }

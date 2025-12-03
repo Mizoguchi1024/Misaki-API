@@ -11,7 +11,8 @@ public interface AssistantService {
     Assistant getAssistantEntity(Long userId, Long assistantId);
     List<Assistant> listAssistantsEntity(Long userId);
     void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest);
-    void updateAssistant(UpdateAssistantFrontRequest updateAssistantFrontRequest);
+    void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest);
+    void deleteAssistant(Long userId, Long assistantId);
 
     AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId);
     List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId);

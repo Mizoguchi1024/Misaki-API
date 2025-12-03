@@ -4,7 +4,7 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.InternalServerErrorException;
 import org.mizoguchi.misaki.service.FileService;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +18,8 @@ import java.io.InputStream;
 public class FileServiceImpl implements FileService {
     private final MinioClient minioClient;
 
-    @Value("${minio.endpoint}")
-    private String endpoint;
+//    @Value("${minio.endpoint}")
+//    private String endpoint;
 
     @Value("${minio.bucket}")
     private String bucket;
@@ -38,7 +38,7 @@ public class FileServiceImpl implements FileService {
                             .build()
             );
         }catch (Exception e){
-            throw new InternalServerErrorException(MessageConstant.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);
         }
 
         return "/" + bucket + "/" + fileName;
@@ -54,7 +54,7 @@ public class FileServiceImpl implements FileService {
                             .build()
             );
         } catch (Exception e) {
-            throw new InternalServerErrorException(MessageConstant.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);
         }
     }
 }

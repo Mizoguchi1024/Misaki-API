@@ -2,7 +2,7 @@ package org.mizoguchi.misaki.common.enumeration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.mizoguchi.misaki.common.constant.MessageConstant;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.InvalidEnumCodeException;
 
 @Getter
@@ -21,6 +21,6 @@ public enum GenderEnum {
                 return genderEnum;
             }
         }
-        throw new InvalidEnumCodeException(MessageConstant.INVALID_ENUM_CODE + code);
+        throw new InvalidEnumCodeException(FailMessageConstant.INVALID_ENUM_CODE + code);
     }
 }
