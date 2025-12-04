@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface AssistantService {
     void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest);
+    void copyAssistant(Long userId, Long assistantId);
 
     AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId);
     List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId);
-    List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId);
+    List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId,Integer pageIndex, Integer pageSize);
 
     void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest);
     void deleteAssistant(Long userId, Long assistantId);

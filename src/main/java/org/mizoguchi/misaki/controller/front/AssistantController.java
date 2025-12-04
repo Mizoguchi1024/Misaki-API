@@ -31,8 +31,11 @@ public class AssistantController {
 
     @Operation(summary = "获取市场公开的助手")
     @GetMapping("/public")
-    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser){// TODO 分页
-        return Result.success(assistantService.listPublicAssistantsFrontResponse(Long.valueOf(authUser.getUsername())));
+    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser,
+                                                                     @RequestParam Integer pageIndex,
+                                                                     @RequestParam Integer pageSize){
+        return Result.success(assistantService.listPublicAssistantsFrontResponse(Long.valueOf(authUser.getUsername()),
+                pageIndex, pageSize));
     }
 
     @Operation(summary = "新建助手设定")
@@ -46,6 +49,7 @@ public class AssistantController {
     @Operation(summary = "复制助手设定")
     @PostMapping("/{id}")
     public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id){
+        assistantService.copyAssistant(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
     }
 
