@@ -13,19 +13,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Model {
-    @TableId(type = IdType.ASSIGN_ID)
+public class ModelUser {
+    @TableId(type =  IdType.ASSIGN_ID)
     private Long id;
 
-    private String name;
+    private Long userId;
 
-    private Integer grade;
-
-    private Integer price;
-
-    private String path;
-
-    private String avatarPath;
+    private Long modelId;
 
     private LocalDateTime createTime;
 }

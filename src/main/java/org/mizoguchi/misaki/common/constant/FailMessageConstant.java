@@ -24,4 +24,8 @@ public class FailMessageConstant {
     public static final String AT_LEAST_ONE_ASSISTANT = "至少保留一个助手存档";
     public static final String CHAT_TITLE_ALREADY_EXISTS = "会话标题已存在";
     public static final String TOO_MANY_ASSISTANTS = "助手存档数量过多";
+    public static final String CRYSTAL_NOT_ENOUGH = "回忆晶片不足";
+    public static final String MODEL_ALREADY_HAVE = "模型已拥有";
+    public static final String MODEL_NOT_EXISTS = "模型不存在";
+    public static final String STARDUST_NOT_ENOUGH = "星尘不足";
 }

@@ -1,7 +1,9 @@
 package org.mizoguchi.misaki.service;
 
+import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
+
 public interface WishService {
     void buyPuzzle(Long userId, Integer amount);
     void buyModel(Long userId, Long modelId);
-    void wish(Long userId, Integer amount);
+    WishFrontResponse wish(Long userId, Integer amount);
 }

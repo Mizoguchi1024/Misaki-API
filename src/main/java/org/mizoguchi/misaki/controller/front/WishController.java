@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
+import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.WishService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,14 +23,14 @@ public class WishController {
     private final WishService wishService;
 
     @Operation(summary = "购买拼图")
-    @PutMapping("/puzzle/{amount}")
+    @PutMapping("/puzzles/{amount}")
     public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Integer amount) {
         wishService.buyPuzzle(Long.valueOf(authUser.getUsername()), amount);
         return Result.success();
     }
 
     @Operation(summary = "购买模型")
-    @PostMapping("/model/{id}")
+    @PostMapping("/models/{id}")
     public Result<Void> buyModel(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Long id){
         wishService.buyModel(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
@@ -37,8 +38,7 @@ public class WishController {
 
     @Operation(summary = "抽卡")
     @PostMapping("/{times}")
-    public Result<Void> wish(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Integer times){
-        wishService.wish(Long.valueOf(authUser.getUsername()), times);
-        return Result.success();
+    public Result<WishFrontResponse> wish(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Integer times){
+        return Result.success(wishService.wish(Long.valueOf(authUser.getUsername()), times));
     }
 }
