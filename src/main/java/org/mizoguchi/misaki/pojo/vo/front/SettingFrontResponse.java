@@ -16,11 +16,9 @@ public class SettingFrontResponse {
 
     private Integer ttsAutoplay;
 
-    private Integer fontSize;
-
     private String colorPrimary;
 
     private Integer borderRadius;
 
-    private String backgroundImagePath;
+    private String backgroundPath;
 }

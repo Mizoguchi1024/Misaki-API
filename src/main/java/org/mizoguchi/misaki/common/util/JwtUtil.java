@@ -84,8 +84,8 @@ public class JwtUtil {
     /**
      * 从 token 中提取 roleCode
      *
-     * @param token
-     * @return
+     * @param token JWT token 字符串
+     * @return roleCode
      */
     public Integer getRoleFromToken(String token) {
         Claims claims = getClaimsFromToken(token);

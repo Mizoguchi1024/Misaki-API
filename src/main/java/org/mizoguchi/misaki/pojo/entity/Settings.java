@@ -23,15 +23,13 @@ public class Settings {
 
     private Integer language;
 
-    private Integer ttsAutoplay;
-
-    private Integer fontSize;
-
     private String colorPrimary;
 
     private Integer borderRadius;
 
-    private String backgroundImagePath;
+    private String backgroundPath;
+
+    private Integer ttsAutoplay;
 
     private Long enabledAssistantId;
 

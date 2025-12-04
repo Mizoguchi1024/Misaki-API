@@ -23,11 +23,6 @@ public class UpdateSettingFrontRequest {
     private Integer ttsAutoplay;
 
     @NotNull
-    @Min(value = 12)
-    @Max(value = 24)
-    private Integer fontSize;
-
-    @NotNull
     @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTEN)
     private String colorPrimary;
 
@@ -36,7 +31,7 @@ public class UpdateSettingFrontRequest {
     @Max(value = 16)
     private Integer borderRadius;
 
-    private String backgroundImagePath;
+    private String backgroundPath;
 
     private Long enabledAssistantId;
 }

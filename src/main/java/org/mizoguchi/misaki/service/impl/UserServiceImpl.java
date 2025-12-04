@@ -30,11 +30,11 @@ public class UserServiceImpl implements UserService {
     public void checkIn(Long userId) {
         User user = userMapper.selectById(userId);
 
-        if (user.getLastCheckInTime() != null && user.getLastCheckInTime().equals(LocalDate.now())){
+        if (user.getLastCheckInDate() != null && user.getLastCheckInDate().equals(LocalDate.now())){
             throw new AlreadyCheckInException(FailMessageConstant.ALREADY_CHECK_IN);
         }
 
-        user.setLastCheckInTime(LocalDate.now());
+        user.setLastCheckInDate(LocalDate.now());
         user.setToken(user.getToken() + SystemConstant.CHECK_IN_TOKEN_AMOUNT);
         user.setCrystal(user.getCrystal() + SystemConstant.CHECK_IN_CRYSTAL_AMOUNT);
         userMapper.updateById(user);

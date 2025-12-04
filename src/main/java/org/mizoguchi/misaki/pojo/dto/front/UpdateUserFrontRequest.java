@@ -21,7 +21,7 @@ public class UpdateUserFrontRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    private String avatarUrl;
+    private String avatarPath;
 
     @Size(max = 20)
     private String occupation;

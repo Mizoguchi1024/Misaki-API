@@ -111,7 +111,6 @@ public class AssistantServiceImpl implements AssistantService {
         BeanUtils.copyProperties(assistant, assistantCopy);
         assistantCopy.setId(null);
         assistantCopy.setOwnerId(userId);
-        assistantCopy.setMoe(0L);
         assistantCopy.setPublicFlag(false);
         assistantCopy.setCreateTime(null);
         assistantCopy.setUpdateTime(null);

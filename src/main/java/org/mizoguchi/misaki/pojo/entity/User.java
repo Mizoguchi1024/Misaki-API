@@ -47,7 +47,7 @@ public class User {
 
     private Integer stardust;
 
-    private LocalDate lastCheckInTime;
+    private LocalDate lastCheckInDate;
 
     @TableField("delete_flag")
     private Boolean deleteFlag;

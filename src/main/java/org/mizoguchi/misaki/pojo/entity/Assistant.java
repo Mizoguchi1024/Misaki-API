@@ -33,8 +33,6 @@ public class Assistant {
 
     private Long ownerId;
 
-    private Long moe;
-
     @TableField("public_flag")
     private Boolean publicFlag;
 

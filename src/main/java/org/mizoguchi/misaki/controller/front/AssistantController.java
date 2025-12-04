@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.controller.front;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.result.Result;
@@ -9,19 +10,23 @@ import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.service.AssistantService;
+import org.mizoguchi.misaki.service.LikesService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/front/assistants")
 @RequiredArgsConstructor
 @Tag(name = "助手相关接口")
 public class AssistantController {
     private final AssistantService assistantService;
+    private final LikesService likesService;
 
     @Operation(summary = "获取该用户拥有的助手")
     @GetMapping()
@@ -32,8 +37,8 @@ public class AssistantController {
     @Operation(summary = "获取市场公开的助手")
     @GetMapping("/public")
     public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser,
-                                                                     @RequestParam Integer pageIndex,
-                                                                     @RequestParam Integer pageSize){
+                                                                     @RequestParam @Positive Integer pageIndex,
+                                                                     @RequestParam @Positive Integer pageSize){
         return Result.success(assistantService.listPublicAssistantsFrontResponse(Long.valueOf(authUser.getUsername()),
                 pageIndex, pageSize));
     }
@@ -62,8 +67,9 @@ public class AssistantController {
     }
 
     @Operation(summary = "为公开助手设定点赞")
-    @PutMapping("/public/{id}")
+    @PostMapping("/public/{id}/likes")
     public Result<Void> likesAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
+        likesService.likesAssistant(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
     }
 
