@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class MessageFrontResponse {
     private Long id;
 
-    private Long conversationId;
+    private Long chatId;
 
     private String type;
 

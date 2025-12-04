@@ -88,7 +88,7 @@ public class EmailServiceImpl implements EmailService {
             helper.addInline("logoImage", res);
 
             mailSender.send(message);
-            log.info("邮件成功发送到{} | 主题={}", to, subject);
+            log.info("验证码成功发送到{} | 主题={}", to, subject);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new SendingEmailFailedException(FailMessageConstant.SENDING_EMAIL_FAILED);
         }

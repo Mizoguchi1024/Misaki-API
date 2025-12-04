@@ -1,35 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.mizoguchi.misaki.mapper.MessageMapper">
-    <select id="selectMessagesByChatId" resultType="org.mizoguchi.misaki.pojo.entity.Message">
-        SELECT * FROM message WHERE chat_id = #{chatId} AND delete_flag = 0
-    </select>
 
-    <insert id="insertMessage" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO message
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="conversationId != null">conversation_id,</if>
-            <if test="type != null">type,</if>
-            <if test="content != null">content,</if>
-            <if test="tokens != null">tokens,</if>
-            <if test="mcp_enabled != null">mcp_enabled,</if>
-        </trim>
-        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
-            <if test="conversationId != null">#{conversationId},</if>
-            <if test="type != null">#{type},</if>
-            <if test="content != null">#{content},</if>
-            <if test="tokens != null">#{tokens},</if>
-            <if test="mcp_enabled != null">#{mcp_enabled},</if>
-        </trim>
-    </insert>
-    <update id="updateMessage">
-        UPDATE message
-        <set>
-            <if test="type != null">type = #{type},</if>
-            <if test="content != null">content = #{content},</if>
-            <if test="tokens != null">tokens = #{tokens},</if>
-            <if test="mcp_enabled != null">mcp_enabled = #{mcp_enabled},</if>
-        </set>
-        WHERE id = #{id}
-    </update>
 </mapper>

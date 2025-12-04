@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
@@ -21,7 +22,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) {
-        User user = userMapper.selectUserById(Long.valueOf(userId));
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getId, Long.valueOf(userId))
+                .eq(User::getDeleteFlag, false));
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);

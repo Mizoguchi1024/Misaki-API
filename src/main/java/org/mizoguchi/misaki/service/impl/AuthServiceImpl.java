@@ -1,9 +1,12 @@
 package org.mizoguchi.misaki.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.util.JwtUtil;
+import org.mizoguchi.misaki.mapper.AssistantMapper;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
@@ -27,12 +30,15 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
+    private final AssistantMapper assistantMapper;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        User user = userMapper.selectUserByEmail(loginRequest.getEmail());
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, loginRequest.getEmail())
+                .eq(User::getDeleteFlag, false));
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
@@ -41,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         user.setLastLoginTime(LocalDateTime.now());
-        userMapper.updateUserById(user);
+        userMapper.updateById(user);
 
         return LoginResponse.builder()
                 .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
@@ -52,9 +58,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void register(RegisterRequest registerRequest) {
-        User user = userMapper.selectUserByEmail(registerRequest.getEmail());
+        User existingUser = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, registerRequest.getEmail())
+                .eq(User::getDeleteFlag, false));
 
-        if (user != null) {
+        if (existingUser != null) {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
@@ -67,24 +75,35 @@ public class AuthServiceImpl implements AuthService {
 
         String encryptPassword = passwordEncoder.encode(registerRequest.getPassword());
 
-        User newUser = User.builder()
+        User user = User.builder()
                 .email(registerRequest.getEmail())
                 .password(encryptPassword)
                 .username(registerRequest.getUsername())
                 .build();
 
-        userMapper.insertUser(newUser);
+        userMapper.insert(user);
 
         Settings settings = Settings.builder()
-                .userId(newUser.getId())
+                .userId(user.getId())
                 .build();
 
-        settingsMapper.insertSettings(settings);
+        settingsMapper.insert(settings);
+
+        Assistant assistant = Assistant.builder()
+                .creatorId(user.getId())
+                .ownerId(user.getId())
+                .build();
+
+        assistantMapper.insert(assistant);
+
+        // TODO 插入别的必须的记录
     }
 
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        User user = userMapper.selectUserByEmail(resetPasswordRequest.getEmail());
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, resetPasswordRequest.getEmail())
+                .eq(User::getDeleteFlag, false));
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
@@ -100,6 +119,6 @@ public class AuthServiceImpl implements AuthService {
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
 
         user.setPassword(encryptPassword);
-        userMapper.updateUserById(user);
+        userMapper.updateById(user);
     }
 }

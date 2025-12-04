@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
 import lombok.AllArgsConstructor;
@@ -48,7 +49,8 @@ public class User {
 
     private LocalDate lastCheckInTime;
 
-    private Integer deleteFlag;
+    @TableField("delete_flag")
+    private Boolean deleteFlag;
 
     private LocalDateTime createTime;
 

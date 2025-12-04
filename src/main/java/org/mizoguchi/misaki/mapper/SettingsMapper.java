@@ -1,9 +1,8 @@
 package org.mizoguchi.misaki.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 
-public interface SettingsMapper {
-    Settings selectSettingsByUserId(Long userId);
-    void insertSettings(Settings settings);
-    void updateSettingsByUserId(Settings settings);
+public interface SettingsMapper extends BaseMapper<Settings> {
+
 }

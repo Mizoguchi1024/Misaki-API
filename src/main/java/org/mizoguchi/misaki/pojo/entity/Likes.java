@@ -1,7 +1,6 @@
 package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,20 +13,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
+public class Likes {
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private Long userId;
 
-    private String title;
+    private Integer targetType;
 
-    private Integer token;
-
-    @TableField("delete_flag")
-    private Boolean deleteFlag;
+    private Long targetId;
 
     private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 }

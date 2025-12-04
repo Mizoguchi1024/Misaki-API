@@ -44,10 +44,10 @@ public class ChatController {
                 sendMessageFrontRequest.getPrefix());
     }
 
-    @Operation(summary = "获取会话标题")
-    @GetMapping("/{id}/title")
-    public Result<String> getChatTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
-        return Result.success(chatService.getChatTitle(Long.valueOf(authUser.getUsername()), id));
+    @Operation(summary = "生成会话标题")
+    @GetMapping(value = "/{id}/title", produces = "text/event-stream;charset=utf-8")
+    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
+        return chatService.addChatTitle(Long.valueOf(authUser.getUsername()), id);
     }
 
     @Operation(summary = "获取历史会话")
@@ -57,7 +57,7 @@ public class ChatController {
     }
 
     @Operation(summary = "获取会话中的所有消息")
-    @GetMapping(value = "/{id}/messages")
+    @GetMapping("/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails authUser,
                                                            @PathVariable @Positive Long id){
         return Result.success(messageService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()), id));

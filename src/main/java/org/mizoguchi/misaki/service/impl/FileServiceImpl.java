@@ -18,9 +18,6 @@ import java.io.InputStream;
 public class FileServiceImpl implements FileService {
     private final MinioClient minioClient;
 
-//    @Value("${minio.endpoint}")
-//    private String endpoint;
-
     @Value("${minio.bucket}")
     private String bucket;
 

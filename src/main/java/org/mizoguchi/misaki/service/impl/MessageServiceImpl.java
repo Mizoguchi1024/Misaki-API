@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -13,6 +14,7 @@ import org.mizoguchi.misaki.service.MessageService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.beans.BeanUtils;
@@ -35,14 +37,17 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Flux<String> sendMessage(Long userId, Long chatId, String content, String prefix) {
-        Chat chat = chatMapper.selectChatById(chatId);
-        if (chat == null || !chat.getUserId().equals(userId)) {
+        Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .eq(Chat::getUserId, userId));
+
+        if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        User user = userMapper.selectUserById(userId);
-        Settings settings = settingsMapper.selectSettingsByUserId(userId);
-        Assistant assistant = assistantMapper.selectAssistantById(settings.getEnabledAssistantId());
+        User user = userMapper.selectById(userId);
+        Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
+        Assistant assistant = assistantMapper.selectById(settings.getEnabledAssistantId());
         if (assistant == null || !assistant.getOwnerId().equals(userId)) {
             throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
@@ -58,7 +63,7 @@ public class MessageServiceImpl implements MessageService {
                                 ? "用户的职业是" + user.getOccupation() + "。" : "",
                         "detail", (user.getDetail() != null && !user.getDetail().isEmpty())
                                 ? "用户的详情是\"" + user.getDetail() + "\"。" : "")))
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId));
+                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId));
 
         // DeepSeek-对话前缀续写（Beta）-代码生成
         if (prefix != null && !prefix.trim().isEmpty() && prefix.startsWith(ChatConstant.CODE_QUOTE)) {
@@ -70,28 +75,32 @@ public class MessageServiceImpl implements MessageService {
             chatClientRequestSpec.messages(new UserMessage(content));
         }
 
-        return chatClientRequestSpec.stream().content();
-    }
-
-    @Override
-    public List<Message> listMessagesEntity(Long userId, Long chatId) {
-        Chat chat = chatMapper.selectChatById(chatId);
-        if (chat == null || !chat.getUserId().equals(userId)) {
-            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
-        }
-
-        return messageMapper.selectMessagesByChatId(chatId);
+        return chatClientRequestSpec
+                .stream()
+                .chatResponse()
+                .doOnNext(chatResponse ->{
+                    Usage usage = chatResponse.getMetadata().getUsage();
+                    chat.setToken(chat.getToken() + usage.getTotalTokens());
+                    chatMapper.updateById(chat);})
+                .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题
     }
 
     @Override
     public List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long chatId) {
-        List<MessageFrontResponse> messages = listMessagesEntity(userId, chatId).stream()
-                .map(message -> {
-                    MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
-                    BeanUtils.copyProperties(message, messageFrontResponse);
-                    return messageFrontResponse;
-                }).collect(Collectors.toList());
+        Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .eq(Chat::getUserId, userId));
 
-        return messages;
+        if (chat == null) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
+        List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>().eq(Message::getChatId, chatId));
+
+        return messages.stream().map(message -> {
+            MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
+            BeanUtils.copyProperties(message, messageFrontResponse);
+            return messageFrontResponse;
+        }).collect(Collectors.toList());
     }
 }

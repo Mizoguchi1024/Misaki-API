@@ -23,11 +23,7 @@ public class Message {
 
     private String content;
 
-    private Integer tokens;
-
-    private Integer mcpEnabled;
-
-    private Integer deleteFlag;
+    private Long parentId;
 
     private LocalDateTime timestamp;
 }

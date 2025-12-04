@@ -1,6 +1,11 @@
 package org.mizoguchi.misaki.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
+import org.mizoguchi.misaki.common.exception.AtLeastOneAssistantException;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
@@ -19,24 +24,16 @@ public class AssistantServiceImpl implements AssistantService {
     private final AssistantMapper assistantMapper;
 
     @Override
-    public Assistant getAssistantEntity(Long userId, Long assistantId) {
-        Assistant assistant = assistantMapper.selectAssistantById(assistantId);
+    public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
+        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getId, assistantId)
+                .eq(Assistant::getOwnerId, userId)
+                .eq(Assistant::getDeleteFlag, false));
 
-        if (assistant.getOwnerId().equals(userId)) {
-            return assistant;
+        if (assistant == null) {
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 
-        return null;
-    }
-
-    @Override
-    public List<Assistant> listAssistantsEntity(Long userId) {
-        return assistantMapper.selectAssistantsByOwnerId(userId);
-    }
-
-    @Override
-    public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
-        Assistant assistant = getAssistantEntity(userId, assistantId);
         AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
         BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
@@ -45,19 +42,37 @@ public class AssistantServiceImpl implements AssistantService {
 
     @Override
     public List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId) {
-        List<AssistantFrontResponse> assistants = listAssistantsEntity(userId).stream()
-                .map(assistant -> {
-                    AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
-                    BeanUtils.copyProperties(assistant, assistantFrontResponse);
-                    return assistantFrontResponse;
-                }).collect(Collectors.toList());
+        List<Assistant> assistants = assistantMapper.selectList(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getOwnerId, userId)
+                .eq(Assistant::getDeleteFlag, false));
 
-        return assistants;
+        if (assistants.isEmpty()){
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
+
+        return assistants.stream().map(assistant -> {
+            AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
+            BeanUtils.copyProperties(assistant, assistantFrontResponse);
+            return assistantFrontResponse;
+        }).collect(Collectors.toList());
     }
 
     @Override
-    public List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId) {
-        return List.of();
+    public List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId) {// TODO 分页
+        List<Assistant> assistants = assistantMapper.selectList(new LambdaQueryWrapper<Assistant>()
+                .ne(Assistant::getOwnerId, userId)
+                .eq(Assistant::getPublicFlag, true)
+                .eq(Assistant::getDeleteFlag, false));
+
+        if (assistants.isEmpty()){
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
+
+        return assistants.stream().map(assistant -> {
+            AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
+            BeanUtils.copyProperties(assistant, assistantFrontResponse);
+            return assistantFrontResponse;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -66,7 +81,7 @@ public class AssistantServiceImpl implements AssistantService {
         Assistant assistant = new Assistant();
         BeanUtils.copyProperties(addAssistantFrontRequest, assistant);
         assistant.setOwnerId(userId);
-        assistantMapper.insertAssistant(assistant);
+        assistantMapper.insert(assistant);
     }
 
     @Override
@@ -76,6 +91,25 @@ public class AssistantServiceImpl implements AssistantService {
 
     @Override
     public void deleteAssistant(Long userId, Long assistantId) {
+        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getId, assistantId)
+                .eq(Assistant::getOwnerId, userId)
+                .eq(Assistant::getDeleteFlag, false));
 
+        if (assistant == null) {
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
+
+        Long assistantCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getOwnerId, userId)
+                .eq(Assistant::getDeleteFlag, false));
+
+        if (assistantCount <= 1){
+            throw new AtLeastOneAssistantException(FailMessageConstant.AT_LEAST_ONE_ASSISTANT);
+        }
+
+        assistantMapper.update(new LambdaUpdateWrapper<Assistant>()
+                .eq(Assistant::getId, assistantId)
+                .set(Assistant::getDeleteFlag, true));
     }
 }

@@ -20,5 +20,7 @@ public class FailMessageConstant {
     public static final String NOT_FOUND = "无法找到请求的资源";
     public static final String INCOMPLETE_CHAT = "会话不完整";
     public static final String ASSISTANT_NOT_EXISTS = "该助手不存在";
-    public static final String TODAY_ALREADY_CHECK_IN = "今日已签到";
+    public static final String ALREADY_CHECK_IN = "重复签到";
+    public static final String AT_LEAST_ONE_ASSISTANT = "至少保留一个助手存档";
+    public static final String CHAT_TITLE_ALREADY_EXISTS = "会话标题已存在";
 }

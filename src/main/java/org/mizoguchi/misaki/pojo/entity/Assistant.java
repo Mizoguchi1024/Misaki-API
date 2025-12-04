@@ -1,13 +1,20 @@
 package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Assistant {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -20,8 +27,6 @@ public class Assistant {
 
     private LocalDate birthday;
 
-    private String avatarPath;
-
     private Long modelId;
 
     private Long creatorId;
@@ -30,9 +35,11 @@ public class Assistant {
 
     private Long moe;
 
-    private Integer publicFlag;
+    @TableField("public_flag")
+    private Boolean publicFlag;
 
-    private Integer deleteFlag;
+    @TableField("delete_flag")
+    private Boolean deleteFlag;
 
     private LocalDateTime createTime;
 
