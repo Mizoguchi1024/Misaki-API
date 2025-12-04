@@ -8,9 +8,11 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.AtLeastOneAssistantException;
 import org.mizoguchi.misaki.common.exception.TooManyAssistantsException;
+import org.mizoguchi.misaki.mapper.LikesMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
+import org.mizoguchi.misaki.pojo.entity.Likes;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.service.AssistantService;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AssistantServiceImpl implements AssistantService {
     private final AssistantMapper assistantMapper;
+    private final LikesMapper likesMapper;
 
     @Override
     public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
@@ -38,6 +41,16 @@ public class AssistantServiceImpl implements AssistantService {
 
         AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
         BeanUtils.copyProperties(assistant, assistantFrontResponse);
+
+        Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
+                .eq(Likes::getTargetType, 0)
+                .eq(Likes::getTargetId, assistant.getId()));
+        assistantFrontResponse.setLikes(likesCount);
+
+        Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getName, assistant.getName())
+                .eq(Assistant::getDeleteFlag, false));
+        assistantFrontResponse.setDuplicateName(duplicateNameCount);
 
         return assistantFrontResponse;
     }
@@ -55,6 +68,17 @@ public class AssistantServiceImpl implements AssistantService {
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
+
+            Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
+                    .eq(Likes::getTargetType, 0)
+                    .eq(Likes::getTargetId, assistant.getId()));
+            assistantFrontResponse.setLikes(likesCount);
+
+            Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+                    .eq(Assistant::getName, assistant.getName())
+                    .eq(Assistant::getDeleteFlag, false));
+            assistantFrontResponse.setDuplicateName(duplicateNameCount);
+
             return assistantFrontResponse;
         }).collect(Collectors.toList());
     }
@@ -74,6 +98,17 @@ public class AssistantServiceImpl implements AssistantService {
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
+
+            Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
+                    .eq(Likes::getTargetType, 0)
+                    .eq(Likes::getTargetId, assistant.getId()));
+            assistantFrontResponse.setLikes(likesCount);
+
+            Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+                    .eq(Assistant::getName, assistant.getName())
+                    .eq(Assistant::getDeleteFlag, false));
+            assistantFrontResponse.setDuplicateName(duplicateNameCount);
+
             return assistantFrontResponse;
         }).collect(Collectors.toList());
     }

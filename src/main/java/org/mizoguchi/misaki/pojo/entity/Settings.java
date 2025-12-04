@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Settings {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private Long userId;
@@ -29,7 +30,8 @@ public class Settings {
 
     private String backgroundPath;
 
-    private Integer ttsAutoplay;
+    @TableField("tts_autoplay")
+    private Boolean ttsAutoplay;
 
     private Long enabledAssistantId;
 

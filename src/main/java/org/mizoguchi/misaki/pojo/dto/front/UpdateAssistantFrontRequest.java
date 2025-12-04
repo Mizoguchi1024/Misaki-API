@@ -22,7 +22,7 @@ public class UpdateAssistantFrontRequest {
 
     private String avatarPath;
 
-    private Long modelId;
+    private String modelId;
 
-    private Integer publicFlag;
+    private Boolean publicFlag;
 }

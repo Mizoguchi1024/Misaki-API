@@ -30,9 +30,11 @@ public class AssistantFrontResponse {
 
     private Long creatorId;
 
-    private Long moe;
+    private Long likes;
 
-    private Integer publicFlag;
+    private Long duplicateName;
+
+    private Boolean publicFlag;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

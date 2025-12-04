@@ -18,9 +18,7 @@ public class UpdateSettingFrontRequest {
     private Integer language;
 
     @NotNull
-    @Min(value = 0)
-    @Max(value = 1)
-    private Integer ttsAutoplay;
+    private Boolean ttsAutoplay;
 
     @NotNull
     @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTEN)

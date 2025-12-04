@@ -28,13 +28,20 @@ public class AssistantController {
     private final AssistantService assistantService;
     private final LikesService likesService;
 
-    @Operation(summary = "获取该用户拥有的助手")
+    @Operation(summary = "获取该用户拥有的指定的助手存档")
+    @GetMapping("/{id}")
+    public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails authUser,
+                                                       @PathVariable Long id){
+        return Result.success(assistantService.getAssistantFrontResponse(Long.valueOf(authUser.getUsername()), id));
+    }
+
+    @Operation(summary = "获取该用户拥有的助手存档")
     @GetMapping()
     public Result<List<AssistantFrontResponse>> listAssistants(@AuthenticationPrincipal UserDetails authUser){
         return Result.success(assistantService.listAssistantsFrontResponse(Long.valueOf(authUser.getUsername())));
     }
 
-    @Operation(summary = "获取市场公开的助手")
+    @Operation(summary = "获取市场公开的助手存档")
     @GetMapping("/public")
     public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser,
                                                                      @RequestParam @Positive Integer pageIndex,
@@ -43,7 +50,7 @@ public class AssistantController {
                 pageIndex, pageSize));
     }
 
-    @Operation(summary = "新建助手设定")
+    @Operation(summary = "新建助手存档")
     @PostMapping()
     public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails authUser,
                                         AddAssistantFrontRequest addAssistantFrontRequest){
@@ -51,14 +58,14 @@ public class AssistantController {
         return Result.success();
     }
 
-    @Operation(summary = "复制助手设定")
+    @Operation(summary = "复制助手存档")
     @PostMapping("/{id}")
     public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id){
         assistantService.copyAssistant(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
     }
 
-    @Operation(summary = "编辑助手设定")
+    @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
     public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id,
                                         UpdateAssistantFrontRequest updateAssistantFrontRequest){
@@ -66,14 +73,14 @@ public class AssistantController {
         return Result.success();
     }
 
-    @Operation(summary = "为公开助手设定点赞")
+    @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/likes")
     public Result<Void> likesAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
         likesService.likesAssistant(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
     }
 
-    @Operation(summary = "删除助手设定")
+    @Operation(summary = "删除助手存档")
     @DeleteMapping("/{id}")
     public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id){
         assistantService.deleteAssistant(Long.valueOf(authUser.getUsername()), id);

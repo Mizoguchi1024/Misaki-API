@@ -18,6 +18,11 @@ public class LikesServiceImpl implements LikesService {
     private final AssistantMapper assistantMapper;
 
     @Override
+    public void likesMisaki(Long userId) {
+
+    }
+
+    @Override
     public void likesAssistant(Long userId, Long assistantId) {
         Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
@@ -30,13 +35,13 @@ public class LikesServiceImpl implements LikesService {
 
         Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, 0)
+                .eq(Likes::getTargetType, 1)
                 .eq(Likes::getTargetId, assistantId));
 
         if (existingLikes == null) {
             Likes likes = Likes.builder()
                     .userId(userId)
-                    .targetType(0)
+                    .targetType(1)
                     .targetId(assistantId)
                     .build();
 
@@ -44,5 +49,10 @@ public class LikesServiceImpl implements LikesService {
         }else {
             likesMapper.deleteById(existingLikes);
         }
+    }
+
+    @Override
+    public void likesScript(Long userId, Long scriptId) {
+
     }
 }
