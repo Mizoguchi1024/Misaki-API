@@ -92,7 +92,7 @@ public class AssistantServiceImpl implements AssistantService {
                 .eq(Assistant::getDeleteFlag, false));
 
         if (assistants.isEmpty()){
-            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+            return List.of();
         }
 
         return assistants.stream().map(assistant -> {
