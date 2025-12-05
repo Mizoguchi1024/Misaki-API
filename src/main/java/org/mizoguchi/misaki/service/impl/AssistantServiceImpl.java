@@ -49,6 +49,7 @@ public class AssistantServiceImpl implements AssistantService {
 
         Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getName, assistant.getName())
+                .ne(Assistant::getId, assistant.getId())
                 .eq(Assistant::getDeleteFlag, false));
         assistantFrontResponse.setDuplicateName(duplicateNameCount);
 
@@ -76,6 +77,7 @@ public class AssistantServiceImpl implements AssistantService {
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                     .eq(Assistant::getName, assistant.getName())
+                    .ne(Assistant::getId, assistant.getId())
                     .eq(Assistant::getDeleteFlag, false));
             assistantFrontResponse.setDuplicateName(duplicateNameCount);
 
@@ -106,6 +108,7 @@ public class AssistantServiceImpl implements AssistantService {
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                     .eq(Assistant::getName, assistant.getName())
+                    .ne(Assistant::getId, assistant.getId())
                     .eq(Assistant::getDeleteFlag, false));
             assistantFrontResponse.setDuplicateName(duplicateNameCount);
 
