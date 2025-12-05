@@ -13,9 +13,12 @@ import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.entity.Model;
 import org.mizoguchi.misaki.pojo.entity.ModelUser;
 import org.mizoguchi.misaki.pojo.entity.User;
+import org.mizoguchi.misaki.pojo.vo.front.ModelFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.WishService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -86,5 +89,15 @@ public class WishServiceImpl implements WishService {
             wishFrontResponse.setPrize(3);
             return wishFrontResponse;
         }
+    }
+
+    @Override
+    public List<ModelFrontResponse> listModelFrontResponse(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public List<WishFrontResponse> listWishFrontResponse(Long userId) {
+        return List.of();
     }
 }

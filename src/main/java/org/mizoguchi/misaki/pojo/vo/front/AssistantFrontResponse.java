@@ -22,6 +22,7 @@ public class AssistantFrontResponse {
 
     private Integer gender;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     private String avatarPath;

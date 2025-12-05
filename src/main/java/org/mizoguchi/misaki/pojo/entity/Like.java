@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Likes {
+public class Like {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 

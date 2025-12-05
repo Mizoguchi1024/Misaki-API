@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -103,5 +104,18 @@ public class ChatServiceImpl implements ChatService {
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题;
+    }
+
+    @Override
+    public void deleteChat(Long userId, Long chatId) {
+        int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .eq(Chat::getUserId, userId)
+                .eq(Chat::getDeleteFlag, false)
+                .set(Chat::getDeleteFlag, true));
+
+        if(affectedRows == 0) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
     }
 }

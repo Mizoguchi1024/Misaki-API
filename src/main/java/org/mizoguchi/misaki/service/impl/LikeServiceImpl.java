@@ -5,25 +5,25 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
-import org.mizoguchi.misaki.mapper.LikesMapper;
+import org.mizoguchi.misaki.mapper.LikeMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
-import org.mizoguchi.misaki.pojo.entity.Likes;
-import org.mizoguchi.misaki.service.LikesService;
+import org.mizoguchi.misaki.pojo.entity.Like;
+import org.mizoguchi.misaki.service.LikeService;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LikesServiceImpl implements LikesService {
-    private final LikesMapper likesMapper;
+public class LikeServiceImpl implements LikeService {
+    private final LikeMapper likeMapper;
     private final AssistantMapper assistantMapper;
 
     @Override
-    public void likesMisaki(Long userId) {
+    public void likeMisaki(Long userId) {
 
     }
 
     @Override
-    public void likesAssistant(Long userId, Long assistantId) {
+    public void likeAssistant(Long userId, Long assistantId) {
         Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
                 .ne(Assistant::getOwnerId, userId)
@@ -33,26 +33,26 @@ public class LikesServiceImpl implements LikesService {
             throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 
-        Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
-                .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, 1)
-                .eq(Likes::getTargetId, assistantId));
+        Like existingLike = likeMapper.selectOne(new LambdaQueryWrapper<Like>()
+                .eq(Like::getUserId, userId)
+                .eq(Like::getTargetType, 1)
+                .eq(Like::getTargetId, assistantId));
 
-        if (existingLikes == null) {
-            Likes likes = Likes.builder()
+        if (existingLike == null) {
+            Like like = Like.builder()
                     .userId(userId)
                     .targetType(1)
                     .targetId(assistantId)
                     .build();
 
-            likesMapper.insert(likes);
+            likeMapper.insert(like);
         }else {
-            likesMapper.deleteById(existingLikes);
+            likeMapper.deleteById(existingLike);
         }
     }
 
     @Override
-    public void likesScript(Long userId, Long scriptId) {
+    public void likeScript(Long userId, Long scriptId) {
 
     }
 }

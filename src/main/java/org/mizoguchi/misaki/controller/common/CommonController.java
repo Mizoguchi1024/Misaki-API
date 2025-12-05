@@ -25,7 +25,7 @@ public class CommonController {
     }
 
     @Operation(summary = "文字转语音")
-    @GetMapping("/tts")
+    @PostMapping("/tts")
     public Result<MultipartFile> textToSpeech(TtsRequest ttsRequest) {
         // TODO TTS功能
         return Result.success(null);

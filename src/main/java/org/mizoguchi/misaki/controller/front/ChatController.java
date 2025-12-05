@@ -40,8 +40,7 @@ public class ChatController {
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails authUser,
                                     @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
-        return messageService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageFrontRequest.getContent(),
-                sendMessageFrontRequest.getPrefix());
+        return messageService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageFrontRequest);
     }
 
     @Operation(summary = "生成会话标题")
@@ -61,5 +60,12 @@ public class ChatController {
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails authUser,
                                                            @PathVariable @Positive Long id){
         return Result.success(messageService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()), id));
+    }
+
+    @Operation(summary = "删除会话")
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Long id){
+        chatService.deleteChat(Long.valueOf(authUser.getUsername()), id);
+        return Result.success();
     }
 }

@@ -10,7 +10,7 @@ import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.service.AssistantService;
-import org.mizoguchi.misaki.service.LikesService;
+import org.mizoguchi.misaki.service.LikeService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "助手相关接口")
 public class AssistantController {
     private final AssistantService assistantService;
-    private final LikesService likesService;
+    private final LikeService likeService;
 
     @Operation(summary = "获取该用户拥有的指定的助手存档")
     @GetMapping("/{id}")
@@ -75,8 +75,8 @@ public class AssistantController {
 
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/likes")
-    public Result<Void> likesAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
-        likesService.likesAssistant(Long.valueOf(authUser.getUsername()), id);
+    public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
+        likeService.likeAssistant(Long.valueOf(authUser.getUsername()), id);
         return Result.success();
     }
 

@@ -8,11 +8,11 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.AtLeastOneAssistantException;
 import org.mizoguchi.misaki.common.exception.TooManyAssistantsException;
-import org.mizoguchi.misaki.mapper.LikesMapper;
+import org.mizoguchi.misaki.mapper.LikeMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
-import org.mizoguchi.misaki.pojo.entity.Likes;
+import org.mizoguchi.misaki.pojo.entity.Like;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.service.AssistantService;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AssistantServiceImpl implements AssistantService {
     private final AssistantMapper assistantMapper;
-    private final LikesMapper likesMapper;
+    private final LikeMapper likeMapper;
 
     @Override
     public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
@@ -42,9 +42,9 @@ public class AssistantServiceImpl implements AssistantService {
         AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
         BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
-        Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                .eq(Likes::getTargetType, 0)
-                .eq(Likes::getTargetId, assistant.getId()));
+        Long likesCount = likeMapper.selectCount(new LambdaQueryWrapper<Like>()
+                .eq(Like::getTargetType, 0)
+                .eq(Like::getTargetId, assistant.getId()));
         assistantFrontResponse.setLikes(likesCount);
 
         Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
@@ -69,9 +69,9 @@ public class AssistantServiceImpl implements AssistantService {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
-            Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                    .eq(Likes::getTargetType, 0)
-                    .eq(Likes::getTargetId, assistant.getId()));
+            Long likesCount = likeMapper.selectCount(new LambdaQueryWrapper<Like>()
+                    .eq(Like::getTargetType, 0)
+                    .eq(Like::getTargetId, assistant.getId()));
             assistantFrontResponse.setLikes(likesCount);
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
@@ -99,9 +99,9 @@ public class AssistantServiceImpl implements AssistantService {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
-            Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                    .eq(Likes::getTargetType, 0)
-                    .eq(Likes::getTargetId, assistant.getId()));
+            Long likesCount = likeMapper.selectCount(new LambdaQueryWrapper<Like>()
+                    .eq(Like::getTargetType, 0)
+                    .eq(Like::getTargetId, assistant.getId()));
             assistantFrontResponse.setLikes(likesCount);
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
@@ -171,15 +171,6 @@ public class AssistantServiceImpl implements AssistantService {
 
     @Override
     public void deleteAssistant(Long userId, Long assistantId) {
-        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
-                .eq(Assistant::getId, assistantId)
-                .eq(Assistant::getOwnerId, userId)
-                .eq(Assistant::getDeleteFlag, false));
-
-        if (assistant == null) {
-            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
-        }
-
         Long assistantCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false));
@@ -188,8 +179,14 @@ public class AssistantServiceImpl implements AssistantService {
             throw new AtLeastOneAssistantException(FailMessageConstant.AT_LEAST_ONE_ASSISTANT);
         }
 
-        assistantMapper.update(new LambdaUpdateWrapper<Assistant>()
+        int affectedRows = assistantMapper.update(new LambdaUpdateWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
+                .eq(Assistant::getOwnerId, userId)
+                .eq(Assistant::getDeleteFlag, false)
                 .set(Assistant::getDeleteFlag, true));
+
+        if (affectedRows == 0){
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
     }
 }
