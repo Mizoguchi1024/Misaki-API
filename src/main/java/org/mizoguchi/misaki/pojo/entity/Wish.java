@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,13 +14,19 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WishLog {
+public class Wish {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     private Long userId;
 
-    private Integer prize;
+    @TableField("hit_flag")
+    private Boolean hitFlag;
+
+    @TableField("duplicate_flag")
+    private Boolean duplicateFlag;
+
+    private Long modelId;
 
     private Integer amount;
 

@@ -47,8 +47,8 @@ public class WishController {
 
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
-    public Result<WishFrontResponse> wish(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer times){
-        return Result.success(wishService.wish(Long.valueOf(authUser.getUsername()), times));
+    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer times){
+        return Result.success(wishService.gacha(Long.valueOf(authUser.getUsername()), times));
     }
 
     @Operation(summary = "抽卡历史记录")
