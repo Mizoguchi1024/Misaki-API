@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mizoguchi.misaki.common.constant.EmailConstant;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
 import org.mizoguchi.misaki.pojo.dto.common.RegisterRequest;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Random;
 
 @Slf4j
 @Validated
@@ -52,8 +54,9 @@ public class AuthController {
     @Operation(summary = "发送电子邮箱验证码")
     @PostMapping("/verify/{email}")
     public Result<Void> sendVerifyCode(@PathVariable @Email() String email){
-        String code = String.valueOf((int) ((Math.random() * 9 + 1) * 100000)); // 六位验证码
-        emailService.sendVerificationEmail(email, code);
+        Random random = new Random(System.currentTimeMillis());
+        String code = String.valueOf(random.nextInt(100000, 999999)); // 六位验证码
+        emailService.sendVerificationEmail(email, EmailConstant.VERIFICATION_EMAIL_SUBJECT, code);
         redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(5)); // 覆盖旧值
 
         return Result.success();

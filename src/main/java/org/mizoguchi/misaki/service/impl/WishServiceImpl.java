@@ -36,7 +36,7 @@ public class WishServiceImpl implements WishService {
     private final ModelUserMapper modelUserMapper;
 
     @Override
-    public void buyPuzzle(Long userId, Integer amount) {
+    public void buyPuzzleWithCrystal(Long userId, Integer amount) {
         User user = userMapper.selectById(userId);
 
         if (user.getCrystal() <= amount * 160) {
@@ -44,6 +44,20 @@ public class WishServiceImpl implements WishService {
         }
 
         user.setCrystal(user.getCrystal() - amount * 160);
+        user.setPuzzle(user.getPuzzle() + amount);
+
+        userMapper.updateById(user);
+    }
+
+    @Override
+    public void buyPuzzleWithStardust(Long userId, Integer amount) {
+        User user = userMapper.selectById(userId);
+
+        if (user.getStardust() <= amount * 20) {
+            throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
+        }
+
+        user.setStardust(user.getStardust() - amount * 20);
         user.setPuzzle(user.getPuzzle() + amount);
 
         userMapper.updateById(user);

@@ -27,8 +27,14 @@ public class WishController {
 
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
-    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer amount) {
-        wishService.buyPuzzle(Long.valueOf(authUser.getUsername()), amount);
+    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer amount,
+                                  @RequestParam String currency) {
+        if (currency.equals("crystal")) {
+            wishService.buyPuzzleWithCrystal(Long.valueOf(authUser.getUsername()), amount);
+        }else if (currency.equals("stardust")){
+            wishService.buyPuzzleWithStardust(Long.valueOf(authUser.getUsername()), amount);
+        }
+
         return Result.success();
     }
 
