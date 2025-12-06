@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
     private String from;
 
     @Override
-    @EnableEmailLog(to = "#to", subject = "#subject")
+    @EnableEmailLog()
     public void sendEmail(String to, String subject, String body) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -47,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    @EnableEmailLog(to = "#to", subject = "#subject")
+    @EnableEmailLog()
     public void sendVerificationEmail(String to, String subject, String code) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
