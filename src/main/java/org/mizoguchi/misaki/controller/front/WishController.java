@@ -46,14 +46,15 @@ public class WishController {
 
     @Operation(summary = "购买模型")
     @PostMapping("/models/{id}")
-    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Long id){
-        wishService.buyModel(Long.valueOf(authUser.getUsername()), id);
+    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive String id){
+        wishService.buyModel(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
-    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer times){
+    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails authUser,
+                                           @RequestParam @Positive Integer times){
         return Result.success(wishService.gacha(Long.valueOf(authUser.getUsername()), times));
     }
 

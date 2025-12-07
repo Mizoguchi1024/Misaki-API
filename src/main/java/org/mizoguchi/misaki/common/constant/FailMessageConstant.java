@@ -1,31 +1,52 @@
 package org.mizoguchi.misaki.common.constant;
 
 public class FailMessageConstant {
-    public static final String MISSING_HEADERS = "缺少请求头";
-    public static final String REQUEST_EXPIRED = "请求已过期";
-    public static final String REPLAY_ATTACK_DETECTED = "检测到重放攻击";
-    public static final String USER_ALREADY_EXISTS = "该用户已存在";
-    public static final String USER_NOT_EXISTS = "该用户不存在";
-    public static final String JWT_EXPIRED = "JWT已过期";
-    public static final String INVALID_JWT = "JWT解析错误";
-    public static final String VERIFY_CODE_EXPIRED = "电子邮箱验证码已过期";
-    public static final String WRONG_PASSWORD = "密码错误";
-    public static final String WRONG_VERIFY_CODE = "电子邮箱验证码错误";
-    public static final String INVALID_FIELD_PATTEN = "非法的字段格式";
-    public static final String INVALID_PARAMETER = "非法的请求参数";
-    public static final String SENDING_EMAIL_FAILED = "邮件发送失败";
-    public static final String INTERNAL_SERVER_ERROR = "服务器内部错误";
-    public static final String CHAT_NOT_EXISTS = "该会话不存在";
-    public static final String INVALID_ENUM_CODE = "非法的枚举代号";
-    public static final String NOT_FOUND = "无法找到请求的资源";
-    public static final String INCOMPLETE_CHAT = "会话不完整";
-    public static final String ASSISTANT_NOT_EXISTS = "该助手不存在";
-    public static final String ALREADY_CHECK_IN = "重复签到";
-    public static final String AT_LEAST_ONE_ASSISTANT = "至少保留一个助手存档";
-    public static final String CHAT_TITLE_ALREADY_EXISTS = "会话标题已存在";
-    public static final String TOO_MANY_ASSISTANTS = "助手存档数量过多";
-    public static final String CRYSTAL_NOT_ENOUGH = "回忆晶片不足";
-    public static final String MODEL_ALREADY_HAVE = "模型已拥有";
-    public static final String MODEL_NOT_EXISTS = "模型不存在";
-    public static final String STARDUST_NOT_ENOUGH = "星尘不足";
+
+    // ===== 请求与安全控制 =====
+    public static final String REQUEST_MISSING_HEADERS = "Request missing headers";
+    public static final String REQUEST_EXPIRED = "Request expired";
+    public static final String REPLAY_ATTACK_DETECTED = "Replay attack detected";
+
+    public static final String INVALID_PARAMETER = "Invalid parameter";
+    public static final String INVALID_FIELD_PATTERN = "Invalid field pattern";
+    public static final String INVALID_ENUM_CODE = "Invalid enum code";
+
+
+    // ===== 权限、认证、用户相关 =====
+    public static final String USER_ALREADY_EXISTS = "User already exists";
+    public static final String USER_NOT_EXISTS = "User not exists";
+    public static final String WRONG_PASSWORD = "Wrong password";
+    public static final String FAILED_TO_SEND_EMAIL = "Failed to send email";
+
+    public static final String VERIFICATION_CODE_EXPIRED = "Verification code expired";
+    public static final String WRONG_VERIFICATION_CODE = "Wrong verification code";
+
+    public static final String JWT_EXPIRED = "JWT expired";
+    public static final String INVALID_JWT = "Invalid JWT";
+
+
+    // ===== 业务资源不存在 =====
+    public static final String RESOURCE_NOT_FOUND = "Resource not found";
+    public static final String CHAT_NOT_EXISTS = "Chat not exists";
+    public static final String ASSISTANT_NOT_EXISTS = "Assistant not exists";
+    public static final String MODEL_NOT_EXISTS = "Model not exists";
+    public static final String INCOMPLETE_CHAT = "Incomplete chat";
+
+
+    // ===== 业务冲突类（已存在、已完成）=====
+    public static final String CHAT_TITLE_ALREADY_EXISTS = "Chat title already exists";
+    public static final String MODEL_ALREADY_OWNED = "Model already owned";
+    public static final String ALREADY_CHECKED_IN = "Already checked in";
+    public static final String TOO_MANY_ASSISTANTS = "Too many assistants";
+    public static final String AT_LEAST_ONE_ASSISTANT = "At least one assistant";
+
+
+    // ===== 资源不足类 =====
+    public static final String CRYSTAL_NOT_ENOUGH = "Crystal not enough";
+    public static final String STARDUST_NOT_ENOUGH = "Stardust not enough";
+
+
+    // ===== 系统级错误 =====
+    public static final String INTERNAL_SERVER_ERROR = "Internal server error";
 }
+

@@ -1,6 +1,8 @@
 package org.mizoguchi.misaki.common.constant;
 
 public class EmailConstant {
+    public static final String VERIFICATION_CODE_FORMAT = "%06d";
+    public static final int VERIFICATION_CODE_LIMIT = 999999;
     public static final String SENDER_FRIENDLY_NAME = "Misaki";
     public static final String EMAIL_ENCODING = "UTF-8";
     public static final String VERIFICATION_EMAIL_SUBJECT = "Misaki - 电子邮箱验证码";

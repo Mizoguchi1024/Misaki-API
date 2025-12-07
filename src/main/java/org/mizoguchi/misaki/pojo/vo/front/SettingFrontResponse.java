@@ -16,7 +16,7 @@ public class SettingFrontResponse {
 
     private Integer ttsAutoplay;
 
-    private String colorPrimary;
+    private String mainColor;
 
     private Integer borderRadius;
 

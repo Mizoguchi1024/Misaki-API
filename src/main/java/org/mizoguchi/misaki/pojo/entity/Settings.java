@@ -24,7 +24,7 @@ public class Settings {
 
     private Integer language;
 
-    private String colorPrimary;
+    private String mainColor;
 
     private Integer borderRadius;
 

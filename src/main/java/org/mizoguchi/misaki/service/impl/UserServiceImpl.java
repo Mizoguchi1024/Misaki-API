@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SystemConstant;
-import org.mizoguchi.misaki.common.exception.AlreadyCheckInException;
+import org.mizoguchi.misaki.common.exception.AlreadyCheckedInException;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectById(userId);
 
         if (user.getLastCheckInDate() != null && user.getLastCheckInDate().equals(LocalDate.now())){
-            throw new AlreadyCheckInException(FailMessageConstant.ALREADY_CHECK_IN);
+            throw new AlreadyCheckedInException(FailMessageConstant.ALREADY_CHECKED_IN);
         }
 
         user.setLastCheckInDate(LocalDate.now());

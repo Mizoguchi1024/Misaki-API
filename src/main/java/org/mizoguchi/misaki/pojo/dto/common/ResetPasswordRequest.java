@@ -17,6 +17,6 @@ public class ResetPasswordRequest {
 
     @NotBlank
     @Size(min = 6, max = 6)
-    @Pattern(regexp = RegexConstant.PURE_NUMBER, message = FailMessageConstant.INVALID_FIELD_PATTEN)
-    private String verifyCode;
+    @Pattern(regexp = RegexConstant.PURE_NUMBER, message = FailMessageConstant.INVALID_FIELD_PATTERN)
+    private String verificationCode;
 }

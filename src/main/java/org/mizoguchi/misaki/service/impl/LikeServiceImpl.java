@@ -5,16 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
-import org.mizoguchi.misaki.mapper.LikeMapper;
+import org.mizoguchi.misaki.mapper.LikesMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
-import org.mizoguchi.misaki.pojo.entity.Like;
+import org.mizoguchi.misaki.pojo.entity.Likes;
 import org.mizoguchi.misaki.service.LikeService;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
-    private final LikeMapper likeMapper;
+    private final LikesMapper likesMapper;
     private final AssistantMapper assistantMapper;
 
     @Override
@@ -33,21 +33,21 @@ public class LikeServiceImpl implements LikeService {
             throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 
-        Like existingLike = likeMapper.selectOne(new LambdaQueryWrapper<Like>()
-                .eq(Like::getUserId, userId)
-                .eq(Like::getTargetType, 1)
-                .eq(Like::getTargetId, assistantId));
+        Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
+                .eq(Likes::getUserId, userId)
+                .eq(Likes::getTargetType, 1)
+                .eq(Likes::getTargetId, assistantId));
 
-        if (existingLike == null) {
-            Like like = Like.builder()
+        if (existingLikes == null) {
+            Likes likes = Likes.builder()
                     .userId(userId)
                     .targetType(1)
                     .targetId(assistantId)
                     .build();
 
-            likeMapper.insert(like);
+            likesMapper.insert(likes);
         }else {
-            likeMapper.deleteById(existingLike);
+            likesMapper.deleteById(existingLikes);
         }
     }
 

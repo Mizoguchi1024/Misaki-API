@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.CrystalNotEnoughException;
-import org.mizoguchi.misaki.common.exception.ModelAlreadyHaveException;
+import org.mizoguchi.misaki.common.exception.ModelAlreadyOwnedException;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsExption;
 import org.mizoguchi.misaki.common.exception.StardustNotEnoughException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
@@ -76,7 +76,7 @@ public class WishServiceImpl implements WishService {
                 .eq(ModelUser::getModelId, modelId));
 
         if (existingModelUser != null) {
-            throw new ModelAlreadyHaveException(FailMessageConstant.MODEL_ALREADY_HAVE);
+            throw new ModelAlreadyOwnedException(FailMessageConstant.MODEL_ALREADY_OWNED);
         }
 
         User user = userMapper.selectById(userId);

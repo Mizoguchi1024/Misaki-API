@@ -38,15 +38,16 @@ public class ChatController {
     @Operation(summary = "发送消息")
     @PostMapping(value = "/{id}/messages", produces = "text/event-stream;charset=utf-8")
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails authUser,
-                                    @PathVariable @Positive Long id,
+                                    @PathVariable @Positive String id,
                                     @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
-        return messageService.sendMessage(Long.valueOf(authUser.getUsername()), id, sendMessageFrontRequest);
+        return messageService.sendMessage(Long.valueOf(authUser.getUsername()), Long.valueOf(id),
+                sendMessageFrontRequest);
     }
 
     @Operation(summary = "生成会话标题")
     @GetMapping(value = "/{id}/title", produces = "text/event-stream;charset=utf-8")
-    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable Long id) {
-        return chatService.addChatTitle(Long.valueOf(authUser.getUsername()), id);
+    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails authUser, @PathVariable String id) {
+        return chatService.addChatTitle(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
     }
 
     @Operation(summary = "获取历史会话")
@@ -58,14 +59,15 @@ public class ChatController {
     @Operation(summary = "获取会话中的所有消息")
     @GetMapping("/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails authUser,
-                                                           @PathVariable @Positive Long id){
-        return Result.success(messageService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()), id));
+                                                           @PathVariable @Positive String id){
+        return Result.success(messageService.listMessagesFrontResponse(Long.valueOf(authUser.getUsername()),
+                Long.valueOf(id)));
     }
 
     @Operation(summary = "删除会话")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive Long id){
-        chatService.deleteChat(Long.valueOf(authUser.getUsername()), id);
+    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive String id){
+        chatService.deleteChat(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 }

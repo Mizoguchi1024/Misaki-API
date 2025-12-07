@@ -52,10 +52,11 @@ public class AuthController {
     }
 
     @Operation(summary = "发送电子邮箱验证码")
-    @PostMapping("/verify/{email}")
-    public Result<Void> sendVerifyCode(@PathVariable @Email() String email){
+    @PostMapping("/verification/{email}")
+    public Result<Void> sendVerificationCode(@PathVariable @Email() String email){
         Random random = new Random(System.currentTimeMillis());
-        String code = String.valueOf(random.nextInt(100000, 999999)); // 六位验证码
+        String code = String.format(EmailConstant.VERIFICATION_CODE_FORMAT,random.nextInt(EmailConstant.VERIFICATION_CODE_LIMIT));
+
         emailService.sendVerificationEmail(email, EmailConstant.VERIFICATION_EMAIL_SUBJECT, code);
         redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(5)); // 覆盖旧值
 

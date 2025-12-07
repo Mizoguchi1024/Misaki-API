@@ -87,9 +87,9 @@ public class GlobalExceptionHandler {
         String method = request.getMethod();
 
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                FailMessageConstant.NOT_FOUND, ip, uri, method, e.getClass().getSimpleName());
+                FailMessageConstant.RESOURCE_NOT_FOUND, ip, uri, method, e.getClass().getSimpleName());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(404, FailMessageConstant.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(404, FailMessageConstant.RESOURCE_NOT_FOUND));
     }
 
     /**

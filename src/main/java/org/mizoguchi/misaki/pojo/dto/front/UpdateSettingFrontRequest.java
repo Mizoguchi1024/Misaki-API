@@ -21,8 +21,8 @@ public class UpdateSettingFrontRequest {
     private Boolean ttsAutoplay;
 
     @NotNull
-    @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTEN)
-    private String colorPrimary;
+    @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTERN)
+    private String mainColor;
 
     @NotNull
     @Min(value = 1)
@@ -31,5 +31,5 @@ public class UpdateSettingFrontRequest {
 
     private String backgroundPath;
 
-    private Long enabledAssistantId;
+    private String enabledAssistantId;
 }

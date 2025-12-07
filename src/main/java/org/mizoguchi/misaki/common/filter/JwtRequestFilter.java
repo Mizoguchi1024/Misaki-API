@@ -54,8 +54,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (timestampHeader == null || nonceHeader == null) {
             log.warn("{} | IP={} | URI={} | Method={}",
-                    FailMessageConstant.MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.MISSING_HEADERS);
+                    FailMessageConstant.REQUEST_MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REQUEST_MISSING_HEADERS);
             return;
         }
 

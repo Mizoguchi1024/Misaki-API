@@ -68,11 +68,11 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
-        String verifyCode = (String) redisTemplate.opsForValue().get(registerRequest.getEmail());
-        if (verifyCode == null) {
-            throw new VerifyCodeExpiredException(FailMessageConstant.VERIFY_CODE_EXPIRED);
-        } else if (!verifyCode.equals(registerRequest.getVerifyCode())) {
-            throw new WrongVerifyCodeException(FailMessageConstant.WRONG_VERIFY_CODE);
+        String verificationCode = (String) redisTemplate.opsForValue().get(registerRequest.getEmail());
+        if (verificationCode == null) {
+            throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
+        } else if (!verificationCode.equals(registerRequest.getVerificationCode())) {
+            throw new WrongVerificationCodeException(FailMessageConstant.WRONG_VERIFICATION_CODE);
         }
 
         String encryptPassword = passwordEncoder.encode(registerRequest.getPassword());
@@ -103,12 +103,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        String verifyCode = (String) redisTemplate.opsForValue().get(resetPasswordRequest.getEmail());
+        String verificationCode = (String) redisTemplate.opsForValue().get(resetPasswordRequest.getEmail());
 
-        if (verifyCode == null) {
-            throw new VerifyCodeExpiredException(FailMessageConstant.VERIFY_CODE_EXPIRED);
-        } else if (!verifyCode.equals(resetPasswordRequest.getVerifyCode())) {
-            throw new WrongVerifyCodeException(FailMessageConstant.WRONG_VERIFY_CODE);
+        if (verificationCode == null) {
+            throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
+        } else if (!verificationCode.equals(resetPasswordRequest.getVerificationCode())) {
+            throw new WrongVerificationCodeException(FailMessageConstant.WRONG_VERIFICATION_CODE);
         }
 
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
