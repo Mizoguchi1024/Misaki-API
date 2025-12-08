@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -8,12 +8,12 @@ import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.mapper.LikesMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.entity.Likes;
-import org.mizoguchi.misaki.service.LikeService;
+import org.mizoguchi.misaki.service.front.LikesFrontService;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LikeServiceImpl implements LikeService {
+public class LikesFrontServiceImpl implements LikesFrontService {
     private final LikesMapper likesMapper;
     private final AssistantMapper assistantMapper;
 

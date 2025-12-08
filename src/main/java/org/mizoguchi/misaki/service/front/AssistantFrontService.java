@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service;
+package org.mizoguchi.misaki.service.front;
 
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
@@ -6,13 +6,13 @@ import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 
 import java.util.List;
 
-public interface AssistantService {
+public interface AssistantFrontService {
     void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest);
     void copyAssistant(Long userId, Long assistantId);
 
-    AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId);
-    List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId);
-    List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId,Integer pageIndex, Integer pageSize);
+    AssistantFrontResponse getAssistant(Long userId, Long assistantId);
+    List<AssistantFrontResponse> listAssistants(Long userId);
+    List<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize);
 
     void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest);
     void deleteAssistant(Long userId, Long assistantId);

@@ -4,15 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
 import org.mizoguchi.misaki.pojo.dto.common.RegisterRequest;
 import org.mizoguchi.misaki.pojo.dto.common.ResetPasswordRequest;
 import org.mizoguchi.misaki.pojo.vo.common.LoginResponse;
-import org.mizoguchi.misaki.service.AuthService;
-import org.mizoguchi.misaki.service.EmailService;
+import org.mizoguchi.misaki.service.common.AuthService;
+import org.mizoguchi.misaki.service.common.EmailService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.util.Random;
 
-@Slf4j
 @Validated
 @RestController
 @RequestMapping("/auth")

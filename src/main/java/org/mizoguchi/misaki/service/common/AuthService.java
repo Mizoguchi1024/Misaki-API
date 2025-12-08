@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service;
+package org.mizoguchi.misaki.service.common;
 
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
 import org.mizoguchi.misaki.pojo.dto.common.RegisterRequest;

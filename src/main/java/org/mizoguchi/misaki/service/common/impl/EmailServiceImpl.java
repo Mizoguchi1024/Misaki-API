@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.common.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -8,7 +8,7 @@ import org.mizoguchi.misaki.annotation.EnableEmailLog;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.FailedToSendEmailException;
-import org.mizoguchi.misaki.service.EmailService;
+import org.mizoguchi.misaki.service.common.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;

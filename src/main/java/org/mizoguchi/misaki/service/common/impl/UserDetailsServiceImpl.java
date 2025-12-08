@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.common.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.pojo.vo.front;
+package org.mizoguchi.misaki.pojo.vo.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -13,12 +13,14 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssistantFrontResponse {
+public class UserAdminResponse {
     private Long id;
 
-    private String name;
+    private String email;
 
-    private String personality;
+    private String password;
+
+    private String username;
 
     private Integer gender;
 
@@ -27,15 +29,27 @@ public class AssistantFrontResponse {
 
     private String avatarPath;
 
-    private Long modelId;
+    private String occupation;
 
-    private Long creatorId;
+    private String detail;
 
-    private Integer likes;
+    private Integer authRole;
 
-    private Integer duplicateName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastLoginTime;
 
-    private Boolean publicFlag;
+    private Long token;
+
+    private Integer crystal;
+
+    private Integer puzzle;
+
+    private Integer stardust;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate lastCheckInDate;
+
+    private Boolean deleteFlag;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;

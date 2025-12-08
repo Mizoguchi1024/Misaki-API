@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.*;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
-import org.mizoguchi.misaki.service.MessageService;
+import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MessageServiceImpl implements MessageService {
+public class MessageFrontServiceImpl implements MessageFrontService {
     private final ChatClient chatClient;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
@@ -89,7 +89,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageFrontResponse> listMessagesFrontResponse(Long userId, Long chatId) {
+    public List<MessageFrontResponse> listMessages(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId));

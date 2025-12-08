@@ -1,19 +1,16 @@
-package org.mizoguchi.misaki.pojo.vo.front;
+package org.mizoguchi.misaki.pojo.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserFrontResponse {
+public class AddUserAdminRequest {
     private String email;
+
+    private String password;
 
     private String username;
 
@@ -28,6 +25,19 @@ public class UserFrontResponse {
 
     private String detail;
 
+    private Integer authRole;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private String createTime;
+    private LocalDateTime lastLoginTime;
+
+    private String token;
+
+    private Integer crystal;
+
+    private Integer puzzle;
+
+    private Integer stardust;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate lastCheckInDate;
 }

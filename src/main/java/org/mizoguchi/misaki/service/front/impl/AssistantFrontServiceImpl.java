@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -15,7 +15,7 @@ import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.Likes;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
-import org.mizoguchi.misaki.service.AssistantService;
+import org.mizoguchi.misaki.service.front.AssistantFrontService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AssistantServiceImpl implements AssistantService {
+public class AssistantFrontServiceImpl implements AssistantFrontService {
     private final AssistantMapper assistantMapper;
     private final LikesMapper likesMapper;
 
     @Override
-    public AssistantFrontResponse getAssistantFrontResponse(Long userId, Long assistantId) {
+    public AssistantFrontResponse getAssistant(Long userId, Long assistantId) {
         Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getOwnerId, userId)
@@ -57,7 +57,7 @@ public class AssistantServiceImpl implements AssistantService {
     }
 
     @Override
-    public List<AssistantFrontResponse> listAssistantsFrontResponse(Long userId) {
+    public List<AssistantFrontResponse> listAssistants(Long userId) {
         List<Assistant> assistants = assistantMapper.selectList(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false));
@@ -86,7 +86,7 @@ public class AssistantServiceImpl implements AssistantService {
     }
 
     @Override
-    public List<AssistantFrontResponse> listPublicAssistantsFrontResponse(Long userId,Integer pageIndex, Integer pageSize) {
+    public List<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize) {
         Page<Assistant> page = new Page<>(pageIndex, pageSize);
         List<Assistant> assistants = assistantMapper.selectList(page, new LambdaQueryWrapper<Assistant>()
                 .ne(Assistant::getOwnerId, userId)

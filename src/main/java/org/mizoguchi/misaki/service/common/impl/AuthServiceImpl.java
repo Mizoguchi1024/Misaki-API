@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.common.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -16,7 +16,7 @@ import org.mizoguchi.misaki.pojo.dto.common.ResetPasswordRequest;
 import org.mizoguchi.misaki.pojo.vo.common.LoginResponse;
 import org.mizoguchi.misaki.mapper.SettingsMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
-import org.mizoguchi.misaki.service.AuthService;
+import org.mizoguchi.misaki.service.common.AuthService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

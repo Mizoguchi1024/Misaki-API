@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -14,7 +14,7 @@ import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 import org.mizoguchi.misaki.mapper.SettingsMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.entity.User;
-import org.mizoguchi.misaki.service.UserService;
+import org.mizoguchi.misaki.service.front.UserFrontService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserFrontServiceImpl implements UserFrontService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
 
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserFrontResponse getUserFrontResponse(Long userId) {
+    public UserFrontResponse getUser(Long userId) {
         User user = userMapper.selectById(userId);
 
         UserFrontResponse userFrontResponse = new UserFrontResponse();
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SettingFrontResponse getSettingFrontResponse(Long userId) {
+    public SettingFrontResponse getSetting(Long userId) {
         Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
 
         SettingFrontResponse settingFrontResponse = new SettingFrontResponse();

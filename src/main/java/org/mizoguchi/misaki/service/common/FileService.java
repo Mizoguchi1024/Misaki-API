@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service;
+package org.mizoguchi.misaki.service.common;
 
 import org.springframework.web.multipart.MultipartFile;
 

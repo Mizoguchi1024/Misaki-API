@@ -1,13 +1,13 @@
-package org.mizoguchi.misaki.service;
+package org.mizoguchi.misaki.service.front;
 
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface ChatService {
+public interface ChatFrontService {
     Long addChat(Long userId);
-    List<ChatFrontResponse> listChatsFrontResponse(Long userId);
+    List<ChatFrontResponse> listChats(Long userId);
     Flux<String> addChatTitle(Long userId, Long chatId);
     void deleteChat(Long userId, Long chatId);
 }

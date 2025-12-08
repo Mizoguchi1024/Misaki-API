@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -14,7 +14,7 @@ import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.pojo.entity.Chat;
 import org.mizoguchi.misaki.pojo.entity.Message;
-import org.mizoguchi.misaki.service.ChatService;
+import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService {
+public class ChatFrontServiceImpl implements ChatFrontService {
     private final ChatClient statelessChatClient;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
@@ -45,7 +45,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatFrontResponse> listChatsFrontResponse(Long userId) {
+    public List<ChatFrontResponse> listChats(Long userId) {
         List<Chat> chats = chatMapper.selectList(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false));

@@ -14,7 +14,7 @@ import org.mizoguchi.misaki.common.constant.WebConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.common.util.JwtUtil;
-import org.mizoguchi.misaki.service.impl.UserDetailsServiceImpl;
+import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

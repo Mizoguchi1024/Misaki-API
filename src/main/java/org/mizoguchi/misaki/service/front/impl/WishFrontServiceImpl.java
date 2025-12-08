@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -18,7 +18,7 @@ import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.entity.Wish;
 import org.mizoguchi.misaki.pojo.vo.front.ModelFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
-import org.mizoguchi.misaki.service.WishService;
+import org.mizoguchi.misaki.service.front.WishFrontService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ import java.util.Random;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class WishServiceImpl implements WishService {
+public class WishFrontServiceImpl implements WishFrontService {
     private final WishMapper wishMapper;
     private final UserMapper userMapper;
     private final ModelMapper modelMapper;
@@ -236,12 +236,12 @@ public class WishServiceImpl implements WishService {
     }
 
     @Override
-    public List<ModelFrontResponse> listModelFrontResponse(Long userId) {
+    public List<ModelFrontResponse> listModels(Long userId) {
         return List.of();
     }
 
     @Override
-    public List<WishFrontResponse> listWishFrontResponse(Long userId) {
+    public List<WishFrontResponse> listWishes(Long userId) {
         return List.of();
     }
 }

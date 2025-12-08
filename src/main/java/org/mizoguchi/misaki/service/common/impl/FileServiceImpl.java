@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.service.impl;
+package org.mizoguchi.misaki.service.common.impl;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -6,7 +6,7 @@ import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.InternalServerErrorException;
-import org.mizoguchi.misaki.service.FileService;
+import org.mizoguchi.misaki.service.common.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
