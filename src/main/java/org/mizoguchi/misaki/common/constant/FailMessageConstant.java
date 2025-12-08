@@ -36,6 +36,7 @@ public class FailMessageConstant {
     // ===== 业务冲突类（已存在、已完成）=====
     public static final String CHAT_TITLE_ALREADY_EXISTS = "Chat title already exists";
     public static final String MODEL_ALREADY_OWNED = "Model already owned";
+    public static final String MODEL_NOT_OWNED = "Model not owned";
     public static final String ALREADY_CHECKED_IN = "Already checked in";
     public static final String TOO_MANY_ASSISTANTS = "Too many assistants";
     public static final String AT_LEAST_ONE_ASSISTANT = "At least one assistant";

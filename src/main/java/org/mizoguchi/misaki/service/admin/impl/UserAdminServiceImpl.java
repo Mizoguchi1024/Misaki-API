@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.AddUserAdminRequest;
+import org.mizoguchi.misaki.pojo.dto.admin.SearchUserAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateUserAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
@@ -21,6 +22,13 @@ public class UserAdminServiceImpl implements UserAdminService {
     private final UserMapper userMapper;
 
     @Override
+    public void addUser(AddUserAdminRequest addUserAdminRequest) {
+        User user = new User();
+        BeanUtils.copyProperties(addUserAdminRequest, user);
+        userMapper.insert(user);
+    }
+
+    @Override
     public List<UserAdminResponse> listUsers(Integer pageIndex, Integer pageSize) {
         Page<User> page = new Page<>(pageIndex, pageSize);
         return userMapper.selectList(page, new LambdaQueryWrapper<>()).stream()
@@ -33,10 +41,9 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
-    public void addUser(AddUserAdminRequest addUserAdminRequest) {
-        User user = new User();
-        BeanUtils.copyProperties(addUserAdminRequest, user);
-        userMapper.insert(user);
+    public List<UserAdminResponse> searchUsers(SearchUserAdminRequest searchUserAdminRequest) {
+        // TODO
+        return List.of();
     }
 
     @Override

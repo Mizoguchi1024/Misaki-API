@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.admin.AddUserAdminRequest;
+import org.mizoguchi.misaki.pojo.dto.admin.SearchUserAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateUserAdminRequest;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
@@ -34,6 +35,12 @@ public class UserAdminController {
     public Result<List<UserAdminResponse>> listUsers(@RequestParam @Positive Integer pageIndex,
                                              @RequestParam @Positive Integer pageSize){
         return Result.success(userAdminService.listUsers(pageIndex, pageSize));
+    }
+
+    @Operation(summary = "条件搜索用户")
+    @GetMapping("/search")
+    public Result<List<UserAdminResponse>> searchUsers(SearchUserAdminRequest searchUserAdminRequest){
+        return Result.success(userAdminService.searchUsers(searchUserAdminRequest));
     }
 
     @Operation(summary = "修改用户")
