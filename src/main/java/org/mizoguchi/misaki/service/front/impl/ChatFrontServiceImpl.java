@@ -9,6 +9,8 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatTitleAlreadyExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteChatException;
+import org.mizoguchi.misaki.mapper.UserMapper;
+import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
@@ -21,17 +23,20 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ChatFrontServiceImpl implements ChatFrontService {
     private final ChatClient statelessChatClient;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
+    private final UserMapper userMapper;
 
     @Override
     public Long addChat(Long userId) {
@@ -70,6 +75,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
 
     @Override
+    @Transactional
     public Flux<String> addChatTitle(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
@@ -105,12 +111,20 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                     Usage usage = chatResponse.getMetadata().getUsage();
                     String title = chatResponse.getResult().getOutput().getText();
                     if (title != null && !title.trim().isEmpty()) {
-                        chat.setToken(chat.getToken() + usage.getTotalTokens());
-                        chat.setTitle(title.replaceAll(RegexConstant.QUOTE_PREFIX, "")
+                        title = title.replaceAll(RegexConstant.QUOTE_PREFIX, "")
                                 .replaceAll(RegexConstant.QUOTE_SUFFIX, "")
-                                .replaceAll(RegexConstant.TITLE_INDICATION, ""));
+                                .replaceAll(RegexConstant.TITLE_INDICATION, "");
 
-                        chatMapper.updateById(chat);
+                        chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                                .eq(Chat::getId, chat.getId())
+                                .set(Chat::getToken, chat.getToken() + usage.getTotalTokens())
+                                .set(Chat::getTitle, title));
+
+                        User user = userMapper.selectById(userId);
+
+                        userMapper.update(new LambdaUpdateWrapper<User>()
+                                .eq(User::getId, userId)
+                                .set(User::getToken, Math.max(user.getToken() - usage.getTotalTokens(), 0)));
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题;

@@ -1,12 +1,14 @@
 package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
+import org.mizoguchi.misaki.common.exception.TokenNotEnoughException;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.*;
@@ -47,6 +49,11 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         }
 
         User user = userMapper.selectById(userId);
+
+        if (user.getToken() == 0){
+            throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
+        }
+
         Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
         Assistant assistant = assistantMapper.selectById(settings.getEnabledAssistantId());
         if (assistant == null || !assistant.getOwnerId().equals(userId)) {
@@ -83,8 +90,14 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                 .chatResponse()
                 .doOnNext(chatResponse ->{
                     Usage usage = chatResponse.getMetadata().getUsage();
-                    chat.setToken(chat.getToken() + usage.getTotalTokens());
-                    chatMapper.updateById(chat);})
+                    chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                            .eq(Chat::getId, chat.getId())
+                            .set(Chat::getToken, chat.getToken() + usage.getTotalTokens()));
+
+                    userMapper.update(new LambdaUpdateWrapper<User>()
+                            .eq(User::getId, userId)
+                            .set(User::getToken, Math.max(user.getToken() - usage.getTotalTokens(), 0)));
+                })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题
     }
 

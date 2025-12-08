@@ -39,7 +39,7 @@ public class User {
 
     private LocalDateTime lastLoginTime;
 
-    private Long token;
+    private Integer token;
 
     private Integer crystal;
 

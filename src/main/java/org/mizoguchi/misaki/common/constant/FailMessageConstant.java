@@ -43,6 +43,7 @@ public class FailMessageConstant {
 
 
     // ===== 资源不足类 =====
+    public static final String TOKEN_NOT_ENOUGH = "Token not enough";
     public static final String CRYSTAL_NOT_ENOUGH = "Crystal not enough";
     public static final String STARDUST_NOT_ENOUGH = "Stardust not enough";
 

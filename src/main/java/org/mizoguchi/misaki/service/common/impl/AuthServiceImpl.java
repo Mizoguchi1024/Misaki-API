@@ -81,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(registerRequest.getEmail())
                 .password(encryptPassword)
                 .username(registerRequest.getUsername())
+                .token(100000)
                 .build();
 
         userMapper.insert(user);
