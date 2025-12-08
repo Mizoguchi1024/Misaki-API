@@ -57,6 +57,16 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ChatFrontResponse> searchChats(Long userId, String keyword) {
+        List<Chat> chats = chatMapper.searchChats(userId, keyword);
+
+        return chats.stream().map(chat -> {
+            ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
+            BeanUtils.copyProperties(chat, chatFrontResponse);
+            return chatFrontResponse;
+        }).collect(Collectors.toList());
+    }
 
 
     @Override

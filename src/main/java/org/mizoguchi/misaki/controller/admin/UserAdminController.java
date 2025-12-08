@@ -33,7 +33,7 @@ public class UserAdminController {
     @Operation(summary = "分页查询所有用户")
     @GetMapping()
     public Result<List<UserAdminResponse>> listUsers(@RequestParam @Positive Integer pageIndex,
-                                             @RequestParam @Positive Integer pageSize){
+                                                     @RequestParam @Positive Integer pageSize){
         return Result.success(userAdminService.listUsers(pageIndex, pageSize));
     }
 

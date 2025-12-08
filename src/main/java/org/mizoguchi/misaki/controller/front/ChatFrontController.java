@@ -54,6 +54,13 @@ public class ChatFrontController {
         return Result.success(chatFrontService.listChats(Long.valueOf(authUser.getUsername())));
     }
 
+    @Operation(summary = "搜索会话")
+    @GetMapping("/search")
+    public Result<List<ChatFrontResponse>> searchChats(@AuthenticationPrincipal UserDetails authUser,
+                                                       @RequestParam String keyword){
+        return Result.success(chatFrontService.searchChats(Long.valueOf(authUser.getUsername()), keyword));
+    }
+
     @Operation(summary = "获取会话中的所有消息")
     @GetMapping("/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails authUser,

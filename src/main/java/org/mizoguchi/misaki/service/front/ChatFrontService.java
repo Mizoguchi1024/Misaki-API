@@ -8,6 +8,7 @@ import java.util.List;
 public interface ChatFrontService {
     Long addChat(Long userId);
     List<ChatFrontResponse> listChats(Long userId);
+    List<ChatFrontResponse> searchChats(Long userId, String keyword);
     Flux<String> addChatTitle(Long userId, Long chatId);
     void deleteChat(Long userId, Long chatId);
 }
