@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.service.front.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.enumeration.LikesTargetTypeEnum;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.mapper.LikesMapper;
@@ -35,13 +36,13 @@ public class LikesFrontServiceImpl implements LikesFrontService {
 
         Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, 1)
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
                 .eq(Likes::getTargetId, assistantId));
 
         if (existingLikes == null) {
             Likes likes = Likes.builder()
                     .userId(userId)
-                    .targetType(1)
+                    .targetType(LikesTargetTypeEnum.ASSISTANT.getValue())
                     .targetId(assistantId)
                     .build();
 

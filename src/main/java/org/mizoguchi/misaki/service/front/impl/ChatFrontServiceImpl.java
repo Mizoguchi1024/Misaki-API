@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
+import org.mizoguchi.misaki.common.enumeration.MessageTypeEnum;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatTitleAlreadyExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteChatException;
@@ -93,11 +94,11 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .eq(Message::getChatId, chatId));
 
         Message userMessage = messages.stream()
-                .filter(message -> ChatConstant.TYPE_USER.equals(message.getType()))
+                .filter(message -> MessageTypeEnum.USER.getValue().equals(message.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
         Message assistantMessage = messages.stream()
-                .filter(message -> ChatConstant.TYPE_ASSISTANT.equals(message.getType()))
+                .filter(message -> MessageTypeEnum.ASSISTANT.getValue().equals(message.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
 
