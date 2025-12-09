@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.CrystalNotEnoughException;
-import org.mizoguchi.misaki.common.exception.ModelAlreadyOwnedException;
-import org.mizoguchi.misaki.common.exception.ModelNotExistsExption;
 import org.mizoguchi.misaki.common.exception.StardustNotEnoughException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
@@ -16,7 +14,6 @@ import org.mizoguchi.misaki.pojo.entity.Model;
 import org.mizoguchi.misaki.pojo.entity.ModelUser;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.entity.Wish;
-import org.mizoguchi.misaki.pojo.vo.front.ModelFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.front.WishFrontService;
 import org.springframework.beans.BeanUtils;
@@ -61,38 +58,6 @@ public class WishFrontServiceImpl implements WishFrontService {
         user.setPuzzle(user.getPuzzle() + amount);
 
         userMapper.updateById(user);
-    }
-
-    @Override
-    public void buyModel(Long userId, Long modelId) {
-        Model model = modelMapper.selectById(modelId);
-
-        if (model == null){
-            throw new ModelNotExistsExption(FailMessageConstant.MODEL_NOT_EXISTS);
-        }
-
-        ModelUser existingModelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
-                .eq(ModelUser::getUserId, userId)
-                .eq(ModelUser::getModelId, modelId));
-
-        if (existingModelUser != null) {
-            throw new ModelAlreadyOwnedException(FailMessageConstant.MODEL_ALREADY_OWNED);
-        }
-
-        User user = userMapper.selectById(userId);
-        if (user.getStardust() <= model.getPrice()) {
-            throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
-        }
-
-        user.setStardust(user.getStardust() - model.getPrice());
-        userMapper.updateById(user);
-
-        ModelUser modelUser = ModelUser.builder()
-                .userId(userId)
-                .modelId(modelId)
-                .build();
-
-        modelUserMapper.insert(modelUser);
     }
 
     @Override
@@ -236,12 +201,8 @@ public class WishFrontServiceImpl implements WishFrontService {
     }
 
     @Override
-    public List<ModelFrontResponse> listModels(Long userId) {
-        return List.of();
-    }
-
-    @Override
     public List<WishFrontResponse> listWishes(Long userId) {
+        // TODO
         return List.of();
     }
 }

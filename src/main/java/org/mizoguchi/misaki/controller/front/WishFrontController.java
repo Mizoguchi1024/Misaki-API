@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
-import org.mizoguchi.misaki.pojo.vo.front.ModelFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.front.WishFrontService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,19 +32,6 @@ public class WishFrontController {
             wishFrontService.buyPuzzleWithStardust(Long.valueOf(authUser.getUsername()), amount);
         }
 
-        return Result.success();
-    }
-
-    @Operation(summary = "获取可购买模型")
-    @GetMapping("/models")
-    public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(wishFrontService.listModels(Long.valueOf(authUser.getUsername())));
-    }
-
-    @Operation(summary = "购买模型")
-    @PostMapping("/models/{id}")
-    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive String id){
-        wishFrontService.buyModel(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 

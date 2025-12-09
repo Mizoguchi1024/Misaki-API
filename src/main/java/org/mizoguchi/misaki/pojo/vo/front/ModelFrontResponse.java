@@ -19,4 +19,6 @@ public class ModelFrontResponse {
     private String path;
 
     private String avatarPath;
+
+    private Boolean ownedFlag;
 }
