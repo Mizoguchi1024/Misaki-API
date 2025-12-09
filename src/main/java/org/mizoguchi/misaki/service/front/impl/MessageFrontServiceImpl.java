@@ -75,7 +75,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
 
         // DeepSeek-对话前缀续写（Beta）-代码生成
         if (sendMessageFrontRequest.getPrefix() != null
-                && !sendMessageFrontRequest.getPrefix().trim().isEmpty()
+                && !sendMessageFrontRequest.getPrefix().isBlank()
                 && sendMessageFrontRequest.getPrefix().startsWith(ChatConstant.CODE_QUOTE)) {
             DeepSeekAssistantMessage assistantMessage = DeepSeekAssistantMessage.prefixAssistantMessage(sendMessageFrontRequest.getPrefix());
             assistantMessage.setPrefix(true);

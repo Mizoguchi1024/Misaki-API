@@ -10,6 +10,7 @@ public class FailMessageConstant {
     public static final String INVALID_PARAMETER = "Invalid parameter";
     public static final String INVALID_FIELD_PATTERN = "Invalid field pattern";
     public static final String INVALID_ENUM_CODE = "Invalid enum code";
+    public static final String INVALID_SORT_PARAMS = "Invalid sort params";
 
 
     // ===== 权限、认证、用户相关 =====

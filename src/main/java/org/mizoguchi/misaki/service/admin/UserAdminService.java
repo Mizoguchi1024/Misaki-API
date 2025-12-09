@@ -9,8 +9,7 @@ import java.util.List;
 
 public interface UserAdminService {
     void addUser(AddUserAdminRequest addUserAdminRequest);
-    List<UserAdminResponse> searchUsers(SearchUserAdminRequest searchUserAdminRequest);
-    List<UserAdminResponse> listUsers(Integer pageIndex, Integer pageSize);
+    List<UserAdminResponse> searchUsers(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchUserAdminRequest searchUserAdminRequest);
     void updateUser(Long userId, UpdateUserAdminRequest updateUserAdminRequest);
     void deleteUser(Long userId);
 }

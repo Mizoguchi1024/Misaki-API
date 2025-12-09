@@ -86,7 +86,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        if (chat.getTitle() != null && !chat.getTitle().trim().isEmpty()) {
+        if (chat.getTitle() != null && !chat.getTitle().isBlank()) {
             throw new ChatTitleAlreadyExistsException(FailMessageConstant.CHAT_TITLE_ALREADY_EXISTS);
         }
 
@@ -111,7 +111,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .doOnNext(chatResponse -> {
                     Usage usage = chatResponse.getMetadata().getUsage();
                     String title = chatResponse.getResult().getOutput().getText();
-                    if (title != null && !title.trim().isEmpty()) {
+                    if (title != null && !title.isBlank()) {
                         title = title.replaceAll(RegexConstant.QUOTE_PREFIX, "")
                                 .replaceAll(RegexConstant.QUOTE_SUFFIX, "")
                                 .replaceAll(RegexConstant.TITLE_INDICATION, "");
