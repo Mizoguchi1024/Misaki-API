@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -202,7 +203,14 @@ public class WishFrontServiceImpl implements WishFrontService {
 
     @Override
     public List<WishFrontResponse> listWishes(Long userId) {
-        // TODO
-        return List.of();
+        List<Wish> wishes = wishMapper.selectList(new LambdaQueryWrapper<Wish>()
+                .eq(Wish::getUserId, userId));
+
+        return wishes.stream()
+                .map(wish -> {
+                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
+                    BeanUtils.copyProperties(wish, wishFrontResponse);
+                    return wishFrontResponse;
+                }).collect(Collectors.toList());
     }
 }
