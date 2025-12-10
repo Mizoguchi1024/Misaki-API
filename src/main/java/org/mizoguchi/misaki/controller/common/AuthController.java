@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.controller.common;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
@@ -31,12 +32,14 @@ public class AuthController {
 
     @Operation(summary = "登录")
     @PostMapping("/login")
+    @Timed("common.auth.login")
     public Result<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
         return Result.success(authService.login(loginRequest));
     }
 
     @Operation(summary = "注册")
     @PostMapping("/register")
+    @Timed("common.auth.register")
     public Result<Void> register(@RequestBody @Validated RegisterRequest registerRequest) {
         authService.register(registerRequest);
         return Result.success();
@@ -44,6 +47,7 @@ public class AuthController {
 
     @Operation(summary = "重设密码")
     @PostMapping("/reset-password")
+    @Timed("common.auth.resetPassword")
     public Result<Void> resetPassword(@RequestBody @Validated ResetPasswordRequest resetPasswordRequest){
         authService.resetPassword(resetPasswordRequest);
         return Result.success();
@@ -51,6 +55,7 @@ public class AuthController {
 
     @Operation(summary = "发送电子邮箱验证码")
     @PostMapping("/verification/{email}")
+    @Timed("common.auth.verification")
     public Result<Void> sendVerificationCode(@PathVariable @Email() String email){
         Random random = new Random(System.currentTimeMillis());
         String code = String.format(EmailConstant.VERIFICATION_CODE_FORMAT,random.nextInt(EmailConstant.VERIFICATION_CODE_LIMIT));
