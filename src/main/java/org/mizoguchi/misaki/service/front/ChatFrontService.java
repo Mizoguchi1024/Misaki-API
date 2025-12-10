@@ -12,4 +12,5 @@ public interface ChatFrontService {
     Flux<String> addChatTitle(Long userId, Long chatId);
     void updateChatTitle(Long userId, String chatId, String title);
     void deleteChat(Long userId, Long chatId);
+    void deleteAllChats(Long userId);
 }

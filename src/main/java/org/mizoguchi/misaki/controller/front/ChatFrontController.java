@@ -84,4 +84,11 @@ public class ChatFrontController {
         chatFrontService.deleteChat(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
     }
+
+    @Operation(summary = "删除全部会话")
+    @DeleteMapping()
+    public Result<Void> deleteAllChats(@AuthenticationPrincipal UserDetails userDetails){
+        chatFrontService.deleteAllChats(Long.valueOf(userDetails.getUsername()));
+        return Result.success();
+    }
 }

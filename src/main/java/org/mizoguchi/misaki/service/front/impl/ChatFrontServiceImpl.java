@@ -156,4 +156,16 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
     }
+
+    @Override
+    public void deleteAllChats(Long userId) {
+        int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                .eq(Chat::getUserId, userId)
+                .eq(Chat::getDeleteFlag, false)
+                .set(Chat::getDeleteFlag, true));
+
+        if(affectedRows == 0) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+    }
 }
