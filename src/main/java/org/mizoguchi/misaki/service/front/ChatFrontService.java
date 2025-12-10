@@ -10,5 +10,6 @@ public interface ChatFrontService {
     List<ChatFrontResponse> listChats(Long userId);
     List<ChatFrontResponse> searchChats(Long userId, String keyword);
     Flux<String> addChatTitle(Long userId, Long chatId);
+    void updateChatTitle(Long userId, String chatId, String title);
     void deleteChat(Long userId, Long chatId);
 }

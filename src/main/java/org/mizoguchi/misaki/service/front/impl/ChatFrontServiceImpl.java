@@ -132,6 +132,19 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     }
 
     @Override
+    public void updateChatTitle(Long userId, String chatId, String title) {
+        int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .eq(Chat::getUserId, userId)
+                .eq(Chat::getDeleteFlag, false)
+                .set(Chat::getTitle, title));
+
+        if(affectedRows == 0) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+    }
+
+    @Override
     public void deleteChat(Long userId, Long chatId) {
         int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
                 .eq(Chat::getId, chatId)

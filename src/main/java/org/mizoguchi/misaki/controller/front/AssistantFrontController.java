@@ -28,62 +28,62 @@ public class AssistantFrontController {
 
     @Operation(summary = "获取该用户拥有的指定的助手存档")
     @GetMapping("/{id}")
-    public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails authUser,
+    public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails userDetails,
                                                        @PathVariable String id){
-        return Result.success(assistantFrontService.getAssistant(Long.valueOf(authUser.getUsername()),
+        return Result.success(assistantFrontService.getAssistant(Long.valueOf(userDetails.getUsername()),
                 Long.valueOf(id)));
     }
 
     @Operation(summary = "获取该用户拥有的助手存档")
     @GetMapping()
-    public Result<List<AssistantFrontResponse>> listAssistants(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(assistantFrontService.listAssistants(Long.valueOf(authUser.getUsername())));
+    public Result<List<AssistantFrontResponse>> listAssistants(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(assistantFrontService.listAssistants(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "获取市场公开的助手存档")
     @GetMapping("/public")
-    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails authUser,
+    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails userDetails,
                                                                      @RequestParam @Positive Integer pageIndex,
                                                                      @RequestParam @Positive Integer pageSize){
-        return Result.success(assistantFrontService.listPublicAssistants(Long.valueOf(authUser.getUsername()),
+        return Result.success(assistantFrontService.listPublicAssistants(Long.valueOf(userDetails.getUsername()),
                 pageIndex, pageSize));
     }
 
     @Operation(summary = "新建助手存档")
     @PostMapping()
-    public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails authUser,
+    public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
                                         AddAssistantFrontRequest addAssistantFrontRequest){
-        assistantFrontService.addAssistant(Long.valueOf(authUser.getUsername()), addAssistantFrontRequest);
+        assistantFrontService.addAssistant(Long.valueOf(userDetails.getUsername()), addAssistantFrontRequest);
         return Result.success();
     }
 
     @Operation(summary = "复制助手存档")
     @PostMapping("/{id}")
-    public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable String id){
-        assistantFrontService.copyAssistant(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
+    public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
+        assistantFrontService.copyAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 
     @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
-    public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable String id,
+    public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id,
                                         UpdateAssistantFrontRequest updateAssistantFrontRequest){
-        assistantFrontService.updateAssistant(Long.valueOf(authUser.getUsername()), Long.valueOf(id),
+        assistantFrontService.updateAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id),
                 updateAssistantFrontRequest);
         return Result.success();
     }
 
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/like")
-    public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable String id) {
-        likesFrontService.likeAssistant(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
+    public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
+        likesFrontService.likeAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 
     @Operation(summary = "删除助手存档")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails authUser, @PathVariable String id){
-        assistantFrontService.deleteAssistant(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
+    public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
+        assistantFrontService.deleteAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 }

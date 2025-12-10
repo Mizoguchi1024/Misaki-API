@@ -23,7 +23,7 @@ public class PuppetFrontController {
 
     @Operation(summary = "事件回应")
     @GetMapping()
-    public Flux<String> puppetEvent(@AuthenticationPrincipal UserDetails authUser, @RequestParam String event) {
-        return puppetFrontService.puppetEvent(Long.valueOf(authUser.getUsername()), event);
+    public Flux<String> puppetEvent(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String event) {
+        return puppetFrontService.puppetEvent(Long.valueOf(userDetails.getUsername()), event);
     }
 }

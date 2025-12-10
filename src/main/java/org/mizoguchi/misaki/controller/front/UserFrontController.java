@@ -24,43 +24,43 @@ public class UserFrontController {
 
     @Operation(summary = "每日签到")
     @PutMapping("/check-in")
-    public Result<Void> checkIn(@AuthenticationPrincipal UserDetails authUser){
-        userFrontService.checkIn(Long.valueOf(authUser.getUsername()));
+    public Result<Void> checkIn(@AuthenticationPrincipal UserDetails userDetails){
+        userFrontService.checkIn(Long.valueOf(userDetails.getUsername()));
         return Result.success();
     }
 
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
-    public Result<UserFrontResponse> getProfile(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(userFrontService.getUser(Long.valueOf(authUser.getUsername())));
+    public Result<UserFrontResponse> getProfile(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(userFrontService.getUser(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "修改个人资料")
     @PutMapping("/profiles")
-    public Result<Void> updateProfile(@AuthenticationPrincipal UserDetails authUser,
+    public Result<Void> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestBody @Validated UpdateUserFrontRequest updateUserFrontRequest){
-        userFrontService.updateUser(Long.valueOf(authUser.getUsername()), updateUserFrontRequest);
+        userFrontService.updateUser(Long.valueOf(userDetails.getUsername()), updateUserFrontRequest);
         return Result.success();
     }
 
     @Operation(summary = "获取设定")
     @GetMapping("/settings")
-    public Result<SettingFrontResponse> getSetting(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(userFrontService.getSetting(Long.valueOf(authUser.getUsername())));
+    public Result<SettingFrontResponse> getSetting(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(userFrontService.getSetting(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "修改设定")
     @PutMapping("/settings")
-    public Result<Void> updateSetting(@AuthenticationPrincipal UserDetails authUser,
+    public Result<Void> updateSetting(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestBody @Validated UpdateSettingFrontRequest updateSettingFrontRequest){
-        userFrontService.updateSetting(Long.valueOf(authUser.getUsername()), updateSettingFrontRequest);
+        userFrontService.updateSetting(Long.valueOf(userDetails.getUsername()), updateSettingFrontRequest);
         return Result.success();
     }
 
     @Operation(summary = "注销账号")
     @DeleteMapping
-    public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails authUser){
-        userFrontService.deleteAccount(Long.valueOf(authUser.getUsername()));
+    public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails){
+        userFrontService.deleteAccount(Long.valueOf(userDetails.getUsername()));
         return Result.success();
     }
 }

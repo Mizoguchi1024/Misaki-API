@@ -24,14 +24,14 @@ public class ModelFrontController {
 
     @Operation(summary = "获取可购买模型")
     @GetMapping()
-    public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(modelFrontService.listModels(Long.valueOf(authUser.getUsername())));
+    public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(modelFrontService.listModels(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "购买模型")
     @PostMapping("/{id}")
-    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails authUser, @PathVariable @Positive String id){
-        modelFrontService.buyModel(Long.valueOf(authUser.getUsername()), Long.valueOf(id));
+    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive String id){
+        modelFrontService.buyModel(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
     }
 

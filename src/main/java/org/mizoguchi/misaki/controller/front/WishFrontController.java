@@ -24,12 +24,12 @@ public class WishFrontController {
 
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
-    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails authUser, @RequestParam @Positive Integer amount,
+    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails, @RequestParam @Positive Integer amount,
                                   @RequestParam String currency) {
         if (currency.equals("crystal")) {
-            wishFrontService.buyPuzzleWithCrystal(Long.valueOf(authUser.getUsername()), amount);
+            wishFrontService.buyPuzzleWithCrystal(Long.valueOf(userDetails.getUsername()), amount);
         }else if (currency.equals("stardust")){
-            wishFrontService.buyPuzzleWithStardust(Long.valueOf(authUser.getUsername()), amount);
+            wishFrontService.buyPuzzleWithStardust(Long.valueOf(userDetails.getUsername()), amount);
         }
 
         return Result.success();
@@ -37,14 +37,14 @@ public class WishFrontController {
 
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
-    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails authUser,
+    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails userDetails,
                                            @RequestParam @Positive Integer times){
-        return Result.success(wishFrontService.gacha(Long.valueOf(authUser.getUsername()), times));
+        return Result.success(wishFrontService.gacha(Long.valueOf(userDetails.getUsername()), times));
     }
 
     @Operation(summary = "抽卡历史记录")
     @GetMapping("/gacha/history")
-    public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails authUser){
-        return Result.success(wishFrontService.listWishes(Long.valueOf(authUser.getUsername())));
+    public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(wishFrontService.listWishes(Long.valueOf(userDetails.getUsername())));
     }
 }
