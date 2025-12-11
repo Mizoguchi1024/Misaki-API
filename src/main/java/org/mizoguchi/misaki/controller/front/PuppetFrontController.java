@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.controller.front;
 
-import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class PuppetFrontController {
 
     @Operation(summary = "事件回应")
     @GetMapping(produces = "text/event-stream;charset=utf-8")
-    @Timed("front.puppet.event")
     public Flux<String> puppetEvent(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String event) {
         return puppetFrontService.puppetEvent(Long.valueOf(userDetails.getUsername()), event);
     }

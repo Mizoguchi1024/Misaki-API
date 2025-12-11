@@ -65,6 +65,16 @@ spring:
               url: http://localhost:8080
         enabled: false
 
+management:
+  metrics:
+    enable:
+      all: false
+      http: true
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics
+
 #logging:
 #  level:
 #    org.springframework.web: DEBUG

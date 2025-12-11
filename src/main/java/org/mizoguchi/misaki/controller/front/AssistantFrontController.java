@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.controller.front;
 
-import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
@@ -29,7 +28,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "获取该用户拥有的指定的助手存档")
     @GetMapping("/{id}")
-    @Timed(value = "front.assistant.get")
     public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails userDetails,
                                                        @PathVariable String id){
         return Result.success(assistantFrontService.getAssistant(Long.valueOf(userDetails.getUsername()),
@@ -38,14 +36,12 @@ public class AssistantFrontController {
 
     @Operation(summary = "获取该用户拥有的助手存档")
     @GetMapping()
-    @Timed(value = "front.assistant.list")
     public Result<List<AssistantFrontResponse>> listAssistants(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(assistantFrontService.listAssistants(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "获取市场公开的助手存档")
     @GetMapping("/public")
-    @Timed(value = "front.assistant.listPublic")
     public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails userDetails,
                                                                      @RequestParam @Positive Integer pageIndex,
                                                                      @RequestParam @Positive Integer pageSize){
@@ -55,7 +51,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "新建助手存档")
     @PostMapping()
-    @Timed(value = "front.assistant.create")
     public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
                                         AddAssistantFrontRequest addAssistantFrontRequest){
         assistantFrontService.addAssistant(Long.valueOf(userDetails.getUsername()), addAssistantFrontRequest);
@@ -64,7 +59,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "复制助手存档")
     @PostMapping("/{id}")
-    @Timed(value = "front.assistant.copy")
     public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
         assistantFrontService.copyAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
@@ -72,7 +66,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
-    @Timed(value = "front.assistant.update")
     public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id,
                                         UpdateAssistantFrontRequest updateAssistantFrontRequest){
         assistantFrontService.updateAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id),
@@ -82,7 +75,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/like")
-    @Timed(value = "front.assistant.like")
     public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
         likesFrontService.likeAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();
@@ -90,7 +82,6 @@ public class AssistantFrontController {
 
     @Operation(summary = "删除助手存档")
     @DeleteMapping("/{id}")
-    @Timed(value = "front.assistant.delete")
     public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
         assistantFrontService.deleteAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
         return Result.success();

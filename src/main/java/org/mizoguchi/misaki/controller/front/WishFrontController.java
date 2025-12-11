@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.controller.front;
 
-import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
@@ -25,7 +24,6 @@ public class WishFrontController {
 
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
-    @Timed("front.wish.buyPuzzle")
     public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails, @RequestParam @Positive Integer amount,
                                   @RequestParam String currency) {
         if (currency.equals("crystal")) {
@@ -39,7 +37,6 @@ public class WishFrontController {
 
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
-    @Timed("front.wish.gacha")
     public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails userDetails,
                                            @RequestParam @Positive Integer times){
         return Result.success(wishFrontService.gacha(Long.valueOf(userDetails.getUsername()), times));
@@ -47,7 +44,6 @@ public class WishFrontController {
 
     @Operation(summary = "抽卡历史记录")
     @GetMapping("/gacha/history")
-    @Timed("front.wish.gachaHistory")
     public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(wishFrontService.listWishes(Long.valueOf(userDetails.getUsername())));
     }

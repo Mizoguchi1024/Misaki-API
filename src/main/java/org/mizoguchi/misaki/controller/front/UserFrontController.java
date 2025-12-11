@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.controller.front;
 
-import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ public class UserFrontController {
 
     @Operation(summary = "每日签到")
     @PutMapping("/check-in")
-    @Timed("front.user.checkIn")
     public Result<Void> checkIn(@AuthenticationPrincipal UserDetails userDetails){
         userFrontService.checkIn(Long.valueOf(userDetails.getUsername()));
         return Result.success();
@@ -33,14 +31,12 @@ public class UserFrontController {
 
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
-    @Timed("front.user.getProfile")
     public Result<UserFrontResponse> getProfile(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(userFrontService.getUser(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "修改个人资料")
     @PutMapping("/profiles")
-    @Timed("front.user.updateProfile")
     public Result<Void> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestBody @Validated UpdateUserFrontRequest updateUserFrontRequest){
         userFrontService.updateUser(Long.valueOf(userDetails.getUsername()), updateUserFrontRequest);
@@ -49,14 +45,12 @@ public class UserFrontController {
 
     @Operation(summary = "获取设定")
     @GetMapping("/settings")
-    @Timed("front.user.getSetting")
     public Result<SettingFrontResponse> getSetting(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(userFrontService.getSetting(Long.valueOf(userDetails.getUsername())));
     }
 
     @Operation(summary = "修改设定")
     @PutMapping("/settings")
-    @Timed("front.user.updateSetting")
     public Result<Void> updateSetting(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestBody @Validated UpdateSettingFrontRequest updateSettingFrontRequest){
         userFrontService.updateSetting(Long.valueOf(userDetails.getUsername()), updateSettingFrontRequest);
@@ -65,7 +59,6 @@ public class UserFrontController {
 
     @Operation(summary = "注销账号")
     @DeleteMapping
-    @Timed("front.user.delete")
     public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails){
         userFrontService.deleteAccount(Long.valueOf(userDetails.getUsername()));
         return Result.success();

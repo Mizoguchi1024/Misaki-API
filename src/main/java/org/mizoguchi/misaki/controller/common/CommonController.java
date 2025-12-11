@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.controller.common;
 
-import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ public class CommonController {
 
     @Operation(summary = "上传文件")
     @PostMapping("/files")
-    @Timed("common.common.uploadFile")
     public Result<String> upload(MultipartFile file) {
         String url = fileService.uploadFile(file);
 
@@ -28,7 +26,6 @@ public class CommonController {
 
     @Operation(summary = "文字转语音")
     @PostMapping("/tts")
-    @Timed("common.common.tts")
     public Result<MultipartFile> textToSpeech(TtsRequest ttsRequest) {
         // TODO TTS功能
         return Result.success(null);
