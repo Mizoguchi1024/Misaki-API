@@ -16,11 +16,11 @@ public class SearchAssistantAdminRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    private String modelId;
+    private Long modelId;
 
-    private String creatorId;
+    private Long creatorId;
 
-    private String ownerId;
+    private Long ownerId;
 
     private Boolean publicFlag;
 }

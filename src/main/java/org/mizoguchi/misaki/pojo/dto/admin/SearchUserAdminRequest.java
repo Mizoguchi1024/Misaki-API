@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 public class SearchUserAdminRequest {
-    private String id;
+    private Long id;
 
     private String email;
 

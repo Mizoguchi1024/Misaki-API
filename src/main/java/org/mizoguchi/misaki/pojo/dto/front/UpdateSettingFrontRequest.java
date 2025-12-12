@@ -31,5 +31,5 @@ public class UpdateSettingFrontRequest {
 
     private String backgroundPath;
 
-    private String enabledAssistantId;
+    private Long enabledAssistantId;
 }

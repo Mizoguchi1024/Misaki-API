@@ -12,7 +12,7 @@ public class SendMessageFrontRequest {
     private String content;
 
     @NotNull
-    private String assistantId;
+    private Long assistantId;
 
     @Size(min = 1, max = 100)
     private String prefix;
