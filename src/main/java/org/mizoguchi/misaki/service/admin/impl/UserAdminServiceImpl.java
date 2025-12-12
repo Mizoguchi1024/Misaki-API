@@ -6,23 +6,31 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
-import org.mizoguchi.misaki.mapper.UserMapper;
+import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.admin.AddUserAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchUserAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateUserAdminRequest;
-import org.mizoguchi.misaki.pojo.entity.User;
+import org.mizoguchi.misaki.pojo.entity.*;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserAdminServiceImpl implements UserAdminService {
     private final UserMapper userMapper;
+    private final SettingsMapper settingsMapper;
+    private final AssistantMapper assistantMapper;
+    private final ChatMapper chatMapper;
+    private final MessageMapper messageMapper;
+    private final ModelUserMapper modelUserMapper;
+    private final WishMapper wishMapper;
 
     @Override
     public void addUser(AddUserAdminRequest addUserAdminRequest) {
@@ -69,7 +77,16 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
+        settingsMapper.delete(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
+        assistantMapper.delete(new LambdaQueryWrapper<Assistant>().eq(Assistant::getOwnerId, userId));
+        modelUserMapper.delete(new LambdaQueryWrapper<ModelUser>().eq(ModelUser::getUserId, userId));
+        wishMapper.delete(new LambdaQueryWrapper<Wish>().eq(Wish::getUserId, userId));
+
+        chatMapper.selectList(new LambdaQueryWrapper<Chat>().eq(Chat::getUserId, userId)).forEach(chat ->
+                messageMapper.delete(new LambdaQueryWrapper<Message>().eq(Message::getChatId, chat.getId())));
+        chatMapper.delete(new LambdaQueryWrapper<Chat>().eq(Chat::getUserId, userId));
         int affectedRows = userMapper.deleteById(userId);
 
         if (affectedRows == 0) {
