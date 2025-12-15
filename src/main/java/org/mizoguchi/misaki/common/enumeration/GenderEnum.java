@@ -8,9 +8,9 @@ import org.mizoguchi.misaki.common.exception.InvalidEnumCodeException;
 @Getter
 @AllArgsConstructor
 public enum GenderEnum {
-    UNKNOWN(0, "未知"),
-    MALE(1, "男性"),
-    FEMALE(2, "女性");
+    UNKNOWN(0, "Unknown"),
+    MALE(1, "Male"),
+    FEMALE(2, "Female");
 
     private final int code;
     private final String gender;

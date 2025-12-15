@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.config;
 
-import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.memory.MySqlCustomDialect;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -18,7 +17,6 @@ public class ChatConfig {
     @Bean
     public ChatClient chatClient(DeepSeekChatModel model, ChatMemory chatMemory) {
         return ChatClient.builder(model)
-                .defaultSystem(ChatConstant.DEFAULT_SYSTEM)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
     }

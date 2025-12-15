@@ -61,16 +61,19 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         }
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
-                .system(systemMessage -> systemMessage.params(Map.of(
-                        "personality", assistant.getPersonality(),
-                        "herName",assistant.getName(),
-                        "username", user.getUsername(),
-                        "gender", user.getGender() != GenderEnum.UNKNOWN.getCode()
-                                ? "用户的性别是" + GenderEnum.fromCode(user.getGender()).getGender() + "。" : "",
-                        "occupation", (user.getOccupation() != null && !user.getOccupation().isEmpty())
-                                ? "用户的职业是" + user.getOccupation() + "。" : "",
-                        "detail", (user.getDetail() != null && !user.getDetail().isEmpty())
-                                ? "用户的详情是\"" + user.getDetail() + "\"。" : "")))
+                .system(ChatConstant.SYSTEM_DEFAULT)
+                .system(systemMessage -> systemMessage.params(
+                        Map.of(
+                            "assistantName", assistant.getName(),
+                            "assistantGender", GenderEnum.fromCode(assistant.getGender()).getGender(),
+                            "assistantBirthday", assistant.getBirthday(),
+                            "assistantPersonality", assistant.getPersonality(),
+                            "userName", user.getUsername(),
+                            "userGender", GenderEnum.fromCode(user.getGender()).getGender(),
+                            "userOccupation", user.getOccupation(),
+                            "userDetail", user.getDetail()
+                        )
+                ))
                 .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId));
 
         // DeepSeek-对话前缀续写（Beta）-代码生成

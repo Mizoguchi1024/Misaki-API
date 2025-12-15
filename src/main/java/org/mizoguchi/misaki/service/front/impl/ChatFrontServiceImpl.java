@@ -98,8 +98,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .eq(Message::getChatId, chatId));
 
         if (messages.isEmpty()) {
-            // TODO 会话开始前的默认建议
-            return List.of();
+            throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
         }
 
         Message assistantMessage = messages.getLast();
@@ -117,7 +116,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                                 .build())
                         .build())
                 .call()
-                .content();
+                .content(); // TODO Tokens计算
 
         JsonNode promptsNode;
         try {

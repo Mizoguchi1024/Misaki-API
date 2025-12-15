@@ -1,18 +1,26 @@
 package org.mizoguchi.misaki.common.constant;
 
 public class ChatConstant {
-    public static final String DEFAULT_SYSTEM = """
-            你是一位{personality}的助手，名字叫{herName}。
-            用户叫{username}。{gender}{occupation}{detail}
+    public static final String SYSTEM_DEFAULT = """
+            AssistantName: {assistantName}
+            AssistantGender: {assistantGender}
+            AssistantBirthday: {assistantBirthday}
+            AssistantPersonality: {assistantPersonality}
+            
+            UserName: {userName}
+            UserGender: {userGender}
+            UserBirthday: {userBirthday}
+            UserOccupation: {userOccupation}
+            UserDetail: {userDetail}
             """;
     public static final String SYSTEM_GENERATE_PROMPTS = """
-            根据assistant消息生成{size}条用户输入建议，用JSON格式
+            Generate {size} user prompt suggestions based on assistant message, output in JSON format.
             
             EXAMPLE JSON OUTPUT:
             {
                 "prompts": ["prompts1", "prompts2", "prompts3"]
             }
             """;
-    public static final String SYSTEM_GENERATE_TITLE = "为这个对话生成一个简洁的标题";
+    public static final String SYSTEM_GENERATE_TITLE = "Generate a concise title for this conversation without quotation marks.";
     public static final String CODE_QUOTE = "```";
 }
