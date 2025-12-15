@@ -34,24 +34,32 @@ public class ChatFrontController {
         return Result.success(chatFrontService.addChat(Long.valueOf(userDetails.getUsername())));
     }
 
+    @Operation(summary = "生成提示词建议")
+    @GetMapping("/{id}/prompts")
+    public Result<List<String>> listPrompts(@AuthenticationPrincipal UserDetails userDetails,
+                                            @PathVariable Long id ,
+                                            @RequestParam @Positive Integer size){
+        return Result.success(chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, size));
+    }
+
     @Operation(summary = "发送消息")
     @PostMapping(value = "/{id}/messages", produces = "text/event-stream;charset=utf-8")
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails userDetails,
-                                    @PathVariable @Positive String id,
+                                    @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
-        return messageFrontService.sendMessage(Long.valueOf(userDetails.getUsername()), Long.valueOf(id),
+        return messageFrontService.sendMessage(Long.valueOf(userDetails.getUsername()), id,
                 sendMessageFrontRequest);
     }
 
     @Operation(summary = "生成会话标题")
     @GetMapping(value = "/{id}/title", produces = "text/event-stream;charset=utf-8")
-    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
-        return chatFrontService.addChatTitle(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        return chatFrontService.addChatTitle(Long.valueOf(userDetails.getUsername()), id);
     }
     
     @Operation(summary = "修改会话标题")
     @PutMapping(value = "/{id}/title")
-    public Result<Void> updateChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id,
+    public Result<Void> updateChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
                                         UpdateChatTitleFrontRequest updateChatTitleFrontRequest){
         chatFrontService.updateChatTitle(Long.valueOf(userDetails.getUsername()), id, updateChatTitleFrontRequest.getTitle());
         return Result.success();
@@ -80,8 +88,8 @@ public class ChatFrontController {
 
     @Operation(summary = "删除会话")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive String id){
-        chatFrontService.deleteChat(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive Long id){
+        chatFrontService.deleteChat(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
 

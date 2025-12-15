@@ -51,5 +51,6 @@ public class FailMessageConstant {
 
     // ===== 系统级错误 =====
     public static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    public static final String BAD_AI_OUTPUT = "Bad AI output";
 }
 

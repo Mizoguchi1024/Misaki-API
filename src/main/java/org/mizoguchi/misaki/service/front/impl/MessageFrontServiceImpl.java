@@ -61,7 +61,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         }
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
-                .system(sp -> sp.params(Map.of(
+                .system(systemMessage -> systemMessage.params(Map.of(
                         "personality", assistant.getPersonality(),
                         "herName",assistant.getName(),
                         "username", user.getUsername(),

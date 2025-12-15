@@ -2,11 +2,16 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.enumeration.MessageTypeEnum;
+import org.mizoguchi.misaki.common.exception.BadAiOutputException;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatTitleAlreadyExistsException;
 import org.mizoguchi.misaki.common.exception.IncompleteChatException;
@@ -22,12 +27,15 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.deepseek.DeepSeekChatOptions;
+import org.springframework.ai.deepseek.api.ResponseFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +46,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
     private final UserMapper userMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Long addChat(Long userId) {
@@ -74,13 +83,59 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> listPrompts(Long userId, Long chatId, Integer size) {
+        Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .eq(Chat::getUserId, userId)
+                .eq(Chat::getDeleteFlag, false));
+
+        if(chat == null) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
+        List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
+                .eq(Message::getChatId, chatId));
+
+        if (messages.isEmpty()) {
+            // TODO 会话开始前的默认建议
+            return List.of();
+        }
+
+        Message assistantMessage = messages.getLast();
+        if (!MessageTypeEnum.ASSISTANT.getValue().equals(assistantMessage.getType())) {
+            throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
+        }
+
+        String jsonString = statelessChatClient.prompt()
+                .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
+                .system(systemMessage -> systemMessage.params(Map.of("size", size)))
+                .messages(new AssistantMessage(assistantMessage.getContent()))
+                .options(DeepSeekChatOptions.builder()
+                        .responseFormat(ResponseFormat.builder()
+                                .type(ResponseFormat.Type.JSON_OBJECT)
+                                .build())
+                        .build())
+                .call()
+                .content();
+
+        JsonNode promptsNode;
+        try {
+            promptsNode = objectMapper.readTree(jsonString).get("prompts");
+        } catch (JsonProcessingException e) {
+            throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
+        }
+
+        return objectMapper.convertValue(promptsNode, new TypeReference<>() {});
+    }
 
     @Override
     @Transactional
     public Flux<String> addChatTitle(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
-                .eq(Chat::getUserId, userId));
+                .eq(Chat::getUserId, userId)
+                .eq(Chat::getDeleteFlag, false));
 
         if(chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
@@ -132,7 +187,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     }
 
     @Override
-    public void updateChatTitle(Long userId, String chatId, String title) {
+    public void updateChatTitle(Long userId, Long chatId, String title) {
         int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)

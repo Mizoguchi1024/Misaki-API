@@ -37,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -131,6 +131,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         Map<String, Object> body = new HashMap<>();
         body.put(WebConstant.FIELD_CODE, code);
         body.put(WebConstant.FIELD_MESSAGE, message);
-        response.getWriter().write(MAPPER.writeValueAsString(body));
+        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 }
