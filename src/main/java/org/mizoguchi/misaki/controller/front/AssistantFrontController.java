@@ -29,9 +29,8 @@ public class AssistantFrontController {
     @Operation(summary = "获取该用户拥有的指定的助手存档")
     @GetMapping("/{id}")
     public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails userDetails,
-                                                       @PathVariable String id){
-        return Result.success(assistantFrontService.getAssistant(Long.valueOf(userDetails.getUsername()),
-                Long.valueOf(id)));
+                                                       @PathVariable Long id){
+        return Result.success(assistantFrontService.getAssistant(Long.valueOf(userDetails.getUsername()), id));
     }
 
     @Operation(summary = "获取该用户拥有的助手存档")
@@ -59,31 +58,30 @@ public class AssistantFrontController {
 
     @Operation(summary = "复制助手存档")
     @PostMapping("/{id}")
-    public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
-        assistantFrontService.copyAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){
+        assistantFrontService.copyAssistant(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
 
     @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
-    public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id,
+    public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
                                         UpdateAssistantFrontRequest updateAssistantFrontRequest){
-        assistantFrontService.updateAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id),
-                updateAssistantFrontRequest);
+        assistantFrontService.updateAssistant(Long.valueOf(userDetails.getUsername()), id, updateAssistantFrontRequest);
         return Result.success();
     }
 
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/like")
-    public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id) {
-        likesFrontService.likeAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        likesFrontService.likeAssistant(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
 
     @Operation(summary = "删除助手存档")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String id){
-        assistantFrontService.deleteAssistant(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){
+        assistantFrontService.deleteAssistant(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
 }

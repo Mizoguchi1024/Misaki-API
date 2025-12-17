@@ -52,15 +52,15 @@ public class UserAdminController {
 
     @Operation(summary = "修改用户")
     @PutMapping("/{id}")
-    public Result<Void> updateUser(@PathVariable String id, @RequestBody UpdateUserAdminRequest updateUserAdminRequest){
-        userAdminService.updateUser(Long.valueOf(id), updateUserAdminRequest);
+    public Result<Void> updateUser(@PathVariable Long id, @RequestBody UpdateUserAdminRequest updateUserAdminRequest){
+        userAdminService.updateUser(id, updateUserAdminRequest);
         return Result.success();
     }
 
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteUser(@PathVariable String id){
-        userAdminService.deleteUser(Long.valueOf(id));
+    public Result<Void> deleteUser(@PathVariable Long id){
+        userAdminService.deleteUser(id);
         return Result.success();
     }
 }

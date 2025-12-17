@@ -45,15 +45,15 @@ public class AssistantAdminController {
 
     @Operation(summary = "修改助手")
     @PutMapping("/{id}")
-    public Result<Void> updateAssistant(@PathVariable String id, @RequestBody UpdateAssistantAdminRequest updateAssistantAdminRequest){
-        assistantAdminService.updateAssistant(Long.valueOf(id), updateAssistantAdminRequest);
+    public Result<Void> updateAssistant(@PathVariable Long id, @RequestBody UpdateAssistantAdminRequest updateAssistantAdminRequest){
+        assistantAdminService.updateAssistant(id, updateAssistantAdminRequest);
         return Result.success();
     }
 
     @Operation(summary = "删除助手")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteAssistant(@PathVariable String id){
-        assistantAdminService.deleteAssistant(Long.valueOf(id));
+    public Result<Void> deleteAssistant(@PathVariable Long id){
+        assistantAdminService.deleteAssistant(id);
         return Result.success();
     }
 }

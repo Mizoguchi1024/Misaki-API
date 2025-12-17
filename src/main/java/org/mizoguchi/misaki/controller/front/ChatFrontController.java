@@ -81,9 +81,8 @@ public class ChatFrontController {
     @Operation(summary = "获取会话中的所有消息")
     @GetMapping("/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails userDetails,
-                                                           @PathVariable @Positive String id){
-        return Result.success(messageFrontService.listMessages(Long.valueOf(userDetails.getUsername()),
-                Long.valueOf(id)));
+                                                           @PathVariable @Positive Long id){
+        return Result.success(messageFrontService.listMessages(Long.valueOf(userDetails.getUsername()), id));
     }
 
     @Operation(summary = "删除会话")

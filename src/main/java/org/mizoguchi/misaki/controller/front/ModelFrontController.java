@@ -30,8 +30,8 @@ public class ModelFrontController {
 
     @Operation(summary = "购买模型")
     @PostMapping("/{id}")
-    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive String id){
-        modelFrontService.buyModel(Long.valueOf(userDetails.getUsername()), Long.valueOf(id));
+    public Result<Void> buyModel(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive Long id){
+        modelFrontService.buyModel(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
 
