@@ -63,7 +63,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     public List<ChatFrontResponse> listChats(Long userId) {
         List<Chat> chats = chatMapper.selectList(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
-                .eq(Chat::getDeleteFlag, false));
+                .eq(Chat::getDeleteFlag, false)
+                .orderBy(true, false, Chat::getUpdateTime));
 
         return chats.stream().map(chat -> {
             ChatFrontResponse chatFrontResponse = new ChatFrontResponse();

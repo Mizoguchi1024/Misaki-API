@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,7 +96,8 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                     Usage usage = chatResponse.getMetadata().getUsage();
                     chatMapper.update(new LambdaUpdateWrapper<Chat>()
                             .eq(Chat::getId, chat.getId())
-                            .set(Chat::getToken, chat.getToken() + usage.getTotalTokens()));
+                            .set(Chat::getToken, chat.getToken() + usage.getTotalTokens())
+                            .set(Chat::getUpdateTime, LocalDateTime.now()));
 
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
