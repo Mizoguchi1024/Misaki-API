@@ -1,8 +1,6 @@
-package org.mizoguchi.misaki.pojo.entity;
+package org.mizoguchi.misaki.pojo.vo.admin;
 
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailLog {
-    @TableId(type = IdType.ASSIGN_ID)
+public class EmailLogAdminResponse {
     private Long id;
 
     private String sender;
@@ -24,5 +21,6 @@ public class EmailLog {
 
     private String subject;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 }

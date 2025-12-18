@@ -35,14 +35,16 @@ public class AuthServiceImpl implements AuthService {
     private final SettingsMapper settingsMapper;
     private final AssistantMapper assistantMapper;
     private final PasswordEncoder passwordEncoder;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         String key = RedisConstant.PASSWORD_RETRY + loginRequest.getEmail();
 
-        Integer retryCount = (Integer) redisTemplate.opsForValue().get(key);
-        if (retryCount != null && retryCount >= 5) {
+        String value = redisTemplate.opsForValue().get(key);
+        int retryCount = value == null ? 0 : Integer.parseInt(value);
+
+        if (retryCount >= 5) {
             throw new AccountTemporarilyLockedException(FailMessageConstant.ACCOUNT_TEMPORARILY_LOCKED);
         }
 
@@ -87,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
-        String verificationCode = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL + registerRequest.getEmail());
+        String verificationCode = redisTemplate.opsForValue().get(RedisConstant.EMAIL + registerRequest.getEmail());
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
         } else if (!verificationCode.equals(registerRequest.getVerificationCode())) {
@@ -123,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        String verificationCode = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL + resetPasswordRequest.getEmail());
+        String verificationCode = redisTemplate.opsForValue().get(RedisConstant.EMAIL + resetPasswordRequest.getEmail());
 
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);

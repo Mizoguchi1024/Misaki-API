@@ -35,6 +35,8 @@ public class FailMessageConstant {
     public static final String FEEDBACK_NOT_EXISTS = "Feedback not exists";
     public static final String WISH_NOT_EXISTS = "Wish not exists";
     public static final String INCOMPLETE_CHAT = "Incomplete chat";
+    public static final String EMAIL_LOG_NOT_EXISTS = "Email log not exists";
+    public static final String EXCEPTION_NOT_EXISTS = "Exception not exists";
 
 
     // ===== 业务冲突类（已存在、已完成）=====
