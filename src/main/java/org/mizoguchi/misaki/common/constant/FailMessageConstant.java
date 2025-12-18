@@ -31,6 +31,7 @@ public class FailMessageConstant {
     public static final String CHAT_NOT_EXISTS = "Chat not exists";
     public static final String ASSISTANT_NOT_EXISTS = "Assistant not exists";
     public static final String MODEL_NOT_EXISTS = "Model not exists";
+    public static final String FEEDBACK_NOT_EXISTS = "Feedback not exists";
     public static final String INCOMPLETE_CHAT = "Incomplete chat";
 
 

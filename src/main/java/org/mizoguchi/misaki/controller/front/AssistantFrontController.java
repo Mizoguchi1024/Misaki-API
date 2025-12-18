@@ -51,7 +51,7 @@ public class AssistantFrontController {
     @Operation(summary = "新建助手存档")
     @PostMapping()
     public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
-                                        AddAssistantFrontRequest addAssistantFrontRequest){
+                                        @RequestBody @Validated AddAssistantFrontRequest addAssistantFrontRequest){
         assistantFrontService.addAssistant(Long.valueOf(userDetails.getUsername()), addAssistantFrontRequest);
         return Result.success();
     }
@@ -66,7 +66,7 @@ public class AssistantFrontController {
     @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
     public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
-                                        UpdateAssistantFrontRequest updateAssistantFrontRequest){
+                                        @RequestBody @Validated UpdateAssistantFrontRequest updateAssistantFrontRequest){
         assistantFrontService.updateAssistant(Long.valueOf(userDetails.getUsername()), id, updateAssistantFrontRequest);
         return Result.success();
     }

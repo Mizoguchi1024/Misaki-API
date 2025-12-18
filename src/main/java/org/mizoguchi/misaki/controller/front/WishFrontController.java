@@ -24,7 +24,8 @@ public class WishFrontController {
 
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
-    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails, @RequestParam @Positive Integer amount,
+    public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails,
+                                  @RequestParam @Positive Integer amount,
                                   @RequestParam String currency) {
         if (currency.equals("crystal")) {
             wishFrontService.buyPuzzleWithCrystal(Long.valueOf(userDetails.getUsername()), amount);
