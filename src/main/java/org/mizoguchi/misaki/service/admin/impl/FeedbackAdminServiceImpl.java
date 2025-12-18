@@ -28,7 +28,7 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
         Page<Feedback> page = new Page<>(pageIndex, pageSize);
         
         List<Feedback> feedbacks = feedbackMapper.selectList(page, new QueryWrapper<Feedback>()
-                .orderBy(sortField != null, !sortOrder.equalsIgnoreCase("desc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchFeedbackAdminRequest.getId() != null, Feedback::getId, searchFeedbackAdminRequest.getId())
                 .like(searchFeedbackAdminRequest.getUserId() != null, Feedback::getUserId, searchFeedbackAdminRequest.getUserId())

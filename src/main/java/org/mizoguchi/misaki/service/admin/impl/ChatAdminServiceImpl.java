@@ -34,7 +34,7 @@ public class ChatAdminServiceImpl implements ChatAdminService {
         Page<Chat> page = new Page<>(pageIndex, pageSize);
 
         List<Chat> chats = chatMapper.selectList(page, new QueryWrapper<Chat>()
-                .orderBy(sortField != null, !sortOrder.equalsIgnoreCase("desc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchChatAdminRequest.getId() != null, Chat::getId, searchChatAdminRequest.getId())
                 .like(searchChatAdminRequest.getUserId() != null, Chat::getUserId, searchChatAdminRequest.getUserId())

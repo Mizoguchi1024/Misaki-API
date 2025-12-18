@@ -28,7 +28,7 @@ public class UserAdminController {
 
     @Operation(summary = "创建用户")
     @PostMapping()
-    public Result<Void> createUser(@RequestBody AddUserAdminRequest addUserAdminRequest){
+    public Result<Void> createUser(@RequestBody @Validated AddUserAdminRequest addUserAdminRequest){
         userAdminService.addUser(addUserAdminRequest);
         return Result.success();
     }
@@ -38,8 +38,8 @@ public class UserAdminController {
     public Result<List<UserAdminResponse>> searchUsers(@RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize,
                                                        @RequestParam(required = false) String sortField,
-                                                       @RequestParam(required = false) String sortOrder,
-                                                       SearchUserAdminRequest searchUserAdminRequest){
+                                                       @RequestParam(defaultValue = "asc") String sortOrder,
+                                                       @RequestBody @Validated SearchUserAdminRequest searchUserAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 User.class.getDeclaredField(sortField);
@@ -52,7 +52,8 @@ public class UserAdminController {
 
     @Operation(summary = "修改用户")
     @PutMapping("/{id}")
-    public Result<Void> updateUser(@PathVariable Long id, @RequestBody UpdateUserAdminRequest updateUserAdminRequest){
+    public Result<Void> updateUser(@PathVariable Long id,
+                                   @RequestBody @Validated UpdateUserAdminRequest updateUserAdminRequest){
         userAdminService.updateUser(id, updateUserAdminRequest);
         return Result.success();
     }

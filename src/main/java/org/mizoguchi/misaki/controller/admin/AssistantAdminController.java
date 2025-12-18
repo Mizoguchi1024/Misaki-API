@@ -28,7 +28,7 @@ public class AssistantAdminController {
 
     @Operation(summary = "创建助手")
     @PostMapping()
-    public Result<Void> createAssistant(@RequestBody AddAssistantAdminRequest addAssistantAdminRequest){
+    public Result<Void> createAssistant(@RequestBody @Validated AddAssistantAdminRequest addAssistantAdminRequest){
         assistantAdminService.addAssistant(addAssistantAdminRequest);
         return Result.success();
     }
@@ -38,8 +38,8 @@ public class AssistantAdminController {
     public Result<List<AssistantAdminResponse>> searchAssistants(@RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize,
                                                        @RequestParam(required = false) String sortField,
-                                                       @RequestParam(required = false) String sortOrder,
-                                                       SearchAssistantAdminRequest searchAssistantAdminRequest){
+                                                       @RequestParam(defaultValue = "asc") String sortOrder,
+                                                       @RequestBody @Validated SearchAssistantAdminRequest searchAssistantAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Assistant.class.getDeclaredField(sortField);
@@ -52,7 +52,7 @@ public class AssistantAdminController {
 
     @Operation(summary = "修改助手")
     @PutMapping("/{id}")
-    public Result<Void> updateAssistant(@PathVariable Long id, @RequestBody UpdateAssistantAdminRequest updateAssistantAdminRequest){
+    public Result<Void> updateAssistant(@PathVariable Long id, @RequestBody @Validated UpdateAssistantAdminRequest updateAssistantAdminRequest){
         assistantAdminService.updateAssistant(id, updateAssistantAdminRequest);
         return Result.success();
     }

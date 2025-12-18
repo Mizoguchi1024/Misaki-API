@@ -30,8 +30,8 @@ public class FeedbackAdminController {
     public Result<List<FeedbackAdminResponse>> searchFeedbacks(@RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize,
                                                        @RequestParam(required = false) String sortField,
-                                                       @RequestParam(required = false) String sortOrder,
-                                                       SearchFeedbackAdminRequest searchFeedbackAdminRequest){
+                                                       @RequestParam(defaultValue = "asc") String sortOrder,
+                                                       @RequestBody @Validated SearchFeedbackAdminRequest searchFeedbackAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Feedback.class.getDeclaredField(sortField);
@@ -44,7 +44,7 @@ public class FeedbackAdminController {
 
     @Operation(summary = "修改反馈")
     @PutMapping("/{id}")
-    public Result<Void> updateFeedback(@PathVariable Long id, @RequestBody UpdateFeedbackAdminRequest updateFeedbackAdminRequest){
+    public Result<Void> updateFeedback(@PathVariable Long id, @RequestBody @Validated UpdateFeedbackAdminRequest updateFeedbackAdminRequest){
         feedbackAdminService.updateFeedback(id, updateFeedbackAdminRequest);
         return Result.success();
     }

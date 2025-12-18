@@ -45,7 +45,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         Page<User> page = new Page<>(pageIndex, pageSize);
 
         List<User> users = userMapper.selectList(page, new QueryWrapper<User>()
-                .orderBy(sortField != null, !sortOrder.equalsIgnoreCase("desc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchUserAdminRequest.getId() != null, User::getId, searchUserAdminRequest.getId())
                 .like(searchUserAdminRequest.getEmail() != null, User::getEmail, searchUserAdminRequest.getEmail())

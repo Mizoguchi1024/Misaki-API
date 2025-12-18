@@ -36,7 +36,7 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
         Page<Assistant> page = new Page<>(pageIndex, pageSize);
 
         List<Assistant> assistants = assistantMapper.selectList(page, new QueryWrapper<Assistant>()
-                .orderBy(sortField != null, !sortOrder.equalsIgnoreCase("desc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchAssistantAdminRequest.getId() != null, Assistant::getId, searchAssistantAdminRequest.getId())
                 .like(searchAssistantAdminRequest.getName() != null, Assistant::getName, searchAssistantAdminRequest.getName())

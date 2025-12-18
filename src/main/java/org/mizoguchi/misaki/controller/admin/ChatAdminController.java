@@ -30,8 +30,8 @@ public class ChatAdminController {
     public Result<List<ChatAdminResponse>> searchChats(@RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize,
                                                        @RequestParam(required = false) String sortField,
-                                                       @RequestParam(required = false) String sortOrder,
-                                                       SearchChatAdminRequest searchChatAdminRequest){
+                                                       @RequestParam(defaultValue = "asc") String sortOrder,
+                                                       @RequestBody @Validated SearchChatAdminRequest searchChatAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Chat.class.getDeclaredField(sortField);
@@ -44,7 +44,7 @@ public class ChatAdminController {
 
     @Operation(summary = "修改会话")
     @PutMapping("/{id}")
-    public Result<Void> updateChat(@PathVariable Long id, @RequestBody UpdateChatAdminRequest updateChatAdminRequest){
+    public Result<Void> updateChat(@PathVariable Long id, @RequestBody @Validated UpdateChatAdminRequest updateChatAdminRequest){
         chatAdminService.updateChat(id, updateChatAdminRequest);
         return Result.success();
     }
