@@ -41,13 +41,16 @@ public class ChatAdminServiceImpl implements ChatAdminService {
                 .like(searchChatAdminRequest.getTitle() != null, Chat::getTitle, searchChatAdminRequest.getTitle())
                 .like(searchChatAdminRequest.getDeleteFlag() != null, Chat::getDeleteFlag, searchChatAdminRequest.getDeleteFlag())
                 .like(searchChatAdminRequest.getCreateTime() != null, Chat::getCreateTime, searchChatAdminRequest.getCreateTime())
-                .like(searchChatAdminRequest.getUpdateTime() != null, Chat::getUpdateTime, searchChatAdminRequest.getUpdateTime()));
+                .like(searchChatAdminRequest.getUpdateTime() != null, Chat::getUpdateTime, searchChatAdminRequest.getUpdateTime())
+        );
 
-        return chats.stream().map(chat -> {
-            ChatAdminResponse chatAdminResponse = new ChatAdminResponse();
-            BeanUtils.copyProperties(chat, chatAdminResponse);
-            return chatAdminResponse;
-        }).collect(Collectors.toList());
+        return chats.stream()
+                .map(chat -> {
+                    ChatAdminResponse chatAdminResponse = new ChatAdminResponse();
+                    BeanUtils.copyProperties(chat, chatAdminResponse);
+
+                    return chatAdminResponse;
+                }).collect(Collectors.toList());
     }
 
     @Override

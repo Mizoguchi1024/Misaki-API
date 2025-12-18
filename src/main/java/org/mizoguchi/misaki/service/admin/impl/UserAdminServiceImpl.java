@@ -54,7 +54,8 @@ public class UserAdminServiceImpl implements UserAdminService {
                 .like(searchUserAdminRequest.getBirthday() != null, User::getBirthday, searchUserAdminRequest.getBirthday())
                 .like(searchUserAdminRequest.getOccupation() != null, User::getOccupation, searchUserAdminRequest.getOccupation())
                 .like(searchUserAdminRequest.getDetail() != null, User::getDetail, searchUserAdminRequest.getDetail())
-                .like(searchUserAdminRequest.getAuthRole() != null, User::getAuthRole, searchUserAdminRequest.getAuthRole()));
+                .like(searchUserAdminRequest.getAuthRole() != null, User::getAuthRole, searchUserAdminRequest.getAuthRole())
+        );
 
         return users.stream()
                 .map(user -> {

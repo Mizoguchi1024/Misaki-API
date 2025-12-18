@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -31,21 +32,33 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
     }
 
     @Override
-    public List<AssistantAdminResponse> listAssistants(Integer pageIndex, Integer pageSize) {
+    public List<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest) {
         Page<Assistant> page = new Page<>(pageIndex, pageSize);
-        return assistantMapper.selectList(page, new LambdaQueryWrapper<>()).stream()
+
+        List<Assistant> assistants = assistantMapper.selectList(page, new QueryWrapper<Assistant>()
+                .orderBy(sortField != null, !sortOrder.equalsIgnoreCase("desc"), sortField)
+                .lambda()
+                .like(searchAssistantAdminRequest.getId() != null, Assistant::getId, searchAssistantAdminRequest.getId())
+                .like(searchAssistantAdminRequest.getName() != null, Assistant::getName, searchAssistantAdminRequest.getName())
+                .like(searchAssistantAdminRequest.getPersonality() != null, Assistant::getPersonality, searchAssistantAdminRequest.getPersonality())
+                .eq(searchAssistantAdminRequest.getGender() != null, Assistant::getGender, searchAssistantAdminRequest.getGender())
+                .eq(searchAssistantAdminRequest.getBirthday() != null, Assistant::getBirthday, searchAssistantAdminRequest.getBirthday())
+                .like(searchAssistantAdminRequest.getModelId() != null, Assistant::getModelId, searchAssistantAdminRequest.getModelId())
+                .like(searchAssistantAdminRequest.getCreatorId() != null, Assistant::getCreatorId, searchAssistantAdminRequest.getCreatorId())
+                .like(searchAssistantAdminRequest.getOwnerId() != null, Assistant::getOwnerId, searchAssistantAdminRequest.getOwnerId())
+                .eq(searchAssistantAdminRequest.getPublicFlag() != null, Assistant::getPublicFlag, searchAssistantAdminRequest.getPublicFlag())
+                .eq(searchAssistantAdminRequest.getDeleteFlag() != null, Assistant::getDeleteFlag, searchAssistantAdminRequest.getDeleteFlag())
+                .eq(searchAssistantAdminRequest.getCreateTime() != null, Assistant::getCreateTime, searchAssistantAdminRequest.getCreateTime())
+                .eq(searchAssistantAdminRequest.getUpdateTime() != null, Assistant::getUpdateTime, searchAssistantAdminRequest.getUpdateTime())
+        );
+
+        return assistants.stream()
                 .map(assistant -> {
                     AssistantAdminResponse assistantAdminResponse = new AssistantAdminResponse();
                     BeanUtils.copyProperties(assistant, assistantAdminResponse);
 
                     return assistantAdminResponse;
                 }).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AssistantAdminResponse> searchAssistants(SearchAssistantAdminRequest searchAssistantAdminRequest) {
-        // TODO
-        return List.of();
     }
 
     @Override

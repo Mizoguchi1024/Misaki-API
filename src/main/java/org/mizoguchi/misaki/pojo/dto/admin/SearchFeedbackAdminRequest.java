@@ -6,12 +6,22 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class SearchChatAdminRequest {
+public class SearchFeedbackAdminRequest {
     private Long id;
 
     private Long userId;
 
+    private Long replierId;
+
+    private Integer type;
+
     private String title;
+
+    private String content;
+
+    private String reply;
+
+    private Integer status;
 
     private Boolean deleteFlag;
 

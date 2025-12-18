@@ -9,8 +9,7 @@ import java.util.List;
 
 public interface AssistantAdminService {
     void addAssistant(AddAssistantAdminRequest addAssistantAdminRequest);
-    List<AssistantAdminResponse> listAssistants(Integer pageIndex, Integer pageSize);
-    List<AssistantAdminResponse> searchAssistants(SearchAssistantAdminRequest searchAssistantAdminRequest);
+    List<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest);
     void updateAssistant(Long assistantId, UpdateAssistantAdminRequest updateAssistantAdminRequest);
     void deleteAssistant(Long assistantId);
 }
