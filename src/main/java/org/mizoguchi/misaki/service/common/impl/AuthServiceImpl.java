@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
@@ -37,15 +39,32 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
+        String key = RedisConstant.PASSWORD_RETRY + loginRequest.getEmail();
+
+        Integer retryCount = (Integer) redisTemplate.opsForValue().get(key);
+        if (retryCount != null && retryCount >= 5) {
+            throw new AccountTemporarilyLockedException(FailMessageConstant.ACCOUNT_TEMPORARILY_LOCKED);
+        }
+
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, loginRequest.getEmail())
                 .eq(User::getDeleteFlag, false));
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
-        } else if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        }
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            Long count = redisTemplate.opsForValue().increment(key);
+
+            if (count != null && count == 1L) {
+                redisTemplate.expire(key, Duration.ofMinutes(5));
+            }
+
             throw new WrongPasswordException(FailMessageConstant.WRONG_PASSWORD);
         }
+
+        redisTemplate.delete(key);
 
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, user.getId())
@@ -68,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
-        String verificationCode = (String) redisTemplate.opsForValue().get(registerRequest.getEmail());
+        String verificationCode = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL + registerRequest.getEmail());
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
         } else if (!verificationCode.equals(registerRequest.getVerificationCode())) {
@@ -104,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        String verificationCode = (String) redisTemplate.opsForValue().get(resetPasswordRequest.getEmail());
+        String verificationCode = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL + resetPasswordRequest.getEmail());
 
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);

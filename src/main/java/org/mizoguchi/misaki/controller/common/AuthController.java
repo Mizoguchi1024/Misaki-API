@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
+import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
 import org.mizoguchi.misaki.pojo.dto.common.RegisterRequest;
@@ -56,7 +57,7 @@ public class AuthController {
         String code = String.format(EmailConstant.VERIFICATION_CODE_FORMAT,random.nextInt(EmailConstant.VERIFICATION_CODE_LIMIT));
 
         emailService.sendVerificationEmail(email, EmailConstant.VERIFICATION_EMAIL_SUBJECT, code);
-        redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(5)); // 覆盖旧值
+        redisTemplate.opsForValue().set(RedisConstant.EMAIL + email, code, Duration.ofMinutes(5)); // 覆盖旧值
 
         return Result.success();
     }

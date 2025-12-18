@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.constant.WebConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
@@ -66,7 +67,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        String redisKey = "nonce:" + nonceHeader;
+        String redisKey = RedisConstant.NONCE + nonceHeader;
 
         if (redisTemplate.hasKey(redisKey)) {
             log.warn("{} | IP={} | URI={} | Method={}",
@@ -105,16 +106,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
-                if (jwtUtil.validateToken(jwt)) {
-                    AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(roleCode);
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authRoleEnum.getRoleName());
+                AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(roleCode);
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authRoleEnum.getRoleName());
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, List.of(authority));
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, List.of(authority));
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (UserNotExistsException e) {
                 log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                         e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());

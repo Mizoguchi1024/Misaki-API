@@ -17,6 +17,7 @@ public class FailMessageConstant {
     public static final String USER_ALREADY_EXISTS = "User already exists";
     public static final String USER_NOT_EXISTS = "User not exists";
     public static final String WRONG_PASSWORD = "Wrong password";
+    public static final String ACCOUNT_TEMPORARILY_LOCKED = "Account temporarily locked";
     public static final String FAILED_TO_SEND_EMAIL = "Failed to send email";
 
     public static final String VERIFICATION_CODE_EXPIRED = "Verification code expired";
