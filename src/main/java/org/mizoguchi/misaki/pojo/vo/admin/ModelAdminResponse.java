@@ -12,28 +12,19 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeedbackAdminResponse {
+public class ModelAdminResponse {
     private Long id;
 
-    private Long userId;
+    private String name;
 
-    private Long replierId;
+    private Integer grade;
 
-    private Integer type;
+    private Integer price;
 
-    private String title;
+    private String path;
 
-    private String content;
-
-    private String reply;
-
-    private Integer status;
-
-    private Boolean deleteFlag;
+    private String avatarPath;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 }
