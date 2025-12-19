@@ -19,11 +19,11 @@ public class Message {
 
     private Long chatId;
 
+    private Long parentId;
+
     private String type;
 
     private String content;
 
-    private Long parentId;
-
-    private LocalDateTime timestamp;
+    private LocalDateTime createTime;
 }

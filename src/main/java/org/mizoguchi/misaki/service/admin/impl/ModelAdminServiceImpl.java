@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
-import org.mizoguchi.misaki.common.exception.ModelNotExistsExption;
+import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.AddModelAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchModelAdminRequest;
@@ -63,7 +63,7 @@ public class ModelAdminServiceImpl implements ModelAdminService {
         int affectedRows = modelMapper.update(model, new LambdaQueryWrapper<Model>().eq(Model::getId, modelId));
 
         if (affectedRows == 0) {
-            throw new ModelNotExistsExption(FailMessageConstant.MODEL_NOT_EXISTS);
+            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
     }
 
@@ -72,7 +72,7 @@ public class ModelAdminServiceImpl implements ModelAdminService {
         int affectedRows = modelMapper.deleteById(modelId);
 
         if (affectedRows == 0) {
-            throw new ModelNotExistsExption(FailMessageConstant.MODEL_NOT_EXISTS);
+            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
     }
 }

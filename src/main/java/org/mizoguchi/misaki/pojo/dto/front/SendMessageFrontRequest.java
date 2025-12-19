@@ -7,13 +7,15 @@ import lombok.Data;
 
 @Data
 public class SendMessageFrontRequest {
-    @NotBlank
-    @Size(min = 1, max = 5000)
-    private String content;
+    private Long parentId;
 
     @NotNull
     private Long assistantId;
 
     @Size(min = 1, max = 100)
     private String prefix;
+
+    @NotBlank
+    @Size(min = 1, max = 5000)
+    private String content;
 }

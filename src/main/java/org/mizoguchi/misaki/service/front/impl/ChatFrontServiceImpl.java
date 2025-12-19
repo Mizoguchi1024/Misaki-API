@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
-import org.mizoguchi.misaki.common.enumeration.MessageTypeEnum;
 import org.mizoguchi.misaki.common.exception.BadAiOutputException;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatTitleAlreadyExistsException;
@@ -25,6 +24,7 @@ import org.mizoguchi.misaki.pojo.entity.Message;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.deepseek.DeepSeekChatOptions;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class ChatFrontServiceImpl implements ChatFrontService {
-    private final ChatClient statelessChatClient;
+    private final ChatClient chatClient;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
     private final UserMapper userMapper;
@@ -103,11 +103,11 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }
 
         Message assistantMessage = messages.getLast();
-        if (!MessageTypeEnum.ASSISTANT.getValue().equals(assistantMessage.getType())) {
+        if (!MessageType.ASSISTANT.getValue().equalsIgnoreCase(assistantMessage.getType())) {
             throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
         }
 
-        String jsonString = statelessChatClient.prompt()
+        String jsonString = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
                 .system(systemMessage -> systemMessage.params(Map.of("size", size)))
                 .messages(new AssistantMessage(assistantMessage.getContent()))
@@ -149,15 +149,15 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .eq(Message::getChatId, chatId));
 
         Message userMessage = messages.stream()
-                .filter(message -> MessageTypeEnum.USER.getValue().equals(message.getType()))
+                .filter(message -> MessageType.USER.getValue().equalsIgnoreCase(message.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
         Message assistantMessage = messages.stream()
-                .filter(message -> MessageTypeEnum.ASSISTANT.getValue().equals(message.getType()))
+                .filter(message -> MessageType.ASSISTANT.getValue().equalsIgnoreCase(message.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
 
-        return statelessChatClient.prompt()
+        return chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)
                 .messages(List.of(new UserMessage(userMessage.getContent()),
                         new AssistantMessage(assistantMessage.getContent())))

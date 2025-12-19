@@ -17,12 +17,12 @@ public class MessageFrontResponse {
 
     private Long chatId;
 
+    private Long parentId;
+
     private String type;
 
     private String content;
 
-    private Integer mcpEnabled;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    private LocalDateTime createTime;
 }

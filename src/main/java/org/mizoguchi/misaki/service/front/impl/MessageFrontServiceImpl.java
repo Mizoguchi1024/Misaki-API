@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.service.front.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.advisor.TreeMemoryAdvisor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
@@ -15,7 +16,6 @@ import org.mizoguchi.misaki.pojo.entity.*;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.ChatOptions;
@@ -40,7 +40,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     private final AssistantMapper assistantMapper;
 
     @Override
-    public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
+        public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId));
@@ -74,12 +74,16 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                             "userOccupation", user.getOccupation(),
                             "userDetail", user.getDetail()
                         )
-                ))
-                .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId));
+                )).advisors(TreeMemoryAdvisor.builder(messageMapper).build())
+                .advisors(advisorSpec -> advisorSpec.params(
+                        Map.of(
+                                "chat_memory_conversation_id", chatId,
+                                "chat_memory_parent_id", sendMessageFrontRequest.getParentId()
+                        )
+                ));
 
         // DeepSeek-对话前缀续写（Beta）-代码生成
         if (sendMessageFrontRequest.getPrefix() != null
-                && !sendMessageFrontRequest.getPrefix().isBlank()
                 && sendMessageFrontRequest.getPrefix().startsWith(ChatConstant.CODE_QUOTE)) {
             DeepSeekAssistantMessage assistantMessage = DeepSeekAssistantMessage.prefixAssistantMessage(sendMessageFrontRequest.getPrefix());
             assistantMessage.setPrefix(true);

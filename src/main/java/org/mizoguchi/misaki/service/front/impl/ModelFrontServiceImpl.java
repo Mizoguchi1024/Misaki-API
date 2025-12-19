@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.ModelAlreadyOwnedException;
-import org.mizoguchi.misaki.common.exception.ModelNotExistsExption;
+import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
 import org.mizoguchi.misaki.common.exception.StardustNotEnoughException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
@@ -49,7 +49,7 @@ public class ModelFrontServiceImpl implements ModelFrontService {
         Model model = modelMapper.selectById(modelId);
 
         if (model == null){
-            throw new ModelNotExistsExption(FailMessageConstant.MODEL_NOT_EXISTS);
+            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
 
         ModelUser existingModelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
