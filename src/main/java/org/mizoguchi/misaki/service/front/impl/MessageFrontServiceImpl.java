@@ -3,7 +3,6 @@ package org.mizoguchi.misaki.service.front.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.advisor.TreeMemoryAdvisor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
@@ -75,8 +74,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                             ChatConstant.USER_OCCUPATION, user.getOccupation(),
                             ChatConstant.USER_DETAIL, user.getDetail()
                         )
-                )).advisors(TreeMemoryAdvisor.builder(messageMapper).build())
-                .advisors(advisorSpec -> advisorSpec.params(
+                )).advisors(advisorSpec -> advisorSpec.params(
                         Map.of(
                                 ChatConstant.CONVERSATION_ID, chatId,
                                 ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId()
