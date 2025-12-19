@@ -65,20 +65,21 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                 .system(ChatConstant.SYSTEM_DEFAULT)
                 .system(systemMessage -> systemMessage.params(
                         Map.of(
-                            "assistantName", assistant.getName(),
-                            "assistantGender", GenderEnum.fromCode(assistant.getGender()).getGender(),
-                            "assistantBirthday", assistant.getBirthday(),
-                            "assistantPersonality", assistant.getPersonality(),
-                            "userName", user.getUsername(),
-                            "userGender", GenderEnum.fromCode(user.getGender()).getGender(),
-                            "userOccupation", user.getOccupation(),
-                            "userDetail", user.getDetail()
+                            ChatConstant.ASSISTANT_NAME, assistant.getName(),
+                            ChatConstant.ASSISTANT_GENDER, GenderEnum.fromCode(assistant.getGender()).getGender(),
+                            ChatConstant.ASSISTANT_BIRTHDAY, assistant.getBirthday(),
+                            ChatConstant.ASSISTANT_PERSONALITY, assistant.getPersonality(),
+                            ChatConstant.USER_NAME, user.getUsername(),
+                            ChatConstant.USER_GENDER, GenderEnum.fromCode(user.getGender()).getGender(),
+                            ChatConstant.USER_BIRTHDAY, user.getBirthday(),
+                            ChatConstant.USER_OCCUPATION, user.getOccupation(),
+                            ChatConstant.USER_DETAIL, user.getDetail()
                         )
                 )).advisors(TreeMemoryAdvisor.builder(messageMapper).build())
                 .advisors(advisorSpec -> advisorSpec.params(
                         Map.of(
-                                "chat_memory_conversation_id", chatId,
-                                "chat_memory_parent_id", sendMessageFrontRequest.getParentId()
+                                ChatConstant.CONVERSATION_ID, chatId,
+                                ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId()
                         )
                 ));
 

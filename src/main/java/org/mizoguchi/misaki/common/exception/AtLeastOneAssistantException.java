@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class AtLeastOneAssistantException extends BaseException {
     public AtLeastOneAssistantException(String message) {
-        super(HttpStatus.BAD_REQUEST, 400, message);
+        super(HttpStatus.FORBIDDEN, 40302, message);
     }
 }

@@ -109,7 +109,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
         String jsonString = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
-                .system(systemMessage -> systemMessage.params(Map.of("size", size)))
+                .system(systemMessage -> systemMessage.params(Map.of(ChatConstant.SIZE, size)))
                 .messages(new AssistantMessage(assistantMessage.getContent()))
                 .options(DeepSeekChatOptions.builder()
                         .responseFormat(ResponseFormat.builder()

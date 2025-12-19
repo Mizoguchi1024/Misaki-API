@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class IncompleteChatException extends BaseException {
     public IncompleteChatException(String message) {
-        super(HttpStatus.BAD_REQUEST, 400, message);
+        super(HttpStatus.UNPROCESSABLE_ENTITY, 42202, message);
     }
 }

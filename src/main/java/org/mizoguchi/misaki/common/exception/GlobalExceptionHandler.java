@@ -49,8 +49,8 @@ public class GlobalExceptionHandler {
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
-        log.warn("{} | Field={} | IP={} | URI={} | Method={} | Exception={}",
-                message, field, ip, uri, method, e.getClass().getSimpleName());
+        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
+                message + field, ip, uri, method, e.getClass().getSimpleName());
 
         return ResponseEntity.status(400).body(Result.fail(400, message + "：" + field));
     }
@@ -74,6 +74,22 @@ public class GlobalExceptionHandler {
                 message, ip, uri, method, e.getClass().getSimpleName());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(400, message));
+    }
+
+    /**
+     * 处理非法参数异常
+     */
+    @EnableExceptionLog
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Result<Void>> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
+            String ip = request.getRemoteAddr();
+            String uri = request.getRequestURI();
+            String method = request.getMethod();
+    
+            log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
+                    e.getMessage(), ip, uri, method, e.getClass().getSimpleName());
+    
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(400, e.getMessage()));
     }
 
     /**
@@ -102,8 +118,8 @@ public class GlobalExceptionHandler {
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
-        log.error("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
-                FailMessageConstant.INTERNAL_SERVER_ERROR, ip, uri, method, e.getClass().getSimpleName(), e.getMessage());
+        log.error("{} | IP={} | URI={} | Method={} | Exception={}",
+                FailMessageConstant.INTERNAL_SERVER_ERROR, ip, uri, method, e.getClass().getSimpleName());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(500, FailMessageConstant.INTERNAL_SERVER_ERROR));
     }

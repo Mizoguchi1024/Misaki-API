@@ -56,14 +56,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (timestampHeader == null || nonceHeader == null) {
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REQUEST_MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REQUEST_MISSING_HEADERS);
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40001, FailMessageConstant.REQUEST_MISSING_HEADERS);
             return;
         }
 
         if (Math.abs(System.currentTimeMillis() - Long.parseLong(timestampHeader)) > WebConstant.REQUEST_EXPIRE_TIME){
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REQUEST_EXPIRED);
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40002, FailMessageConstant.REQUEST_EXPIRED);
             return;
         }
 
@@ -72,7 +72,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (redisTemplate.hasKey(redisKey)) {
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REPLAY_ATTACK_DETECTED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
-            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 400, FailMessageConstant.REPLAY_ATTACK_DETECTED);
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40003, FailMessageConstant.REPLAY_ATTACK_DETECTED);
             return;
         }
 
@@ -93,12 +93,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                     FailMessageConstant.JWT_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
-            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, FailMessageConstant.JWT_EXPIRED);
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 40102, FailMessageConstant.JWT_EXPIRED);
             return;
         } catch (Exception e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
                     FailMessageConstant.INVALID_JWT, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName(), e.getMessage());
-            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, FailMessageConstant.INVALID_JWT);
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 40103, FailMessageConstant.INVALID_JWT);
             return;
         }
 
@@ -116,7 +116,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (UserNotExistsException e) {
                 log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                         e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
-                writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 401, e.getMessage());
+                writeError(response, e.getStatus().value(), e.getCode(), e.getMessage());
                 return;
             }
         }

@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class ChatNotExistsException extends BaseException {
     public ChatNotExistsException(String message) {
-        super(HttpStatus.BAD_REQUEST, 400, message);
+        super(HttpStatus.NOT_FOUND, 40402, message);
     }
 }
