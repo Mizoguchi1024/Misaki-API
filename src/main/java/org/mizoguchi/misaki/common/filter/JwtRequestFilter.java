@@ -9,11 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.constant.WebConstant;
 import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
+import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,13 +25,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -42,8 +43,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain chain) throws ServletException, IOException {
         final String timestampHeader = request.getHeader(WebConstant.HEADER_TIMESTAMP);
         final String nonceHeader = request.getHeader(WebConstant.HEADER_NONCE);
         final String authHeader = request.getHeader(WebConstant.HEADER_AUTHORIZATION);
@@ -53,14 +54,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (timestampHeader == null || nonceHeader == null) {
+        if (!StringUtils.hasText(timestampHeader) || !StringUtils.hasText(nonceHeader)) {
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REQUEST_MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40001, FailMessageConstant.REQUEST_MISSING_HEADERS);
             return;
         }
 
-        if (Math.abs(System.currentTimeMillis() - Long.parseLong(timestampHeader)) > WebConstant.REQUEST_EXPIRE_TIME){
+        long timestamp;
+        try{
+            timestamp = Long.parseLong(timestampHeader);
+        }catch (NumberFormatException e){
+            log.warn("{} | IP={} | URI={} | Method={}",
+                    FailMessageConstant.REQUEST_MISSING_HEADERS, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
+            writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40001, FailMessageConstant.REQUEST_MISSING_HEADERS);
+            return;
+        }
+
+        if (Math.abs(System.currentTimeMillis() - timestamp) > WebConstant.REQUEST_EXPIRE_TIME){
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40002, FailMessageConstant.REQUEST_EXPIRED);
@@ -96,8 +107,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 40102, FailMessageConstant.JWT_EXPIRED);
             return;
         } catch (Exception e) {
-            log.warn("{} | IP={} | URI={} | Method={} | Exception={} | Message={}",
-                    FailMessageConstant.INVALID_JWT, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName(), e.getMessage());
+            log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
+                    FailMessageConstant.INVALID_JWT, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
             writeError(response, HttpServletResponse.SC_UNAUTHORIZED, 40103, FailMessageConstant.INVALID_JWT);
             return;
         }
@@ -126,9 +137,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private void writeError(HttpServletResponse response, int httpStatus, int code, String message) throws IOException {
         response.setStatus(httpStatus);
         response.setContentType(WebConstant.CONTENT_TYPE_JSON);
-        Map<String, Object> body = new HashMap<>();
-        body.put(WebConstant.FIELD_CODE, code);
-        body.put(WebConstant.FIELD_MESSAGE, message);
-        response.getWriter().write(objectMapper.writeValueAsString(body));
+        response.getWriter().write(objectMapper.writeValueAsString(Result.fail(code, message)));
     }
 }

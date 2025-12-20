@@ -3,7 +3,6 @@ package org.mizoguchi.misaki.common.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.annotation.EnableExceptionLog;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
-@RequiredArgsConstructor
 public class GlobalExceptionHandler {
     /**
      * 处理自定义业务异常
@@ -73,10 +71,9 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Result<Void>> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-            log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                    e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
-    
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
+        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
+                e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
     }
 
     /**
