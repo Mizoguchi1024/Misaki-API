@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModelFrontResponse {
+    private Long id;
+
     private String name;
 
     private Integer grade;

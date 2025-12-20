@@ -70,7 +70,8 @@ public class AuthServiceImpl implements AuthService {
 
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, user.getId())
-                .set(User::getLastLoginTime, LocalDateTime.now()));
+                .set(User::getLastLoginTime, LocalDateTime.now())
+                .set(User::getDeletePendingFlag, false));
 
         return LoginResponse.builder()
                 .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
@@ -103,6 +104,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(encryptPassword)
                 .username(registerRequest.getUsername())
                 .token(100000)
+                .deletePendingFlag(false)
                 .build();
 
         userMapper.insert(user);

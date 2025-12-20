@@ -49,6 +49,8 @@ public class UserAdminResponse {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate lastCheckInDate;
 
+    private Boolean deletePendingFlag;
+
     private Boolean deleteFlag;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

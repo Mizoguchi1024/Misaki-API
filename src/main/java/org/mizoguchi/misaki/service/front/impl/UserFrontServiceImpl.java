@@ -44,8 +44,8 @@ public class UserFrontServiceImpl implements UserFrontService {
     public void deleteAccount(Long userId) {
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
-                .set(User::getUsername, "Deleted account")
-                .set(User::getDeleteFlag, true));
+                .set(User::getLastLoginTime, LocalDate.now())
+                .set(User::getDeletePendingFlag, true));
     }
 
     @Override

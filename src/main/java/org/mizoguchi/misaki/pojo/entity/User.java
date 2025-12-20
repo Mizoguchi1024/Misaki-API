@@ -50,6 +50,9 @@ public class User {
 
     private LocalDate lastCheckInDate;
 
+    @TableField(value = "delete_pending_flag")
+    private Boolean deletePendingFlag;
+
     @TableField(value = "delete_flag", fill =  FieldFill.INSERT)
     private Boolean deleteFlag;
 
