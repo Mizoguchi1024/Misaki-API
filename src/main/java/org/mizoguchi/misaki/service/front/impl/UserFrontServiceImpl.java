@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
-import org.mizoguchi.misaki.common.constant.BusinessConstant;
 import org.mizoguchi.misaki.common.exception.AlreadyCheckedInException;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
@@ -16,6 +15,7 @@ import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.service.front.UserFrontService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,6 +26,12 @@ public class UserFrontServiceImpl implements UserFrontService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
 
+    @Value("${misaki.business.user.check-in.token}")
+    private Integer checkInTokenAmount;
+
+    @Value("${misaki.business.user.check-in.crystal}")
+    private Integer checkInCrystalAmount;
+
     @Override
     public void checkIn(Long userId) {
         User user = userMapper.selectById(userId);
@@ -35,8 +41,8 @@ public class UserFrontServiceImpl implements UserFrontService {
         }
 
         user.setLastCheckInDate(LocalDate.now());
-        user.setToken(user.getToken() + BusinessConstant.CHECK_IN_TOKEN_AMOUNT);
-        user.setCrystal(user.getCrystal() + BusinessConstant.CHECK_IN_CRYSTAL_AMOUNT);
+        user.setToken(user.getToken() + checkInTokenAmount);
+        user.setCrystal(user.getCrystal() + checkInCrystalAmount);
         userMapper.updateById(user);
     }
 

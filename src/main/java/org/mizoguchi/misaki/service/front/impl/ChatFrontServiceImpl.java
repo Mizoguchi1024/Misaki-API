@@ -52,6 +52,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     public Long addChat(Long userId) {
         Chat chat = Chat.builder()
                 .userId(userId)
+                .token(0)
                 .build();
 
         chatMapper.insert(chat);

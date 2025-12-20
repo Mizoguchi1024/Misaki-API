@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.enumeration.LikesTargetTypeEnum;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.AtLeastOneAssistantException;
 import org.mizoguchi.misaki.common.exception.ModelNotOwnedException;
@@ -102,7 +103,7 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
         BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
         Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                .eq(Likes::getTargetType, 0)
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
                 .eq(Likes::getTargetId, assistant.getId()));
         assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
 
@@ -130,7 +131,7 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
             Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                    .eq(Likes::getTargetType, 0)
+                    .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
                     .eq(Likes::getTargetId, assistant.getId()));
             assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
 
@@ -161,7 +162,7 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
             Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                    .eq(Likes::getTargetType, 0)
+                    .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
                     .eq(Likes::getTargetId, assistant.getId()));
             assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
 

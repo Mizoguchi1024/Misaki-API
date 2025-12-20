@@ -19,6 +19,7 @@ import org.mizoguchi.misaki.pojo.entity.Wish;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.front.WishFrontService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,15 +37,40 @@ public class WishFrontServiceImpl implements WishFrontService {
     private final ModelMapper modelMapper;
     private final ModelUserMapper modelUserMapper;
 
+    @Value("${misaki.business.wish.exchange-rate.puzzle-crystal}")
+    private Integer puzzleCrystal;
+
+    @Value("${misaki.business.wish.exchange-rate.puzzle-stardust}")
+    private Integer stardust;
+
+    @Value("${misaki.business.wish.compensation.four-star}")
+    private Integer fourStarCompensation;
+
+    @Value("${misaki.business.wish.compensation.five-star}")
+    private Integer fiveStarCompensation;
+
+    @Value("${misaki.business.wish.token.limit}")
+    private Integer tokenLimit;
+
+    @Value("${misaki.business.wish.probability.base}")
+    private Integer baseProbability;
+
+    @Value("${misaki.business.wish.probability.token}")
+    private Integer tokenProbability;
+
+    @Value("${misaki.business.wish.probability.four-star}")
+    private Integer fourStarProbability;
+
+
     @Override
     public void buyPuzzleWithCrystal(Long userId, Integer amount) {
         User user = userMapper.selectById(userId);
 
-        if (user.getCrystal() <= amount * 160) {
+        if (user.getCrystal() <= amount * puzzleCrystal) {
             throw new CrystalNotEnoughException(FailMessageConstant.CRYSTAL_NOT_ENOUGH);
         }
 
-        user.setCrystal(user.getCrystal() - amount * 160);
+        user.setCrystal(user.getCrystal() - amount * puzzleCrystal);
         user.setPuzzle(user.getPuzzle() + amount);
 
         userMapper.updateById(user);
@@ -54,11 +80,11 @@ public class WishFrontServiceImpl implements WishFrontService {
     public void buyPuzzleWithStardust(Long userId, Integer amount) {
         User user = userMapper.selectById(userId);
 
-        if (user.getStardust() <= amount * 20) {
+        if (user.getStardust() <= amount * stardust) {
             throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
         }
 
-        user.setStardust(user.getStardust() - amount * 20);
+        user.setStardust(user.getStardust() - amount * stardust);
         user.setPuzzle(user.getPuzzle() + amount);
 
         userMapper.updateById(user);
@@ -78,10 +104,10 @@ public class WishFrontServiceImpl implements WishFrontService {
         Random random = new Random(System.currentTimeMillis());
 
         for (int i = 0; i < times; i++) {
-            int randomResult = random.nextInt(1000);
+            int randomResult = random.nextInt(baseProbability);
 
-            if (randomResult <= 900) { // 抽到 token
-                int token = random.nextInt(10000);
+            if (randomResult <= tokenProbability) { // 抽到 token
+                int token = random.nextInt(tokenLimit);
 
                 userMapper.update(new LambdaUpdateWrapper<User>()
                         .eq(User::getId, userId)
@@ -100,7 +126,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                 BeanUtils.copyProperties(wish, wishFrontResponse);
 
                 wishFrontResponses.add(wishFrontResponse);
-            } else if (randomResult <= 994) { // 抽到4星模型
+            } else if (randomResult <= fourStarProbability) { // 抽到4星模型
                 List<Model> models = modelMapper.selectList(new LambdaQueryWrapper<Model>()
                         .eq(Model::getGrade, 4));
 
@@ -117,14 +143,14 @@ public class WishFrontServiceImpl implements WishFrontService {
                 if (existingModel != null) { // 抽到已有模型
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
-                            .set(User::getStardust, user.getStardust() + 100));
+                            .set(User::getStardust, user.getStardust() + fourStarCompensation));
 
                     Wish wish = Wish.builder()
                             .userId(userId)
                             .hitFlag(true)
                             .duplicateFlag(true)
                             .modelId(models.get(index).getId())
-                            .amount(100) // 补偿100星尘
+                            .amount(fourStarCompensation) // 补偿100星尘
                             .build();
 
                     wishMapper.insert(wish);
@@ -173,14 +199,14 @@ public class WishFrontServiceImpl implements WishFrontService {
                 if (existingModel != null) { // 抽到已有模型
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
-                            .set(User::getStardust, user.getStardust() + 200));
+                            .set(User::getStardust, user.getStardust() + fiveStarCompensation));
 
                     Wish wish = Wish.builder()
                             .userId(userId)
                             .hitFlag(true)
                             .duplicateFlag(true)
                             .modelId(models.get(index).getId())
-                            .amount(200) // 补偿200星尘
+                            .amount(fiveStarCompensation) // 补偿200星尘
                             .build();
 
                     wishMapper.insert(wish);

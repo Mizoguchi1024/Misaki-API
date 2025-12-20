@@ -112,3 +112,23 @@ misaki:
     access-key: misaki
     secret-key: nakahara
     bucket: misaki
+  business:
+    user:
+      check-in:
+        token: 10000
+        crystal: 60
+      delete:
+        cooldown-days: 7
+    wish:
+      exchange-rate:
+        puzzle-crystal: 160
+        puzzle-stardust: 20
+      compensation:
+        four-star: 50
+        five-star: 100
+      token:
+        limit: 10000
+      probability:
+        base: 1000
+        token: 900
+        four-star: 994
