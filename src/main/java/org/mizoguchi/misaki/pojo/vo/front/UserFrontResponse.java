@@ -30,5 +30,19 @@ public class UserFrontResponse {
     private String detail;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastLoginTime;
+
+    private Integer token;
+
+    private Integer crystal;
+
+    private Integer puzzle;
+
+    private Integer stardust;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate lastCheckInDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 }
