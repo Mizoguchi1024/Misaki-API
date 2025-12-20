@@ -81,15 +81,24 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                         )
                 ));
 
-        // DeepSeek-对话前缀续写（Beta）-代码生成
-        if (sendMessageFrontRequest.getPrefix() != null
-                && sendMessageFrontRequest.getPrefix().startsWith(ChatConstant.CODE_QUOTE)) {
-            DeepSeekAssistantMessage assistantMessage = DeepSeekAssistantMessage.prefixAssistantMessage(sendMessageFrontRequest.getPrefix());
-            assistantMessage.setPrefix(true);
-            chatClientRequestSpec.messages(List.of(new UserMessage(sendMessageFrontRequest.getContent()), assistantMessage));
-            chatClientRequestSpec.options(ChatOptions.builder().stopSequences(List.of(ChatConstant.CODE_QUOTE)).build());
+        // DeepSeek-对话前缀续写（Beta）
+        String prefix = sendMessageFrontRequest.getPrefix();
+        UserMessage userMessage = new UserMessage(sendMessageFrontRequest.getContent());
+        if (prefix != null) {
+            DeepSeekAssistantMessage assistantMessage = new DeepSeekAssistantMessage.Builder()
+                    .content(prefix)
+                    .prefix(true)
+                    .build();
+
+            chatClientRequestSpec.messages(List.of(userMessage, assistantMessage));
+            if (prefix.startsWith(ChatConstant.CODE_QUOTE)) {
+                chatClientRequestSpec.options(ChatOptions.builder()
+                        .stopSequences(List.of(ChatConstant.CODE_QUOTE))
+                        .build()
+                );
+            }
         }else {
-            chatClientRequestSpec.messages(new UserMessage(sendMessageFrontRequest.getContent()));
+            chatClientRequestSpec.messages(userMessage);
         }
 
         return chatClientRequestSpec

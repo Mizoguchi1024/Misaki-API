@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.advisor;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.springframework.ai.chat.client.ChatClientRequest;
@@ -32,7 +33,7 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
         this.scheduler = scheduler;
     }
 
-    public ChatClientRequest before(ChatClientRequest chatClientRequest, AdvisorChain advisorChain) {
+    public @NonNull ChatClientRequest before(ChatClientRequest chatClientRequest, @NonNull AdvisorChain advisorChain) {
         String conversationId = getConversationId(chatClientRequest.context());
         String parentId = getParentId(chatClientRequest.context());
 
@@ -45,11 +46,10 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
 
         // parentId != null 才需要回溯历史
         if (parentId != null) {
-            List<org.mizoguchi.misaki.pojo.entity.Message> allMessages =
-                    this.messageMapper.selectList(
-                            new LambdaQueryWrapper<org.mizoguchi.misaki.pojo.entity.Message>()
-                                    .eq(org.mizoguchi.misaki.pojo.entity.Message::getChatId, Long.valueOf(conversationId))
-                    );
+            List<org.mizoguchi.misaki.pojo.entity.Message> allMessages = this.messageMapper.selectList(
+                    new LambdaQueryWrapper<org.mizoguchi.misaki.pojo.entity.Message>()
+                            .eq(org.mizoguchi.misaki.pojo.entity.Message::getChatId, Long.valueOf(conversationId))
+            );
 
             historyEntities = resolveHistory(allMessages, Long.valueOf(parentId));
         }
@@ -92,7 +92,7 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
         return processedRequest;
     }
 
-    public ChatClientResponse after(ChatClientResponse chatClientResponse, AdvisorChain advisorChain) {
+    public @NonNull ChatClientResponse after(ChatClientResponse chatClientResponse, @NonNull AdvisorChain advisorChain) {
 
         String conversationId = getConversationId(chatClientResponse.context());
         String parentId = getParentId(chatClientResponse.context());
