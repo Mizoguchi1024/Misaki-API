@@ -52,6 +52,7 @@ public class FailMessageConstant {
     public static final String TOKEN_NOT_ENOUGH = "Token not enough";
     public static final String CRYSTAL_NOT_ENOUGH = "Crystal not enough";
     public static final String STARDUST_NOT_ENOUGH = "Stardust not enough";
+    public static final String PUZZLE_NOT_ENOUGH = "Puzzle not enough";
 
 
     // ===== 系统级错误 =====

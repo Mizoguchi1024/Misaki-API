@@ -89,7 +89,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         redisTemplate.opsForValue().set(redisKey, timestampHeader, Duration.ofMillis(WebConstant.REQUEST_EXPIRE_TIME));
 
-        if (authHeader == null || !authHeader.startsWith(WebConstant.BEARER_PREFIX)) {
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(WebConstant.BEARER_PREFIX)) {
             chain.doFilter(request, response);
             return;
         }

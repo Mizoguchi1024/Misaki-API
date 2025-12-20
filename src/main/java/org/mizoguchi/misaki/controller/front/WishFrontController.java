@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.controller.front;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
@@ -26,7 +27,7 @@ public class WishFrontController {
     @PostMapping("/puzzles")
     public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails,
                                   @RequestParam @Positive Integer amount,
-                                  @RequestParam String currency) {
+                                  @RequestParam @Pattern(regexp = "crystal|stardust") String currency) {
         if (currency.equals("crystal")) {
             wishFrontService.buyPuzzleWithCrystal(Long.valueOf(userDetails.getUsername()), amount);
         }else if (currency.equals("stardust")){
@@ -38,8 +39,8 @@ public class WishFrontController {
 
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
-    public Result<WishFrontResponse> gacha(@AuthenticationPrincipal UserDetails userDetails,
-                                           @RequestParam @Positive Integer times){
+    public Result<List<WishFrontResponse>> gacha(@AuthenticationPrincipal UserDetails userDetails,
+                                                 @RequestParam @Positive Integer times){
         return Result.success(wishFrontService.gacha(Long.valueOf(userDetails.getUsername()), times));
     }
 
