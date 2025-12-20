@@ -9,6 +9,9 @@ spring:
     multipart:
       max-file-size: 10MB       # 单个文件最大 10MB
       max-request-size: 20MB    # 单次请求总大小（多个文件加起来）
+  web:
+    locale: en_US
+    locale-resolver: fixed
   jackson:
     time-zone: Asia/Shanghai
     locale: zh
