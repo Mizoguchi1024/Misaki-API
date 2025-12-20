@@ -25,12 +25,8 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(value = BaseException.class)
     public ResponseEntity<Result<Void>> handleCustomException(BaseException e, HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                e.getMessage(), ip, uri, method, e.getClass().getSimpleName());
+                e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
 
         return ResponseEntity.status(e.getStatus()).body(Result.fail(e.getCode(), e.getMessage()));
     }
@@ -45,14 +41,12 @@ public class GlobalExceptionHandler {
                 ? e.getBindingResult().getFieldError().getDefaultMessage()
                 : FailMessageConstant.INVALID_PARAMETER;
         String field = e.getBindingResult().getFieldError().getField();
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
+        String fullMessage = message + ": " + field;
 
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                message + field, ip, uri, method, e.getClass().getSimpleName());
+                fullMessage, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
 
-        return ResponseEntity.status(400).body(Result.fail(400, message + "：" + field));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, fullMessage));
     }
 
     /**
@@ -66,14 +60,11 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .map(ConstraintViolation::getMessage)
                 .orElse(FailMessageConstant.INVALID_PARAMETER);
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
 
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                message, ip, uri, method, e.getClass().getSimpleName());
+                message, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(400, message));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, message));
     }
 
     /**
@@ -82,14 +73,10 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Result<Void>> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-            String ip = request.getRemoteAddr();
-            String uri = request.getRequestURI();
-            String method = request.getMethod();
-    
             log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                    e.getMessage(), ip, uri, method, e.getClass().getSimpleName());
+                    e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
     
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(400, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
     }
 
     /**
@@ -98,14 +85,10 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Result<Void>> handleNoResourceFoundException(NoResourceFoundException e, HttpServletRequest request){
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                FailMessageConstant.RESOURCE_NOT_FOUND, ip, uri, method, e.getClass().getSimpleName());
+                FailMessageConstant.RESOURCE_NOT_FOUND, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(404, FailMessageConstant.RESOURCE_NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(40400, FailMessageConstant.RESOURCE_NOT_FOUND));
     }
 
     /**
@@ -114,13 +97,9 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Result<Void>> handleException(Exception e, HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        String uri = request.getRequestURI();
-        String method = request.getMethod();
-
         log.error("{} | IP={} | URI={} | Method={} | Exception={}",
-                FailMessageConstant.INTERNAL_SERVER_ERROR, ip, uri, method, e.getClass().getSimpleName());
+                FailMessageConstant.INTERNAL_SERVER_ERROR, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(500, FailMessageConstant.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(50000, FailMessageConstant.INTERNAL_SERVER_ERROR));
     }
 }

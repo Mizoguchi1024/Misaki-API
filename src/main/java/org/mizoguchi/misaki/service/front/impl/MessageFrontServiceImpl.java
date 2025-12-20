@@ -39,7 +39,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     private final AssistantMapper assistantMapper;
 
     @Override
-        public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
+    public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId));
