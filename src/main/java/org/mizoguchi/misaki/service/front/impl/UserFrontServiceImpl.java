@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
-import org.mizoguchi.misaki.common.constant.SystemConstant;
+import org.mizoguchi.misaki.common.constant.BusinessConstant;
 import org.mizoguchi.misaki.common.exception.AlreadyCheckedInException;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
@@ -35,8 +35,8 @@ public class UserFrontServiceImpl implements UserFrontService {
         }
 
         user.setLastCheckInDate(LocalDate.now());
-        user.setToken(user.getToken() + SystemConstant.CHECK_IN_TOKEN_AMOUNT);
-        user.setCrystal(user.getCrystal() + SystemConstant.CHECK_IN_CRYSTAL_AMOUNT);
+        user.setToken(user.getToken() + BusinessConstant.CHECK_IN_TOKEN_AMOUNT);
+        user.setCrystal(user.getCrystal() + BusinessConstant.CHECK_IN_CRYSTAL_AMOUNT);
         userMapper.updateById(user);
     }
 

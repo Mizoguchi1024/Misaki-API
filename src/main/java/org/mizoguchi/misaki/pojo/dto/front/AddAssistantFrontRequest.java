@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.pojo.dto.front;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
@@ -18,6 +19,7 @@ public class AddAssistantFrontRequest {
     private Integer gender;
 
     @PastOrPresent
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     private String avatarPath;

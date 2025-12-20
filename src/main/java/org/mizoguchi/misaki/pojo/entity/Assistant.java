@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -33,13 +34,15 @@ public class Assistant {
 
     private Long ownerId;
 
-    @TableField("public_flag")
+    @TableField(value = "public_flag", fill = FieldFill.INSERT)
     private Boolean publicFlag;
 
-    @TableField("delete_flag")
+    @TableField(value = "delete_flag", fill =  FieldFill.INSERT)
     private Boolean deleteFlag;
 
+    @TableField(fill =  FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

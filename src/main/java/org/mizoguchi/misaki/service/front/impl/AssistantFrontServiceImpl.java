@@ -42,8 +42,17 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
             throw new TooManyAssistantsException(FailMessageConstant.TOO_MANY_ASSISTANTS);
         }
 
+        ModelUser modelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
+                .eq(ModelUser::getUserId, userId)
+                .eq(ModelUser::getModelId, addAssistantFrontRequest.getModelId()));
+
+        if (modelUser == null) {
+            throw new ModelNotOwnedException(FailMessageConstant.MODEL_NOT_OWNED);
+        }
+
         Assistant assistant = new Assistant();
         BeanUtils.copyProperties(addAssistantFrontRequest, assistant);
+        assistant.setCreatorId(userId);
         assistant.setOwnerId(userId);
         assistantMapper.insert(assistant);
     }
