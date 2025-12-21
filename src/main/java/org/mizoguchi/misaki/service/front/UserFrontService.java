@@ -9,7 +9,7 @@ public interface UserFrontService {
     UserFrontResponse getUser(Long userId);
     void updateUser(Long userId, UpdateUserFrontRequest updateUserFrontRequest);
     void checkIn(Long userId);
-    void deleteAccount(Long userId);
+    void deleteAccount(Long userId, String jwtId);
 
     SettingFrontResponse getSetting(Long userId);
     void updateSetting(Long userId, UpdateSettingFrontRequest updateSettingFrontRequest);

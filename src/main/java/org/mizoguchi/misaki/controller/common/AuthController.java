@@ -28,7 +28,7 @@ import java.util.Random;
 public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Operation(summary = "登录")
     @PostMapping("/login")

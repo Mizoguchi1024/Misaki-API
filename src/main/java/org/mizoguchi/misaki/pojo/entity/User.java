@@ -38,8 +38,6 @@ public class User {
 
     private Integer authRole;
 
-    private LocalDateTime lastLoginTime;
-
     private Integer token;
 
     private Integer crystal;
@@ -49,6 +47,8 @@ public class User {
     private Integer stardust;
 
     private LocalDate lastCheckInDate;
+
+    private LocalDateTime lastLoginTime;
 
     @TableField(value = "delete_pending_flag")
     private Boolean deletePendingFlag;

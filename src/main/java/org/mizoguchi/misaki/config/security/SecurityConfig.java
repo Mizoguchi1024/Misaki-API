@@ -1,7 +1,6 @@
-package org.mizoguchi.misaki.config;
+package org.mizoguchi.misaki.config.security;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.common.filter.JwtRequestFilter;
 import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

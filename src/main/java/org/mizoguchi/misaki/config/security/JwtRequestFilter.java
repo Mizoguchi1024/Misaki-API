@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.common.filter;
+package org.mizoguchi.misaki.config.security;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,7 +37,7 @@ import java.util.List;
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -95,12 +94,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
+        String jwtId;
         String userId;
         Integer roleCode;
 
         try {
+            jwtId = jwtUtil.getIdFromToken(jwt);
             userId = jwtUtil.getSubjectFromToken(jwt);
             roleCode = jwtUtil.getRoleFromToken(jwt);
+            if (redisTemplate.hasKey(RedisConstant.BLOCKED_JWT + jwtId)) {
+                throw new ExpiredJwtException(null, null, null);
+            }
         } catch (ExpiredJwtException e) {
             log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                     FailMessageConstant.JWT_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
@@ -115,15 +119,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+                CustomUserDetails customUserDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(userId);
+                customUserDetails.setJwtId(jwtId);
 
                 AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(roleCode);
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authRoleEnum.getRoleName());
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, List.of(authority));
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, List.of(authority));
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } catch (UserNotExistsException e) {
                 log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                         e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());

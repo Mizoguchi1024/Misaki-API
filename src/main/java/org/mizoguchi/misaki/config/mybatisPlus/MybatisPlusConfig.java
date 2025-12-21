@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.config;
+package org.mizoguchi.misaki.config.mybatisPlus;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

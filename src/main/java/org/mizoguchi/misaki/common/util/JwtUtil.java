@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -43,6 +44,7 @@ public class JwtUtil {
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_IN_MS);
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
                 .subject(subject)           // 设置 token 主题
                 .issuedAt(now)              // 设置 token 签发时间
                 .expiration(expiryDate)     // 设置 token 过期时间
@@ -71,14 +73,24 @@ public class JwtUtil {
     }
 
     /**
+     * 从 token 中提取 id
+     *
+     * @param token JWT token 字符串
+     * @return JWT id
+     */
+    public String getIdFromToken(String token) {
+        return getClaimsFromToken(token).getId();
+    }
+
+
+    /**
      * 从 token 中提取 subject（例如用户名或者用户ID）
      *
      * @param token JWT token 字符串
      * @return token 中存储的 subject
      */
     public String getSubjectFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getSubject();
+        return getClaimsFromToken(token).getSubject();
     }
 
     /**

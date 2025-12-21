@@ -12,6 +12,7 @@ public class ChatConfig {
     @Bean
     public ChatClient chatClient(DeepSeekChatModel model, MessageMapper messageMapper) {
         return ChatClient.builder(model)
-                .defaultAdvisors(TreeMemoryAdvisor.builder(messageMapper).build()).build();
+                .defaultAdvisors(TreeMemoryAdvisor.builder(messageMapper).build())
+                .build();
     }
 }

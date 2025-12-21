@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
+import org.mizoguchi.misaki.config.security.CustomUserDetails;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
@@ -59,8 +60,8 @@ public class UserFrontController {
 
     @Operation(summary = "注销账号")
     @DeleteMapping
-    public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails){
-        userFrontService.deleteAccount(Long.valueOf(userDetails.getUsername()));
+    public Result<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        userFrontService.deleteAccount(Long.valueOf(customUserDetails.getUsername()), customUserDetails.getJwtId());
         return Result.success();
     }
 }

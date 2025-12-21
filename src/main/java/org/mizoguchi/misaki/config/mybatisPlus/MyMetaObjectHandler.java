@@ -1,4 +1,4 @@
-package org.mizoguchi.misaki.common.handler;
+package org.mizoguchi.misaki.config.mybatisPlus;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
