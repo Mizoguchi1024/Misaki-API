@@ -122,10 +122,6 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false));
 
-        if (assistants.isEmpty()){
-            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
-        }
-
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
@@ -151,10 +147,6 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                 .ne(Assistant::getOwnerId, userId)
                 .eq(Assistant::getPublicFlag, true)
                 .eq(Assistant::getDeleteFlag, false));
-
-        if (assistants.isEmpty()){
-            return List.of();
-        }
 
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
