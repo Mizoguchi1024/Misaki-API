@@ -43,13 +43,13 @@ public class UserFrontController {
         return Result.success();
     }
 
-    @Operation(summary = "获取设定")
+    @Operation(summary = "获取设置项")
     @GetMapping("/settings")
     public Result<SettingFrontResponse> getSetting(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(userFrontService.getSetting(Long.valueOf(userDetails.getUsername())));
     }
 
-    @Operation(summary = "修改设定")
+    @Operation(summary = "修改设置项")
     @PutMapping("/settings")
     public Result<Void> updateSetting(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestBody @Validated UpdateSettingFrontRequest updateSettingFrontRequest){

@@ -25,6 +25,8 @@ public class ModelAdminResponse {
 
     private String avatarPath;
 
+    private Boolean onSaleFlag;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 }

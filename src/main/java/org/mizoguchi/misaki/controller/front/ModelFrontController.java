@@ -22,7 +22,7 @@ import java.util.List;
 public class ModelFrontController {
     private final ModelFrontService modelFrontService;
 
-    @Operation(summary = "获取可购买模型")
+    @Operation(summary = "获取所有模型")
     @GetMapping()
     public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(modelFrontService.listModels(Long.valueOf(userDetails.getUsername())));
@@ -34,8 +34,4 @@ public class ModelFrontController {
         modelFrontService.buyModel(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
-
-
-
-
 }

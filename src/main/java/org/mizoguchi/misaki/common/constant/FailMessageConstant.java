@@ -46,6 +46,7 @@ public class FailMessageConstant {
     public static final String ALREADY_CHECKED_IN = "Already checked in";
     public static final String TOO_MANY_ASSISTANTS = "Too many assistants";
     public static final String AT_LEAST_ONE_ASSISTANT = "At least one assistant";
+    public static final String MODEL_NOT_ON_SALE = "Model not on sale";
 
 
     // ===== 资源不足类 =====

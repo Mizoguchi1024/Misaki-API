@@ -23,4 +23,6 @@ public class ModelFrontResponse {
     private String avatarPath;
 
     private Boolean ownedFlag;
+
+    private Boolean onSaleFlag;
 }

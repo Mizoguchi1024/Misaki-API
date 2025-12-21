@@ -15,4 +15,7 @@ public class AddModelAdminRequest {
     private String path;
 
     private String avatarPath;
+
+    @NotNull
+    private Boolean onSaleFlag;
 }

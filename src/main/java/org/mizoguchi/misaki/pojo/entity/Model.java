@@ -29,6 +29,9 @@ public class Model {
 
     private String avatarPath;
 
+    @TableField("on_sale_flag")
+    private Boolean onSaleFlag;
+
     @TableField(fill =  FieldFill.INSERT)
     private LocalDateTime createTime;
 }

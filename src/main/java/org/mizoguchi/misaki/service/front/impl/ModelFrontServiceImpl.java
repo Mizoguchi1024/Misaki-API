@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.ModelAlreadyOwnedException;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
+import org.mizoguchi.misaki.common.exception.ModelNotOnSaleException;
 import org.mizoguchi.misaki.common.exception.StardustNotEnoughException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
@@ -50,6 +51,10 @@ public class ModelFrontServiceImpl implements ModelFrontService {
 
         if (model == null){
             throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
+        }
+
+        if (model.getOnSaleFlag() == false) {
+            throw new ModelNotOnSaleException(FailMessageConstant.MODEL_NOT_ON_SALE);
         }
 
         ModelUser existingModelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()

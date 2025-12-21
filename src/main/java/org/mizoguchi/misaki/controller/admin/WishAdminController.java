@@ -25,7 +25,7 @@ import java.util.List;
 public class WishAdminController {
     private final WishAdminService wishAdminService;
 
-    @Operation(summary = "分页条件搜索祈愿")
+    @Operation(summary = "分页条件搜索祈愿记录")
     @PostMapping("/search")
     public Result<List<WishAdminResponse>> searchWishes(@RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize,
@@ -42,14 +42,14 @@ public class WishAdminController {
         return Result.success(wishAdminService.searchWishes(pageIndex, pageSize, sortField, sortOrder, searchWishAdminRequest));
     }
 
-    @Operation(summary = "删除祈愿")
+    @Operation(summary = "删除祈愿记录")
     @DeleteMapping("/{id}")
     public Result<Void> deleteWish(@PathVariable Long id){
         wishAdminService.deleteWish(id);
         return Result.success();
     }
 
-    @Operation(summary = "删除某日期及以前的祈愿")
+    @Operation(summary = "删除某日期及以前的祈愿记录")
     @DeleteMapping()
     public Result<Void> deleteWishes(@RequestParam LocalDate date){
         wishAdminService.deleteWishes(date);
