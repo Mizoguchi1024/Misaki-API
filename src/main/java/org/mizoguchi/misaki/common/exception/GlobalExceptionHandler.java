@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
      * 处理自定义业务异常
      */
     @EnableExceptionLog
-    @ExceptionHandler(value = BaseException.class)
+    @ExceptionHandler(BaseException.class)
     public ResponseEntity<Result<Void>> handleCustomException(BaseException e, HttpServletRequest request) {
         log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
                 e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());

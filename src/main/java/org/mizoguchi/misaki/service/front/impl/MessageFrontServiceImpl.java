@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,29 +58,31 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
         Assistant assistant = assistantMapper.selectById(settings.getEnabledAssistantId());
         if (assistant == null || !assistant.getOwnerId().equals(userId)) {
-            throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
+
+        Map<String, Object> systemMessageParams = new HashMap<>();
+        systemMessageParams.put(ChatConstant.ASSISTANT_NAME, assistant.getName());
+        systemMessageParams.put(ChatConstant.ASSISTANT_GENDER, GenderEnum.fromCode(assistant.getGender()).getGender());
+        systemMessageParams.put(ChatConstant.ASSISTANT_BIRTHDAY, assistant.getBirthday());
+        systemMessageParams.put(ChatConstant.ASSISTANT_PERSONALITY, assistant.getPersonality());
+        systemMessageParams.put(ChatConstant.USER_NAME, user.getUsername());
+        systemMessageParams.put(ChatConstant.USER_GENDER, GenderEnum.fromCode(user.getGender()).getGender());
+        systemMessageParams.put(ChatConstant.USER_BIRTHDAY, user.getBirthday());
+        systemMessageParams.put(ChatConstant.USER_OCCUPATION, user.getOccupation());
+        systemMessageParams.put(ChatConstant.USER_DETAIL, user.getDetail());
+        systemMessageParams.replaceAll((k, v) -> v == null ? "" : v);
+
+        Map<String, Object> advisorParams = new HashMap<>();
+        advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
+        if (sendMessageFrontRequest.getParentId() != null) {
+            advisorParams.put(ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId());
         }
 
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_DEFAULT)
-                .system(systemMessage -> systemMessage.params(
-                        Map.of(
-                            ChatConstant.ASSISTANT_NAME, assistant.getName(),
-                            ChatConstant.ASSISTANT_GENDER, GenderEnum.fromCode(assistant.getGender()).getGender(),
-                            ChatConstant.ASSISTANT_BIRTHDAY, assistant.getBirthday(),
-                            ChatConstant.ASSISTANT_PERSONALITY, assistant.getPersonality(),
-                            ChatConstant.USER_NAME, user.getUsername(),
-                            ChatConstant.USER_GENDER, GenderEnum.fromCode(user.getGender()).getGender(),
-                            ChatConstant.USER_BIRTHDAY, user.getBirthday(),
-                            ChatConstant.USER_OCCUPATION, user.getOccupation(),
-                            ChatConstant.USER_DETAIL, user.getDetail()
-                        )
-                )).advisors(advisorSpec -> advisorSpec.params(
-                        Map.of(
-                                ChatConstant.CONVERSATION_ID, chatId,
-                                ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId()
-                        )
-                ));
+                .system(systemMessage -> systemMessage.params(systemMessageParams))
+                .advisors(advisorSpec -> advisorSpec.params(advisorParams));
 
         // DeepSeek-对话前缀续写（Beta）
         String prefix = sendMessageFrontRequest.getPrefix();

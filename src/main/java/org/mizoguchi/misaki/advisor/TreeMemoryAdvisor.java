@@ -5,14 +5,18 @@ import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.mapper.MessageMapper;
+import org.springframework.ai.chat.client.ChatClientMessageAggregator;
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.AdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
 import org.springframework.ai.chat.client.advisor.api.BaseChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.api.StreamAdvisorChain;
 import org.springframework.ai.chat.messages.*;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.util.*;
@@ -68,13 +72,12 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
 
         processedMessages.addAll(chatClientRequest.prompt().getInstructions());
 
-        ChatClientRequest processedRequest =
-                chatClientRequest.mutate()
-                        .prompt(chatClientRequest.prompt()
-                                .mutate()
-                                .messages(processedMessages)
-                                .build())
-                        .build();
+        ChatClientRequest processedRequest = chatClientRequest.mutate()
+                .prompt(chatClientRequest.prompt()
+                        .mutate()
+                        .messages(processedMessages)
+                        .build())
+                .build();
 
         // 记录 USER 消息
         UserMessage userMessage = processedRequest.prompt().getUserMessage();
@@ -90,7 +93,7 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
         messageMapper.insert(userEntity);
         Long userMessageId = userEntity.getId();
 
-        chatClientRequest.context().put(ChatConstant.LAST_USER_MESSAGE_ID, userMessageId);
+        processedRequest.context().put(ChatConstant.LAST_USER_MESSAGE_ID, userMessageId);
 
         return processedRequest;
     }
@@ -127,6 +130,17 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
             }
         }
         return chatClientResponse;
+    }
+
+    @Override
+    public @NonNull Flux<ChatClientResponse> adviseStream(@NonNull ChatClientRequest chatClientRequest, StreamAdvisorChain streamAdvisorChain) {
+        Scheduler scheduler = this.getScheduler();
+
+        return Mono.just(chatClientRequest)
+                .publishOn(scheduler)
+                .map(request -> this.before(request, streamAdvisorChain))
+                .flatMapMany(streamAdvisorChain::nextStream)
+                .transform(flux -> new ChatClientMessageAggregator().aggregateChatClientResponse(flux, response -> this.after(response, streamAdvisorChain)));
     }
 
     private String getConversationId(Map<String, Object> context) {

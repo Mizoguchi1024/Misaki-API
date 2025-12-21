@@ -37,7 +37,7 @@ public class ExceptionLogAspect {
 
         ExceptionLog exceptionLog = ExceptionLog.builder()
                 .exception(e.getClass().getSimpleName())
-                .message(e.getMessage())
+                .message(e.getMessage() == null ? "" : e.getMessage())
                 .ip(request.getRemoteAddr())
                 .uri(request.getRequestURI())
                 .method(request.getMethod())

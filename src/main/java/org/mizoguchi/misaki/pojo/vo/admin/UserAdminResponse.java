@@ -35,9 +35,6 @@ public class UserAdminResponse {
 
     private Integer authRole;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastLoginTime;
-
     private Long token;
 
     private Integer crystal;
@@ -45,6 +42,9 @@ public class UserAdminResponse {
     private Integer puzzle;
 
     private Integer stardust;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastLoginTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate lastCheckInDate;
