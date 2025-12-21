@@ -28,10 +28,10 @@ public class WishAdminController {
     @Operation(summary = "分页条件搜索祈愿记录")
     @PostMapping("/search")
     public Result<List<WishAdminResponse>> searchWishes(@RequestParam @Positive Integer pageIndex,
-                                                       @RequestParam @Positive Integer pageSize,
-                                                       @RequestParam(required = false) String sortField,
-                                                       @RequestParam(defaultValue = "asc") String sortOrder,
-                                                       @RequestBody @Validated SearchWishAdminRequest searchWishAdminRequest){
+                                                        @RequestParam @Positive Integer pageSize,
+                                                        @RequestParam(required = false) String sortField,
+                                                        @RequestParam(defaultValue = "asc") String sortOrder,
+                                                        @RequestBody @Validated SearchWishAdminRequest searchWishAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Wish.class.getDeclaredField(sortField);

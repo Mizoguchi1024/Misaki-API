@@ -147,8 +147,7 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
     @Override
     public List<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize) {
-        Page<Assistant> page = new Page<>(pageIndex, pageSize);
-        List<Assistant> assistants = assistantMapper.selectList(page, new LambdaQueryWrapper<Assistant>()
+        List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
                 .ne(Assistant::getOwnerId, userId)
                 .eq(Assistant::getPublicFlag, true)
                 .eq(Assistant::getDeleteFlag, false));

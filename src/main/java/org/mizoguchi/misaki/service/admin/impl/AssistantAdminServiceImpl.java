@@ -33,9 +33,7 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
 
     @Override
     public List<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest) {
-        Page<Assistant> page = new Page<>(pageIndex, pageSize);
-
-        List<Assistant> assistants = assistantMapper.selectList(page, new QueryWrapper<Assistant>()
+        List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Assistant>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchAssistantAdminRequest.getId() != null, Assistant::getId, searchAssistantAdminRequest.getId())

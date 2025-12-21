@@ -36,10 +36,10 @@ public class ModelAdminController {
     @Operation(summary = "分页条件搜索模型")
     @PostMapping("/search")
     public Result<List<ModelAdminResponse>> searchModels(@RequestParam @Positive Integer pageIndex,
-                                                                 @RequestParam @Positive Integer pageSize,
-                                                                 @RequestParam(required = false) String sortField,
-                                                                 @RequestParam(defaultValue = "asc") String sortOrder,
-                                                                 @RequestBody @Validated SearchModelAdminRequest searchModelAdminRequest){
+                                                         @RequestParam @Positive Integer pageSize,
+                                                         @RequestParam(required = false) String sortField,
+                                                         @RequestParam(defaultValue = "asc") String sortOrder,
+                                                         @RequestBody @Validated SearchModelAdminRequest searchModelAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Model.class.getDeclaredField(sortField);

@@ -31,9 +31,7 @@ public class ChatAdminServiceImpl implements ChatAdminService {
     @Override
     public List<ChatAdminResponse> searchChats(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
                                                SearchChatAdminRequest searchChatAdminRequest) {
-        Page<Chat> page = new Page<>(pageIndex, pageSize);
-
-        List<Chat> chats = chatMapper.selectList(page, new QueryWrapper<Chat>()
+        List<Chat> chats = chatMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Chat>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchChatAdminRequest.getId() != null, Chat::getId, searchChatAdminRequest.getId())

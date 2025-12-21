@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.CrystalNotEnoughException;
@@ -248,9 +249,10 @@ public class WishFrontServiceImpl implements WishFrontService {
     }
 
     @Override
-    public List<WishFrontResponse> listWishes(Long userId) {
-        List<Wish> wishes = wishMapper.selectList(new LambdaQueryWrapper<Wish>()
-                .eq(Wish::getUserId, userId));
+    public List<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize) {
+        List<Wish> wishes = wishMapper.selectList(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Wish>()
+                .eq(Wish::getUserId, userId)
+                .orderBy(true, false, Wish::getCreateTime));
 
         return wishes.stream()
                 .map(wish -> {

@@ -35,4 +35,5 @@ public class ChatConstant {
     public static final String CODE_QUOTE = "```";
     public static final String CONVERSATION_ID = "chat_memory_conversation_id";
     public static final String PARENT_ID = "chat_memory_parent_id";
+    public static final String LAST_USER_MESSAGE_ID = "chat_memory_last_user_message_id";
 }

@@ -25,9 +25,7 @@ public class WishAdminServiceImpl implements WishAdminService {
 
     @Override
     public List<WishAdminResponse> searchWishes(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchWishAdminRequest searchWishAdminRequest) {
-        Page<Wish> page = new Page<>(pageIndex, pageSize);
-
-        List<Wish> wishes = wishMapper.selectList(page, new QueryWrapper<Wish>()
+        List<Wish> wishes = wishMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Wish>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchWishAdminRequest.getId() != null, Wish::getId, searchWishAdminRequest.getId())

@@ -88,6 +88,9 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
                         .build();
 
         messageMapper.insert(userEntity);
+        Long userMessageId = userEntity.getId();
+
+        chatClientRequest.context().put(ChatConstant.LAST_USER_MESSAGE_ID, userMessageId);
 
         return processedRequest;
     }
@@ -95,7 +98,7 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
     public @NonNull ChatClientResponse after(ChatClientResponse chatClientResponse, @NonNull AdvisorChain advisorChain) {
 
         String conversationId = getConversationId(chatClientResponse.context());
-        String parentId = getParentId(chatClientResponse.context());
+        String lastUserMessageId = getLastUserMessageId(chatClientResponse.context());
 
         // conversationId == null → 不写聊天记忆
         if (conversationId == null) {
@@ -115,7 +118,7 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
                 org.mizoguchi.misaki.pojo.entity.Message assistantEntity =
                         org.mizoguchi.misaki.pojo.entity.Message.builder()
                                 .chatId(Long.valueOf(conversationId))
-                                .parentId(parentId == null ? null : Long.valueOf(parentId))
+                                .parentId(lastUserMessageId == null ? null : Long.valueOf(lastUserMessageId))
                                 .type(MessageType.ASSISTANT.getValue())
                                 .content(assistantMessage.getText())
                                 .build();
@@ -132,6 +135,10 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
 
     private String getParentId(Map<String, Object> context) {
         return context == null ? null : Objects.toString(context.get(ChatConstant.PARENT_ID), null);
+    }
+
+    private String getLastUserMessageId(Map<String, Object> context) {
+        return context == null ? null : Objects.toString(context.get(ChatConstant.LAST_USER_MESSAGE_ID), null);
     }
 
     private List<org.mizoguchi.misaki.pojo.entity.Message> resolveHistory(List<org.mizoguchi.misaki.pojo.entity.Message> memoryMessages,

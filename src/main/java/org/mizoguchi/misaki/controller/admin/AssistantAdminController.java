@@ -36,10 +36,10 @@ public class AssistantAdminController {
     @Operation(summary = "分页条件搜索助手")
     @PostMapping("/search")
     public Result<List<AssistantAdminResponse>> searchAssistants(@RequestParam @Positive Integer pageIndex,
-                                                       @RequestParam @Positive Integer pageSize,
-                                                       @RequestParam(required = false) String sortField,
-                                                       @RequestParam(defaultValue = "asc") String sortOrder,
-                                                       @RequestBody @Validated SearchAssistantAdminRequest searchAssistantAdminRequest){
+                                                                 @RequestParam @Positive Integer pageSize,
+                                                                 @RequestParam(required = false) String sortField,
+                                                                 @RequestParam(defaultValue = "asc") String sortOrder,
+                                                                 @RequestBody @Validated SearchAssistantAdminRequest searchAssistantAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Assistant.class.getDeclaredField(sortField);

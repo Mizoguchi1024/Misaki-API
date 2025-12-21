@@ -2,6 +2,8 @@ package org.mizoguchi.misaki.controller.front;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class WishFrontController {
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
     public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails,
-                                  @RequestParam @Positive Integer amount,
+                                  @RequestParam @Min(1) @Max(100) Integer amount,
                                   @RequestParam @Pattern(regexp = "crystal|stardust") String currency) {
         if (currency.equals("crystal")) {
             wishFrontService.buyPuzzleWithCrystal(Long.valueOf(userDetails.getUsername()), amount);
@@ -46,7 +48,9 @@ public class WishFrontController {
 
     @Operation(summary = "抽卡历史记录")
     @GetMapping("/gacha/history")
-    public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails){
-        return Result.success(wishFrontService.listWishes(Long.valueOf(userDetails.getUsername())));
+    public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails,
+                                                       @RequestParam @Positive Integer pageIndex,
+                                                       @RequestParam @Positive Integer pageSize){
+        return Result.success(wishFrontService.listWishes(Long.valueOf(userDetails.getUsername()), pageIndex, pageSize));
     }
 }

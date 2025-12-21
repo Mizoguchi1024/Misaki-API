@@ -32,9 +32,7 @@ public class LogAdminServiceImpl implements LogAdminService {
 
     @Override
     public List<EmailLogAdminResponse> searchEmailLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchEmailLogAdminRequest searchEmailLogAdminRequest) {
-        Page<EmailLog> page = new Page<>(pageIndex, pageSize);
-
-        List<EmailLog> emailLogs = emailLogMapper.selectList(page, new QueryWrapper<EmailLog>()
+        List<EmailLog> emailLogs = emailLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<EmailLog>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchEmailLogAdminRequest.getId() != null, EmailLog::getId, searchEmailLogAdminRequest.getId())
@@ -66,9 +64,7 @@ public class LogAdminServiceImpl implements LogAdminService {
 
     @Override
     public List<ExceptionLogAdminResponse> searchExceptionLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchExceptionLogAdminRequest searchExceptionLogAdminRequest) {
-        Page<ExceptionLog> page = new Page<>(pageIndex, pageSize);
-
-        List<ExceptionLog> exceptionLogs = exceptionLogMapper.selectList(page, new QueryWrapper<ExceptionLog>()
+        List<ExceptionLog> exceptionLogs = exceptionLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<ExceptionLog>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchExceptionLogAdminRequest.getId() != null, ExceptionLog::getId, searchExceptionLogAdminRequest.getId())

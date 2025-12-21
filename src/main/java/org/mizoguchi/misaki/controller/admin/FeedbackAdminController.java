@@ -28,10 +28,10 @@ public class FeedbackAdminController {
     @Operation(summary = "分页条件搜索反馈")
     @PostMapping("/search")
     public Result<List<FeedbackAdminResponse>> searchFeedbacks(@RequestParam @Positive Integer pageIndex,
-                                                       @RequestParam @Positive Integer pageSize,
-                                                       @RequestParam(required = false) String sortField,
-                                                       @RequestParam(defaultValue = "asc") String sortOrder,
-                                                       @RequestBody @Validated SearchFeedbackAdminRequest searchFeedbackAdminRequest){
+                                                               @RequestParam @Positive Integer pageSize,
+                                                               @RequestParam(required = false) String sortField,
+                                                               @RequestParam(defaultValue = "asc") String sortOrder,
+                                                               @RequestBody @Validated SearchFeedbackAdminRequest searchFeedbackAdminRequest){
         if (sortField != null && !sortField.isBlank()){
             try {
                 Feedback.class.getDeclaredField(sortField);

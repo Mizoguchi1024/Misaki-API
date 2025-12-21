@@ -42,9 +42,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Override
     public List<UserAdminResponse> searchUsers(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
                                                SearchUserAdminRequest searchUserAdminRequest) {
-        Page<User> page = new Page<>(pageIndex, pageSize);
-
-        List<User> users = userMapper.selectList(page, new QueryWrapper<User>()
+        List<User> users = userMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<User>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchUserAdminRequest.getId() != null, User::getId, searchUserAdminRequest.getId())

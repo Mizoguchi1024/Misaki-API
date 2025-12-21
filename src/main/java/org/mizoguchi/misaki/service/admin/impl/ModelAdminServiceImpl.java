@@ -33,9 +33,7 @@ public class ModelAdminServiceImpl implements ModelAdminService {
 
     @Override
     public List<ModelAdminResponse> searchModels(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchModelAdminRequest searchModelAdminRequest) {
-        Page<Model> page = new Page<>(pageIndex, pageSize);
-
-        List<Model> models = modelMapper.selectList(page, new QueryWrapper<Model>()
+        List<Model> models = modelMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Model>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
                 .lambda()
                 .like(searchModelAdminRequest.getId() != null, Model::getId, searchModelAdminRequest.getId())
