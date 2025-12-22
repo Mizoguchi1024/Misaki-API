@@ -11,6 +11,7 @@ import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -43,7 +44,7 @@ public class ChatFrontController {
     }
 
     @Operation(summary = "发送消息")
-    @PostMapping(value = "/{id}/messages", produces = "text/event-stream;charset=utf-8")
+    @PostMapping(value = "/{id}/messages", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_EVENT_STREAM_VALUE})
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails userDetails,
                                     @PathVariable @Positive Long id,
                                     @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
@@ -52,7 +53,7 @@ public class ChatFrontController {
     }
 
     @Operation(summary = "生成会话标题")
-    @GetMapping(value = "/{id}/title", produces = "text/event-stream;charset=utf-8")
+    @GetMapping(value = "/{id}/title", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_EVENT_STREAM_VALUE})
     public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         return chatFrontService.addChatTitle(Long.valueOf(userDetails.getUsername()), id);
     }

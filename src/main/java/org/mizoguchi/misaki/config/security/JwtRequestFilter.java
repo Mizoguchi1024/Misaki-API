@@ -1,6 +1,5 @@
 package org.mizoguchi.misaki.config.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
