@@ -25,6 +25,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.deepseek.DeepSeekChatOptions;
 import org.springframework.ai.deepseek.api.ResponseFormat;
 import org.springframework.beans.BeanUtils;
@@ -88,10 +89,16 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
-                .eq(Chat::getDeleteFlag, false));
+                .eq(Chat::getDeleteFlag, false)
+        );
 
         if(chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
+        User user = userMapper.selectById(userId);
+        if (user.getToken() <= 0){
+            throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
         }
 
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
@@ -106,7 +113,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
         }
 
-        String jsonString = chatClient.prompt()
+        ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
                 .system(systemMessage -> systemMessage.params(Map.of(ChatConstant.SIZE, size)))
                 .messages(new AssistantMessage(assistantMessage.getContent()))
@@ -116,8 +123,26 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                                 .build())
                         .build())
                 .call()
-                .content(); // TODO Tokens计算
+                .chatResponse();
 
+        if (chatResponse == null) {
+            throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
+        }
+
+        Usage usage = chatResponse.getMetadata().getUsage();
+        chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .setIncrBy(Chat::getToken, usage.getTotalTokens())
+                .setIncrBy(Chat::getVersion, 1)
+        );
+
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setDecrBy(User::getToken, usage.getTotalTokens())
+                .setIncrBy(User::getVersion, 1)
+        );
+
+        String jsonString = chatResponse.getResult().getOutput().getText();
         JsonNode promptsNode;
         try {
             promptsNode = objectMapper.readTree(jsonString).get("prompts");
