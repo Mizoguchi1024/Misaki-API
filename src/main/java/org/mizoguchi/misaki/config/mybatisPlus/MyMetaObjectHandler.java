@@ -13,7 +13,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         LocalDateTime now = LocalDateTime.now();
 
-        this.strictInsertFill(metaObject, "publicFlag", Boolean.class, false);
         this.strictInsertFill(metaObject, "deleteFlag", Boolean.class, false);
         this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, now);
         this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, now);

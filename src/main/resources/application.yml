@@ -117,6 +117,9 @@ misaki:
     secret-key: nakahara
     bucket: misaki
   business:
+    auth:
+      max-password-retry-count: 5
+      password-retry-time-window: 5  #分钟
     user:
       check-in:
         token: 10000

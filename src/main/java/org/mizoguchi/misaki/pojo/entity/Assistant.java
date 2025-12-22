@@ -34,7 +34,7 @@ public class Assistant {
 
     private Long ownerId;
 
-    @TableField(value = "public_flag", fill = FieldFill.INSERT)
+    @TableField(value = "public_flag")
     private Boolean publicFlag;
 
     @TableField(value = "delete_flag", fill =  FieldFill.INSERT)
