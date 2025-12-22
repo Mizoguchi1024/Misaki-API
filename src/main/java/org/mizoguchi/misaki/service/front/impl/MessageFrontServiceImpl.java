@@ -8,6 +8,7 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
+import org.mizoguchi.misaki.common.exception.MessageNotExistsException;
 import org.mizoguchi.misaki.common.exception.TokenNotEnoughException;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
@@ -47,6 +48,16 @@ public class MessageFrontServiceImpl implements MessageFrontService {
 
         if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
+        if (sendMessageFrontRequest.getParentId() != null) {
+            Message parentMessage = messageMapper.selectOne(new LambdaQueryWrapper<Message>()
+                    .eq(Message::getChatId, chatId)
+                    .eq(Message::getParentId, sendMessageFrontRequest.getParentId()));
+
+            if (parentMessage == null) {
+                throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
+            }
         }
 
         User user = userMapper.selectById(userId);

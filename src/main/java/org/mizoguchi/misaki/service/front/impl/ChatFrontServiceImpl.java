@@ -147,7 +147,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }
 
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
-                .eq(Message::getChatId, chatId));
+                .eq(Message::getChatId, chatId)
+                .orderBy(true, true, Message::getCreateTime));
 
         Message userMessage = messages.stream()
                 .filter(message -> MessageType.USER.getValue().equalsIgnoreCase(message.getType()))

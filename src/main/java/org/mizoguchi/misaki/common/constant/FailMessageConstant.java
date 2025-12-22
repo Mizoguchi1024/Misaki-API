@@ -30,6 +30,7 @@ public class FailMessageConstant {
     // ===== 业务资源不存在 =====
     public static final String RESOURCE_NOT_FOUND = "Resource not found";
     public static final String CHAT_NOT_EXISTS = "Chat not exists";
+    public static final String MESSAGE_NOT_EXISTS = "Message not exists";
     public static final String ASSISTANT_NOT_EXISTS = "Assistant not exists";
     public static final String MODEL_NOT_EXISTS = "Model not exists";
     public static final String FEEDBACK_NOT_EXISTS = "Feedback not exists";
