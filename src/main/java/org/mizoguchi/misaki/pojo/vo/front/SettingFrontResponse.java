@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.pojo.vo.front;
 
+import com.baomidou.mybatisplus.annotation.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,7 @@ public class SettingFrontResponse {
     private Integer borderRadius;
 
     private String backgroundPath;
+
+    @Version
+    private Integer version;
 }

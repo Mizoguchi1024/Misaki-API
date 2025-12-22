@@ -24,7 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
 
         User user = userMapper.selectById(userId);
 
-        if (user.getToken() == 0){
+        if (user.getToken() <= 0){
             throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
         }
 
@@ -121,13 +120,16 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                 .doOnNext(chatResponse ->{
                     Usage usage = chatResponse.getMetadata().getUsage();
                     chatMapper.update(new LambdaUpdateWrapper<Chat>()
-                            .eq(Chat::getId, chat.getId())
-                            .set(Chat::getToken, chat.getToken() + usage.getTotalTokens())
-                            .set(Chat::getUpdateTime, LocalDateTime.now()));
+                            .eq(Chat::getId, chatId)
+                            .setIncrBy(Chat::getToken, usage.getTotalTokens())
+                            .setIncrBy(Chat::getVersion, 1)
+                    );
 
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
-                            .set(User::getToken, Math.max(user.getToken() - usage.getTotalTokens(), 0)));
+                            .setDecrBy(User::getToken, usage.getTotalTokens())
+                            .setIncrBy(User::getVersion, 1)
+                    );
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题
     }

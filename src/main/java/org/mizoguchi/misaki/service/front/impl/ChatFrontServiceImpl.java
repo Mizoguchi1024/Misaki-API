@@ -10,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
-import org.mizoguchi.misaki.common.exception.BadAiOutputException;
-import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
-import org.mizoguchi.misaki.common.exception.ChatTitleAlreadyExistsException;
-import org.mizoguchi.misaki.common.exception.IncompleteChatException;
+import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.mapper.UserMapper;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.mapper.ChatMapper;
@@ -146,6 +144,11 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new ChatTitleAlreadyExistsException(FailMessageConstant.CHAT_TITLE_ALREADY_EXISTS);
         }
 
+        User user = userMapper.selectById(userId);
+        if (user.getToken() <= 0){
+            throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
+        }
+
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
                 .eq(Message::getChatId, chatId)
                 .orderBy(true, true, Message::getCreateTime));
@@ -174,30 +177,38 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                                 .replaceAll(RegexConstant.TITLE_INDICATION, "");
 
                         chatMapper.update(new LambdaUpdateWrapper<Chat>()
-                                .eq(Chat::getId, chat.getId())
-                                .set(Chat::getToken, chat.getToken() + usage.getTotalTokens())
-                                .set(Chat::getTitle, title));
-
-                        User user = userMapper.selectById(userId);
+                                .eq(Chat::getId, chatId)
+                                .set(Chat::getTitle, title)
+                                .setIncrBy(Chat::getToken, usage.getTotalTokens())
+                                .setIncrBy(Chat::getVersion, 1)
+                        );
 
                         userMapper.update(new LambdaUpdateWrapper<User>()
                                 .eq(User::getId, userId)
-                                .set(User::getToken, Math.max(user.getToken() - usage.getTotalTokens(), 0)));
+                                .setDecrBy(User::getToken, usage.getTotalTokens())
+                                .setIncrBy(User::getVersion, 1)
+                        );
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题;
     }
 
     @Override
-    public void updateChatTitle(Long userId, Long chatId, String title) {
-        int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
+    public void updateChatTitle(Long userId, Long chatId, UpdateChatTitleFrontRequest updateChatTitleFrontRequest) {
+        Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
-                .eq(Chat::getDeleteFlag, false)
-                .set(Chat::getTitle, title));
+                .eq(Chat::getDeleteFlag, false));
+
+        if(chat == null) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
+        BeanUtils.copyProperties(updateChatTitleFrontRequest, chat);
+        int affectedRows = chatMapper.updateById(chat);
 
         if(affectedRows == 0) {
-            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 
@@ -207,7 +218,9 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-                .set(Chat::getDeleteFlag, true));
+                .set(Chat::getDeleteFlag, true)
+                .setIncrBy(Chat::getVersion, 1)
+        );
 
         if(affectedRows == 0) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
@@ -219,7 +232,9 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         int affectedRows = chatMapper.update(new LambdaUpdateWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-                .set(Chat::getDeleteFlag, true));
+                .set(Chat::getDeleteFlag, true)
+                .setIncrBy(Chat::getVersion, 1)
+        );
 
         if(affectedRows == 0) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);

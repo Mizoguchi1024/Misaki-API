@@ -62,7 +62,7 @@ public class ChatFrontController {
     @PutMapping(value = "/{id}/title")
     public Result<Void> updateChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
                                         @RequestBody @Validated UpdateChatTitleFrontRequest updateChatTitleFrontRequest){
-        chatFrontService.updateChatTitle(Long.valueOf(userDetails.getUsername()), id, updateChatTitleFrontRequest.getTitle());
+        chatFrontService.updateChatTitle(Long.valueOf(userDetails.getUsername()), id, updateChatTitleFrontRequest);
         return Result.success();
     }
 

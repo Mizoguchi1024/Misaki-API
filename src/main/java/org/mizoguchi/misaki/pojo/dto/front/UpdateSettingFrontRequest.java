@@ -32,4 +32,7 @@ public class UpdateSettingFrontRequest {
     private String backgroundPath;
 
     private Long enabledAssistantId;
+
+    @NotNull
+    private Integer version;
 }

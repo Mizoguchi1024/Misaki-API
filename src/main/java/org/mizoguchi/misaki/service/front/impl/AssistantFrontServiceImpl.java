@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -165,17 +166,17 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
     @Override
     public void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest) {
-        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
+        if(!assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getOwnerId, userId)
-                .eq(Assistant::getDeleteFlag, false));
-
-        if(assistant == null){
+                .eq(Assistant::getDeleteFlag, false)
+        )){
             throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 
+        Assistant assistant= new Assistant();
         BeanUtils.copyProperties(updateAssistantFrontRequest, assistant);
-
+        assistant.setId(assistantId);
         int affectedRows = assistantMapper.updateById(assistant);
 
         if (affectedRows == 0) {
@@ -193,21 +194,16 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
             throw new AtLeastOneAssistantException(FailMessageConstant.AT_LEAST_ONE_ASSISTANT);
         }
 
-        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
+        int affectedRows = assistantMapper.update(new LambdaUpdateWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false)
+                .set(Assistant::getDeleteFlag, true)
+                .setIncrBy(Assistant::getVersion, 1)
         );
 
-        if (assistant == null){
-            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
-        }
-
-        assistant.setDeleteFlag(true);
-        int affectedRows = assistantMapper.updateById(assistant);
-
         if (affectedRows == 0){
-            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
     }
 }

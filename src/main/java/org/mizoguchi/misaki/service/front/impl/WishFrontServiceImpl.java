@@ -71,10 +71,12 @@ public class WishFrontServiceImpl implements WishFrontService {
             throw new CrystalNotEnoughException(FailMessageConstant.CRYSTAL_NOT_ENOUGH);
         }
 
-        user.setCrystal(user.getCrystal() - amount * puzzleCrystal);
-        user.setPuzzle(user.getPuzzle() + amount);
-
-        userMapper.updateById(user);
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setDecrBy(User::getCrystal, amount * puzzleCrystal)
+                .setIncrBy(User::getPuzzle, amount)
+                .setIncrBy(User::getVersion, 1)
+        );
     }
 
     @Override
@@ -85,10 +87,12 @@ public class WishFrontServiceImpl implements WishFrontService {
             throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
         }
 
-        user.setStardust(user.getStardust() - amount * stardust);
-        user.setPuzzle(user.getPuzzle() + amount);
-
-        userMapper.updateById(user);
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setDecrBy(User::getStardust, amount * stardust)
+                .setIncrBy(User::getPuzzle, amount)
+                .setIncrBy(User::getVersion, 1)
+        );
     }
 
     @Override
@@ -112,7 +116,9 @@ public class WishFrontServiceImpl implements WishFrontService {
 
                 userMapper.update(new LambdaUpdateWrapper<User>()
                         .eq(User::getId, userId)
-                        .set(User::getToken, user.getToken() + token));
+                        .setIncrBy(User::getToken, token)
+                        .setIncrBy(User::getVersion, 1)
+                );
 
                 Wish wish = Wish.builder()
                         .userId(userId)
@@ -144,7 +150,9 @@ public class WishFrontServiceImpl implements WishFrontService {
                 if (existingModel != null) { // 抽到已有模型
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
-                            .set(User::getStardust, user.getStardust() + fourStarCompensation));
+                            .setIncrBy(User::getStardust, fourStarCompensation)
+                            .setIncrBy(User::getVersion, 1)
+                );
 
                     Wish wish = Wish.builder()
                             .userId(userId)
@@ -200,7 +208,9 @@ public class WishFrontServiceImpl implements WishFrontService {
                 if (existingModel != null) { // 抽到已有模型
                     userMapper.update(new LambdaUpdateWrapper<User>()
                             .eq(User::getId, userId)
-                            .set(User::getStardust, user.getStardust() + fiveStarCompensation));
+                            .setIncrBy(User::getStardust, fiveStarCompensation)
+                            .setIncrBy(User::getVersion, 1)
+                );
 
                     Wish wish = Wish.builder()
                             .userId(userId)
@@ -243,7 +253,9 @@ public class WishFrontServiceImpl implements WishFrontService {
         }
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
-                .set(User::getPuzzle, user.getPuzzle() - times));
+                .setDecrBy(User::getPuzzle, times)
+                .setIncrBy(User::getVersion, 1)
+        );
 
         return wishFrontResponses;
     }

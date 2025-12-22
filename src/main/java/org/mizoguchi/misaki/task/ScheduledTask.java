@@ -26,6 +26,8 @@ public class ScheduledTask {
                 .le(User::getLastLoginTime, LocalDateTime.now().minusDays(cooldownDays))
                 .set(User::getUsername, "Deleted account")
                 .set(User::getDeletePendingFlag, false)
-                .set(User::getDeleteFlag, true));
+                .set(User::getDeleteFlag, true)
+                .setIncrBy(User::getVersion, 1)
+        );
     }
 }

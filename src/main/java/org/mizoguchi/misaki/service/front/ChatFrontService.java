@@ -1,5 +1,6 @@
 package org.mizoguchi.misaki.service.front;
 
+import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import reactor.core.publisher.Flux;
 
@@ -11,7 +12,7 @@ public interface ChatFrontService {
     List<ChatFrontResponse> searchChats(Long userId, String keyword);
     List<String> listPrompts(Long userId, Long chatId, Integer size);
     Flux<String> addChatTitle(Long userId, Long chatId);
-    void updateChatTitle(Long userId, Long chatId, String title);
+    void updateChatTitle(Long userId, Long chatId, UpdateChatTitleFrontRequest updateChatTitleFrontRequest);
     void deleteChat(Long userId, Long chatId);
     void deleteAllChats(Long userId);
 }

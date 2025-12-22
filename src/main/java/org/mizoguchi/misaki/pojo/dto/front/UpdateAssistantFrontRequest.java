@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.pojo.dto.front;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
@@ -25,4 +26,7 @@ public class UpdateAssistantFrontRequest {
     private Long modelId;
 
     private Boolean publicFlag;
+
+    @NotNull
+    private Integer version;
 }

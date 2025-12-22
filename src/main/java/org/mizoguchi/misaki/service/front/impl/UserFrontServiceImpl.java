@@ -47,10 +47,13 @@ public class UserFrontServiceImpl implements UserFrontService {
             throw new AlreadyCheckedInException(FailMessageConstant.ALREADY_CHECKED_IN);
         }
 
-        user.setLastCheckInDate(LocalDate.now());
-        user.setToken(user.getToken() + checkInTokenAmount);
-        user.setCrystal(user.getCrystal() + checkInCrystalAmount);
-        userMapper.updateById(user);
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .set(User::getLastCheckInDate, LocalDate.now())
+                .setIncrBy(User::getToken, checkInTokenAmount)
+                .setIncrBy(User::getCrystal, checkInCrystalAmount)
+                .setIncrBy(User::getVersion, 1)
+        );
     }
 
     @Override
@@ -58,7 +61,9 @@ public class UserFrontServiceImpl implements UserFrontService {
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
                 .set(User::getLastLoginTime, LocalDate.now())
-                .set(User::getDeletePendingFlag, true));
+                .set(User::getDeletePendingFlag, true)
+                .setIncrBy(User::getVersion, 1)
+        );
 
         redisTemplate.opsForValue().set(RedisConstant.BLOCKED_JWT + jwtId, "1", Duration.ofMillis(JWT_EXPIRATION_IN_MS));
     }
@@ -76,8 +81,8 @@ public class UserFrontServiceImpl implements UserFrontService {
     @Override
     public void updateUser(Long userId, UpdateUserFrontRequest updateUserFrontRequest) {
         User user = new User();
-        user.setId(userId);
         BeanUtils.copyProperties(updateUserFrontRequest, user);
+        user.setId(userId);
 
         userMapper.updateById(user);
     }
@@ -95,8 +100,8 @@ public class UserFrontServiceImpl implements UserFrontService {
     @Override
     public void updateSetting(Long userId, UpdateSettingFrontRequest updateSettingFrontRequest) {
         Settings settings = new Settings();
-        settings.setUserId(userId);
         BeanUtils.copyProperties(updateSettingFrontRequest, settings);
+        settings.setUserId(userId);
 
         settingsMapper.update(settings, new LambdaUpdateWrapper<Settings>().eq(Settings::getUserId, userId));
     }

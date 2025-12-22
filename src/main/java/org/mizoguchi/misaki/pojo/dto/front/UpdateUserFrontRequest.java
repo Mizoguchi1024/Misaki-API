@@ -28,4 +28,7 @@ public class UpdateUserFrontRequest {
 
     @Size(max = 255)
     private String detail;
+
+    @NotNull
+    private Integer version;
 }

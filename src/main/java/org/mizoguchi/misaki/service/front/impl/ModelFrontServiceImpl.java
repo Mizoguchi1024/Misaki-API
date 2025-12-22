@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.ModelAlreadyOwnedException;
@@ -66,12 +67,16 @@ public class ModelFrontServiceImpl implements ModelFrontService {
         }
 
         User user = userMapper.selectById(userId);
+
         if (user.getStardust() <= model.getPrice()) {
             throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
         }
 
-        user.setStardust(user.getStardust() - model.getPrice());
-        userMapper.updateById(user);
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setDecrBy(User::getStardust, model.getPrice())
+                .setIncrBy(User::getVersion, 1)
+        );
 
         ModelUser modelUser = ModelUser.builder()
                 .userId(userId)

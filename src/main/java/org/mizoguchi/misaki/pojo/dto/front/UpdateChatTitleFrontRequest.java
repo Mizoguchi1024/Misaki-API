@@ -11,4 +11,7 @@ public class UpdateChatTitleFrontRequest {
     @NotBlank
     @Size(min = 1, max = 20)
     private String title;
+
+    @NotNull
+    private Integer version;
 }

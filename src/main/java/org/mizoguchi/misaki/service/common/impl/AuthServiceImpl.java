@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.service.common.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
@@ -153,19 +154,15 @@ public class AuthServiceImpl implements AuthService {
 
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
 
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+        int affectedRows = userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getEmail, resetPasswordRequest.getEmail())
                 .eq(User::getDeleteFlag, false)
+                .set(User::getPassword, encryptPassword)
+                .setIncrBy(User::getVersion, 1)
         );
-        if (user == null) {
-            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
-        }
-
-        user.setPassword(encryptPassword);
-        int affectedRows = userMapper.updateById(user);
 
         if (affectedRows == 0) {
-            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         }
     }
 }

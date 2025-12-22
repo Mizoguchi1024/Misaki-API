@@ -48,7 +48,9 @@ public class FeedbackFrontServiceImpl implements FeedbackFrontService {
                 .eq(Feedback::getId, feedbackId)
                 .eq(Feedback::getUserId, userId)
                 .eq(Feedback::getDeleteFlag, false)
-                .set(Feedback::getDeleteFlag, true));
+                .set(Feedback::getDeleteFlag, true)
+                .setIncrBy(Feedback::getVersion, 1)
+        );
 
         if(affectedRows == 0) {
             throw new FeedbackNotExistsException(FailMessageConstant.FEEDBACK_NOT_EXISTS);
