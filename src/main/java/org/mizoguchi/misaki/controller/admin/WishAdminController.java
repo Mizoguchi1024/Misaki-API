@@ -11,6 +11,7 @@ import org.mizoguchi.misaki.pojo.dto.admin.SearchWishAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Wish;
 import org.mizoguchi.misaki.pojo.vo.admin.WishAdminResponse;
 import org.mizoguchi.misaki.service.admin.WishAdminService;
+import org.springframework.data.util.ParsingUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class WishAdminController {
             } catch (NoSuchFieldException e) {
                 throw new InvalidSortParamsException(FailMessageConstant.INVALID_SORT_PARAMS);
             }
+            sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
         return Result.success(wishAdminService.searchWishes(pageIndex, pageSize, sortField, sortOrder, searchWishAdminRequest));
     }

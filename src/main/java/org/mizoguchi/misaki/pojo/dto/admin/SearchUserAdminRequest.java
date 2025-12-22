@@ -1,10 +1,10 @@
 package org.mizoguchi.misaki.pojo.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class SearchUserAdminRequest {
@@ -17,6 +17,7 @@ public class SearchUserAdminRequest {
     private Integer gender;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent
     private LocalDate birthday;
 
     private String occupation;
@@ -25,11 +26,23 @@ public class SearchUserAdminRequest {
 
     private Integer authRole;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent
+    private LocalDate lastCheckInDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent
+    private LocalDate lastLoginTime;
+
+    private Boolean deletePendingFlag;
+
     private Boolean deleteFlag;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent
+    private LocalDate createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent
+    private LocalDate updateTime;
 }

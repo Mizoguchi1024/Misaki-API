@@ -9,9 +9,12 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.result.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
@@ -23,8 +26,8 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<Result<Void>> handleCustomException(BaseException e, HttpServletRequest request) {
-        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
 
         return ResponseEntity.status(e.getStatus()).body(Result.fail(e.getCode(), e.getMessage()));
     }
@@ -41,8 +44,8 @@ public class GlobalExceptionHandler {
         String field = e.getBindingResult().getFieldError().getField();
         String fullMessage = message + ": " + field;
 
-        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                fullMessage, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), fullMessage);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, fullMessage));
     }
@@ -52,17 +55,53 @@ public class GlobalExceptionHandler {
      */
     @EnableExceptionLog
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolation(ConstraintViolationException e, HttpServletRequest request) {
+    public ResponseEntity<Result<Void>> handleConstraintViolation(ConstraintViolationException e, HttpServletRequest request) {
         String message = e.getConstraintViolations()
                 .stream()
                 .findFirst()
                 .map(ConstraintViolation::getMessage)
                 .orElse(FailMessageConstant.INVALID_PARAMETER);
 
-        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                message, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), message);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, message));
+    }
+
+    /**
+     * 处理缺少 RequestParam 异常
+     */
+    @EnableExceptionLog
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Result<Void>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e, HttpServletRequest request){
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
+    }
+
+    /**
+     * 处理 RequestParam 类型不匹配异常
+     */
+    @EnableExceptionLog
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Result<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request){
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
+    }
+
+    /**
+     * 处理反序列化失败异常
+     */
+    @EnableExceptionLog
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Result<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request){
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
     }
 
     /**
@@ -71,8 +110,9 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Result<Void>> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                e.getMessage(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
     }
 
@@ -82,8 +122,8 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Result<Void>> handleNoResourceFoundException(NoResourceFoundException e, HttpServletRequest request){
-        log.warn("{} | IP={} | URI={} | Method={} | Exception={}",
-                FailMessageConstant.RESOURCE_NOT_FOUND, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.RESOURCE_NOT_FOUND);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(40400, FailMessageConstant.RESOURCE_NOT_FOUND));
     }
@@ -94,8 +134,8 @@ public class GlobalExceptionHandler {
     @EnableExceptionLog
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Result<Void>> handleException(Exception e, HttpServletRequest request) {
-        log.error("{} | IP={} | URI={} | Method={} | Exception={}",
-                FailMessageConstant.INTERNAL_SERVER_ERROR, request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getClass().getSimpleName());
+        log.error("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.INTERNAL_SERVER_ERROR);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Result.fail(50000, FailMessageConstant.INTERNAL_SERVER_ERROR));
     }

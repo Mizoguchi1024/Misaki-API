@@ -13,6 +13,7 @@ import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.admin.EmailLogAdminResponse;
 import org.mizoguchi.misaki.pojo.vo.admin.ExceptionLogAdminResponse;
 import org.mizoguchi.misaki.service.admin.LogAdminService;
+import org.springframework.data.util.ParsingUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class LogAdminController {
             } catch (NoSuchFieldException e) {
                 throw new InvalidSortParamsException(FailMessageConstant.INVALID_SORT_PARAMS);
             }
+            sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
         return Result.success(logAdminService.searchEmailLogs(pageIndex, pageSize, sortField, sortOrder, searchEmailLogAdminRequest));
     }

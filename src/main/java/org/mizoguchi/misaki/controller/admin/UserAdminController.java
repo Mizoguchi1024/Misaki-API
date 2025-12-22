@@ -13,6 +13,7 @@ import org.mizoguchi.misaki.pojo.dto.admin.UpdateUserAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
+import org.springframework.data.util.ParsingUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class UserAdminController {
             } catch (NoSuchFieldException e) {
                 throw new InvalidSortParamsException(FailMessageConstant.INVALID_SORT_PARAMS);
             }
+            sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
         return Result.success(userAdminService.searchUsers(pageIndex, pageSize, sortField, sortOrder, searchUserAdminRequest));
     }

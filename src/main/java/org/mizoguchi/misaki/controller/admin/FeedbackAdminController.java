@@ -12,6 +12,7 @@ import org.mizoguchi.misaki.pojo.dto.admin.UpdateFeedbackAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Feedback;
 import org.mizoguchi.misaki.pojo.vo.admin.FeedbackAdminResponse;
 import org.mizoguchi.misaki.service.admin.FeedbackAdminService;
+import org.springframework.data.util.ParsingUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class FeedbackAdminController {
             } catch (NoSuchFieldException e) {
                 throw new InvalidSortParamsException(FailMessageConstant.INVALID_SORT_PARAMS);
             }
+            sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
         return Result.success(feedbackAdminService.searchFeedbacks(pageIndex, pageSize, sortField, sortOrder, searchFeedbackAdminRequest));
     }

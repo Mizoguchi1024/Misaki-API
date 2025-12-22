@@ -13,6 +13,7 @@ import org.mizoguchi.misaki.pojo.dto.admin.UpdateAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.vo.admin.AssistantAdminResponse;
 import org.mizoguchi.misaki.service.admin.AssistantAdminService;
+import org.springframework.data.util.ParsingUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,7 @@ public class AssistantAdminController {
             } catch (NoSuchFieldException e) {
                 throw new InvalidSortParamsException(FailMessageConstant.INVALID_SORT_PARAMS);
             }
+            sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
         return Result.success(assistantAdminService.searchAssistants(pageIndex, pageSize, sortField, sortOrder, searchAssistantAdminRequest));
     }
