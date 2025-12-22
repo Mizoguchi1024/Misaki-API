@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.admin.AddUserAdminRequest;
@@ -71,12 +72,17 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public void updateUser(Long userId, UpdateUserAdminRequest updateUserAdminRequest) {
+        if (!userMapper.exists(new LambdaQueryWrapper<User>().eq(User::getId, userId))) {
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
+        }
+
         User user = new User();
         BeanUtils.copyProperties(updateUserAdminRequest, user);
-        int affectedRows = userMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getId, userId));
+        user.setId(userId);
+        int affectedRows = userMapper.updateById(user);
 
         if (affectedRows == 0) {
-            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 

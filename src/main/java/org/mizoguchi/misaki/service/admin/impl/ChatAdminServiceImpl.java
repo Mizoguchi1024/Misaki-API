@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
+import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchChatAdminRequest;
@@ -53,12 +54,17 @@ public class ChatAdminServiceImpl implements ChatAdminService {
 
     @Override
     public void updateChat(Long chatId, UpdateChatAdminRequest updateChatAdminRequest) {
+        if (!chatMapper.exists(new LambdaQueryWrapper<Chat>().eq(Chat::getId, chatId))) {
+            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+        }
+
         Chat chat = new Chat();
         BeanUtils.copyProperties(updateChatAdminRequest, chat);
-        int affectedRows = chatMapper.update(chat, new LambdaQueryWrapper<Chat>().eq(Chat::getId, chatId));
+        chat.setId(chatId);
+        int affectedRows = chatMapper.updateById(chat);
 
         if (affectedRows == 0) {
-            throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 

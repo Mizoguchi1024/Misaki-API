@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.pojo.dto.admin;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -42,4 +43,7 @@ public class UpdateUserAdminRequest {
     private LocalDate lastCheckInDate;
 
     private Boolean deleteFlag;
+
+    @NotNull
+    private Integer version;
 }

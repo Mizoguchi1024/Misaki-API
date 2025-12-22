@@ -1,6 +1,7 @@
 package org.mizoguchi.misaki.pojo.dto.admin;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -24,4 +25,7 @@ public class UpdateAssistantAdminRequest {
     private Boolean publicFlag;
 
     private Boolean deleteFlag;
+
+    @NotNull
+    private Integer version;
 }

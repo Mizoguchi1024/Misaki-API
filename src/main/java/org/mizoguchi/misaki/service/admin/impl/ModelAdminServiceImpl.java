@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
+import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.AddModelAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchModelAdminRequest;
@@ -56,12 +57,17 @@ public class ModelAdminServiceImpl implements ModelAdminService {
 
     @Override
     public void updateModel(Long modelId, UpdateModelAdminRequest updateModelAdminRequest) {
+        if (!modelMapper.exists(new LambdaQueryWrapper<Model>().eq(Model::getId, modelId))) {
+            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
+        }
+
         Model model = new Model();
         BeanUtils.copyProperties(updateModelAdminRequest, model);
-        int affectedRows = modelMapper.update(model, new LambdaQueryWrapper<Model>().eq(Model::getId, modelId));
+        model.setId(modelId);
+        int affectedRows = modelMapper.updateById(model);
 
         if (affectedRows == 0) {
-            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 

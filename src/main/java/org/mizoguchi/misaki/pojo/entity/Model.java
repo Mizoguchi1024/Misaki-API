@@ -1,9 +1,6 @@
 package org.mizoguchi.misaki.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,4 +31,7 @@ public class Model {
 
     @TableField(fill =  FieldFill.INSERT)
     private LocalDateTime createTime;
+
+    @Version
+    private Integer version;
 }

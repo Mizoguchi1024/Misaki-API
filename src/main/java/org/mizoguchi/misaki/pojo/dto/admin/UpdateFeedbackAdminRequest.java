@@ -2,6 +2,8 @@ package org.mizoguchi.misaki.pojo.dto.admin;
 
 import lombok.Data;
 
+import jakarta.validation.constraints.NotNull;
+
 @Data
 public class UpdateFeedbackAdminRequest {
     private Long replierId;
@@ -17,4 +19,7 @@ public class UpdateFeedbackAdminRequest {
     private Integer status;
 
     private Boolean deleteFlag;
+
+    @NotNull
+    private Integer version;
 }

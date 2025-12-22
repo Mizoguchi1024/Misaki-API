@@ -1,7 +1,6 @@
 package org.mizoguchi.misaki.service.common.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
@@ -59,7 +58,8 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, loginRequest.getEmail())
-                .eq(User::getDeleteFlag, false));
+                .eq(User::getDeleteFlag, false)
+        );
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
@@ -75,10 +75,13 @@ public class AuthServiceImpl implements AuthService {
             throw new WrongPasswordException(FailMessageConstant.WRONG_PASSWORD);
         }
 
-        userMapper.update(new LambdaUpdateWrapper<User>()
-                .eq(User::getId, user.getId())
-                .set(User::getLastLoginTime, LocalDateTime.now())
-                .set(User::getDeletePendingFlag, false));
+        user.setLastLoginTime(LocalDateTime.now());
+        user.setDeletePendingFlag(false);
+        int affectedRows = userMapper.updateById(user);
+
+        if (affectedRows == 0) {
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
 
         return LoginResponse.builder()
                 .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
@@ -150,13 +153,19 @@ public class AuthServiceImpl implements AuthService {
 
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
 
-        int affectedRows = userMapper.update(new LambdaUpdateWrapper<User>()
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, resetPasswordRequest.getEmail())
                 .eq(User::getDeleteFlag, false)
-                .set(User::getPassword, encryptPassword));
+        );
+        if (user == null) {
+            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
+        }
+
+        user.setPassword(encryptPassword);
+        int affectedRows = userMapper.updateById(user);
 
         if (affectedRows == 0) {
-            throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 }

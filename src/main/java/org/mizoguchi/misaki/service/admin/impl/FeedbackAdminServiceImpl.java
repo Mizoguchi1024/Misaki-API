@@ -1,11 +1,12 @@
 package org.mizoguchi.misaki.service.admin.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.FeedbackNotExistsException;
+import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.FeedbackMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchFeedbackAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateFeedbackAdminRequest;
@@ -52,12 +53,17 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
 
     @Override
     public void updateFeedback(Long feedbackId, UpdateFeedbackAdminRequest updateFeedbackAdminRequest) {
+        if (!feedbackMapper.exists(new LambdaQueryWrapper<Feedback>().eq(Feedback::getId, feedbackId))) {
+            throw new FeedbackNotExistsException(FailMessageConstant.FEEDBACK_NOT_EXISTS);
+        }
+
         Feedback feedback = new Feedback();
         BeanUtils.copyProperties(updateFeedbackAdminRequest, feedback);
-        int affectedRows = feedbackMapper.update(feedback, new LambdaUpdateWrapper<Feedback>().eq(Feedback::getId, feedbackId));
+        feedback.setId(feedbackId);
+        int affectedRows = feedbackMapper.updateById(feedback);
 
-        if(affectedRows == 0) {
-            throw new FeedbackNotExistsException(FailMessageConstant.FEEDBACK_NOT_EXISTS);
+        if (affectedRows == 0) {
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
     }
 
@@ -65,7 +71,7 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
     public void deleteFeedback(Long feedbackId) {
         int affectedRows = feedbackMapper.deleteById(feedbackId);
 
-        if(affectedRows == 0) {
+        if (affectedRows == 0) {
             throw new FeedbackNotExistsException(FailMessageConstant.FEEDBACK_NOT_EXISTS);
         }
     }

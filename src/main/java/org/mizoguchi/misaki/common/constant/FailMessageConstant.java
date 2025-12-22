@@ -41,6 +41,7 @@ public class FailMessageConstant {
 
 
     // ===== 业务冲突类（已存在、已完成）=====
+    public static final String OPTIMISTIC_LOCK_FAILED = "Optimistic lock failed";
     public static final String CHAT_TITLE_ALREADY_EXISTS = "Chat title already exists";
     public static final String MODEL_ALREADY_OWNED = "Model already owned";
     public static final String MODEL_NOT_OWNED = "Model not owned";
