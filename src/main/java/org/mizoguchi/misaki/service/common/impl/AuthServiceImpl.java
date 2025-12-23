@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
+import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
+import org.mizoguchi.misaki.mapper.ModelUserMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
+import org.mizoguchi.misaki.pojo.entity.ModelUser;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.dto.common.LoginRequest;
@@ -37,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
     private final AssistantMapper assistantMapper;
+    private final ModelUserMapper  modelUserMapper;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -111,20 +115,26 @@ public class AuthServiceImpl implements AuthService {
         String encryptPassword = passwordEncoder.encode(registerRequest.getPassword());
 
         User user = User.builder()
+                .authRole(AuthRoleEnum.USER.getCode())
                 .email(registerRequest.getEmail())
-                .password(encryptPassword)
                 .username(registerRequest.getUsername())
+                .password(encryptPassword)
+                .gender(GenderEnum.UNKNOWN.getCode())
                 .token(100000)
+                .crystal(0)
+                .puzzle(0)
+                .stardust(0)
                 .deletePendingFlag(false)
                 .build();
 
         userMapper.insert(user);
 
-        Settings settings = Settings.builder()
+        ModelUser modelUser = ModelUser.builder()
                 .userId(user.getId())
+                .modelId(1L)
                 .build();
 
-        settingsMapper.insert(settings);
+        modelUserMapper.insert(modelUser);
 
         Assistant assistant = Assistant.builder()
                 .name("Misaki")
@@ -139,6 +149,17 @@ public class AuthServiceImpl implements AuthService {
 
         assistantMapper.insert(assistant);
 
+        Settings settings = Settings.builder()
+                .userId(user.getId())
+                .appearance(0)
+                .language(0)
+                .mainColor("#3142ef")
+                .borderRadius(16)
+                .ttsAutoplay(false)
+                .enabledAssistantId(assistant.getId())
+                .build();
+
+        settingsMapper.insert(settings);
         // TODO 插入别的必需的记录
     }
 
