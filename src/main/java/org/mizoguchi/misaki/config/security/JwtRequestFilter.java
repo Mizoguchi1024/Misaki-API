@@ -12,14 +12,12 @@ import org.jspecify.annotations.NonNull;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.constant.WebConstant;
-import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -28,7 +26,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -95,12 +92,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(7);
         String jwtId;
         String userId;
-        Integer roleCode;
 
         try {
             jwtId = jwtUtil.getIdFromToken(jwt);
             userId = jwtUtil.getSubjectFromToken(jwt);
-            roleCode = jwtUtil.getRoleFromToken(jwt);
             if (redisTemplate.hasKey(RedisConstant.BLOCKED_JWT + jwtId)) {
                 throw new ExpiredJwtException(null, null, null);
             }
@@ -121,10 +116,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 CustomUserDetails customUserDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(userId);
                 customUserDetails.setJwtId(jwtId);
 
-                AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(roleCode);
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authRoleEnum.getRoleName());
-
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, List.of(authority));
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
 
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

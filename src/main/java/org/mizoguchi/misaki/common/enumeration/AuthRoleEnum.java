@@ -8,11 +8,12 @@ import org.mizoguchi.misaki.common.exception.InvalidEnumCodeException;
 @Getter
 @AllArgsConstructor
 public enum AuthRoleEnum {
-    USER(0, "ROLE_USER"),
-    ADMIN(1, "ROLE_ADMIN");
+    USER(0, "USER", "ROLE_USER"),
+    ADMIN(1, "ADMIN", "ROLE_ADMIN");
 
     private final int code;
-    private final String roleName;
+    private final String role;
+    private final String roleWithPrefix;
 
     public static AuthRoleEnum fromCode(int code) {
         for (AuthRoleEnum authRoleEnum : AuthRoleEnum.values()) {

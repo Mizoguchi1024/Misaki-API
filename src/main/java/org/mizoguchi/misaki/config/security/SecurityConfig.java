@@ -1,11 +1,10 @@
 package org.mizoguchi.misaki.config.security;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
-import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
+import org.mizoguchi.misaki.common.enumeration.AuthRoleEnum;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
-    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,20 +26,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                         .requestMatchers("/auth/**","/error/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/common/**", "/front/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**", "/actuator/**").hasRole("ADMIN")
+                        .requestMatchers("/common/**", "/front/**").hasAnyRole(AuthRoleEnum.USER.getRole(), AuthRoleEnum.ADMIN.getRole())
+                        .requestMatchers("/admin/**", "/actuator/**").hasRole(AuthRoleEnum.ADMIN.getRole())
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
     }
 
     @Bean
