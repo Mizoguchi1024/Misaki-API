@@ -13,6 +13,7 @@ import org.mizoguchi.misaki.pojo.entity.Feedback;
 import org.mizoguchi.misaki.pojo.vo.admin.FeedbackAdminResponse;
 import org.mizoguchi.misaki.service.admin.FeedbackAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class FeedbackAdminController {
                                                                @RequestParam(required = false) String sortField,
                                                                @RequestParam(defaultValue = "asc") String sortOrder,
                                                                @RequestBody @Validated SearchFeedbackAdminRequest searchFeedbackAdminRequest){
-        if (sortField != null && !sortField.isBlank()){
+        if (StringUtils.hasText(sortField)){
             try {
                 Feedback.class.getDeclaredField(sortField);
             } catch (NoSuchFieldException e) {

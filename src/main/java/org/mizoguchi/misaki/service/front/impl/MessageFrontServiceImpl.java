@@ -18,11 +18,13 @@ import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,14 +51,18 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        if (sendMessageFrontRequest.getParentId() != null) {
-            Message parentMessage = messageMapper.selectOne(new LambdaQueryWrapper<Message>()
-                    .eq(Message::getChatId, chatId)
-                    .eq(Message::getParentId, sendMessageFrontRequest.getParentId()));
+        Map<String, Object> advisorParams = new HashMap<>();
+        advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
 
-            if (parentMessage == null) {
+        if (sendMessageFrontRequest.getParentId() != null) {
+            if (!messageMapper.exists(new LambdaQueryWrapper<Message>()
+                    .eq(Message::getId, sendMessageFrontRequest.getParentId())
+                    .eq(Message::getChatId, chatId)
+            )) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
             }
+
+            advisorParams.put(ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId());
         }
 
         User user = userMapper.selectById(userId);
@@ -83,12 +89,6 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         systemMessageParams.put(ChatConstant.USER_DETAIL, user.getDetail());
         systemMessageParams.replaceAll((k, v) -> v == null ? "" : v);
 
-        Map<String, Object> advisorParams = new HashMap<>();
-        advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
-        if (sendMessageFrontRequest.getParentId() != null) {
-            advisorParams.put(ChatConstant.PARENT_ID, sendMessageFrontRequest.getParentId());
-        }
-
         ChatClient.ChatClientRequestSpec chatClientRequestSpec = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_DEFAULT)
                 .system(systemMessage -> systemMessage.params(systemMessageParams))
@@ -114,24 +114,33 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             chatClientRequestSpec.messages(userMessage);
         }
 
-        return chatClientRequestSpec
+        Flux<ChatResponse> responseFlux = chatClientRequestSpec
                 .stream()
                 .chatResponse()
-                .doOnNext(chatResponse ->{
-                    Usage usage = chatResponse.getMetadata().getUsage();
-                    chatMapper.update(new LambdaUpdateWrapper<Chat>()
-                            .eq(Chat::getId, chatId)
-                            .setIncrBy(Chat::getToken, usage.getTotalTokens())
-                            .setIncrBy(Chat::getVersion, 1)
-                    );
+                .cache(); // 复用同一个流
 
-                    userMapper.update(new LambdaUpdateWrapper<User>()
-                            .eq(User::getId, userId)
-                            .setDecrBy(User::getToken, usage.getTotalTokens())
-                            .setIncrBy(User::getVersion, 1)
-                    );
+        Mono<Long> tokenMono = responseFlux.map(chatResponse -> {
+                    Usage usage = chatResponse.getMetadata().getUsage();
+                    return usage == null ? 0L : usage.getTotalTokens();
                 })
-                .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题
+                .reduce(0L, Long::sum);
+
+        return responseFlux.mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText())
+                .doOnComplete(() -> tokenMono.subscribe(tokens -> {
+                    if (tokens > 0) {
+                        chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                                .eq(Chat::getId, chatId)
+                                .setIncrBy(Chat::getToken, tokens)
+                                .setIncrBy(Chat::getVersion, 1)
+                        );
+
+                        userMapper.update(new LambdaUpdateWrapper<User>()
+                                .eq(User::getId, userId)
+                                .setDecrBy(User::getToken, tokens)
+                                .setIncrBy(User::getVersion, 1)
+                        );
+                    }
+                }));
     }
 
     @Override

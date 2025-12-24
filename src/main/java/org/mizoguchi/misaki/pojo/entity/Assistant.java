@@ -44,5 +44,6 @@ public class Assistant {
     private LocalDateTime updateTime;
 
     @Version
+    @TableField(fill =  FieldFill.INSERT)
     private Integer version;
 }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.result.Result;
+import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
@@ -38,9 +39,9 @@ public class ChatFrontController {
     @Operation(summary = "生成提示词建议")
     @GetMapping("/{id}/prompts")
     public Result<List<String>> listPrompts(@AuthenticationPrincipal UserDetails userDetails,
-                                            @PathVariable Long id ,
-                                            @RequestParam @Positive Integer size){
-        return Result.success(chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, size));
+                                            @PathVariable Long id,
+                                            @RequestBody @Validated ListPromptsFrontRequest  listPromptsFrontRequest){
+        return Result.success(chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, listPromptsFrontRequest));
     }
 
     @Operation(summary = "发送消息")
@@ -53,9 +54,10 @@ public class ChatFrontController {
     }
 
     @Operation(summary = "生成会话标题")
-    @GetMapping(value = "/{id}/title", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_EVENT_STREAM_VALUE})
-    public Flux<String> createChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        return chatFrontService.addChatTitle(Long.valueOf(userDetails.getUsername()), id);
+    @GetMapping(value = "/{id}/title")
+    public Result<Void> createChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        chatFrontService.addChatTitle(Long.valueOf(userDetails.getUsername()), id);
+        return Result.success();
     }
     
     @Operation(summary = "修改会话标题")

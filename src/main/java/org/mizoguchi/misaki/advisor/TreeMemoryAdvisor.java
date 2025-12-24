@@ -79,7 +79,10 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
                         .build())
                 .build();
 
-        // 记录 USER 消息
+        if (isDisableDbWrite(chatClientRequest.context())) {
+            return processedRequest;
+        }
+
         UserMessage userMessage = processedRequest.prompt().getUserMessage();
 
         org.mizoguchi.misaki.pojo.entity.Message userEntity =
@@ -103,8 +106,8 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
         String conversationId = getConversationId(chatClientResponse.context());
         String lastUserMessageId = getLastUserMessageId(chatClientResponse.context());
 
-        // conversationId == null → 不写聊天记忆
-        if (conversationId == null) {
+        // 不写聊天记忆
+        if (conversationId == null || isDisableDbWrite(chatClientResponse.context())) {
             return chatClientResponse;
         }
 
@@ -153,6 +156,10 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
 
     private String getLastUserMessageId(Map<String, Object> context) {
         return context == null ? null : Objects.toString(context.get(ChatConstant.LAST_USER_MESSAGE_ID), null);
+    }
+
+    private Boolean isDisableDbWrite(Map<String, Object> context) {
+        return context == null || context.containsKey(ChatConstant.DISABLE_DB_WRITE);
     }
 
     private List<org.mizoguchi.misaki.pojo.entity.Message> resolveHistory(List<org.mizoguchi.misaki.pojo.entity.Message> memoryMessages,

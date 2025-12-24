@@ -33,5 +33,6 @@ public class Model {
     private LocalDateTime createTime;
 
     @Version
+    @TableField(fill =  FieldFill.INSERT)
     private Integer version;
 }

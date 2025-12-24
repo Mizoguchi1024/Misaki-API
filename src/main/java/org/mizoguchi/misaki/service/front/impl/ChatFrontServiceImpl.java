@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
-import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.mapper.UserMapper;
+import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
@@ -31,8 +31,9 @@ import org.springframework.ai.deepseek.api.ResponseFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
+import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -85,16 +86,27 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     }
 
     @Override
-    public List<String> listPrompts(Long userId, Long chatId, Integer size) {
-        Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
+    public List<String> listPrompts(Long userId, Long chatId, ListPromptsFrontRequest listPromptsFrontRequest) {
+        if(!chatMapper.exists(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-        );
-
-        if(chat == null) {
+        )) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
+
+        Map<String, Object> advisorParams = new HashMap<>();
+        advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
+        advisorParams.put(ChatConstant.DISABLE_DB_WRITE, true);
+
+        if (!messageMapper.exists(new LambdaQueryWrapper<Message>()
+                .eq(Message::getId, listPromptsFrontRequest.getParentId())
+                .eq(Message::getChatId, chatId)
+        )) {
+                throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
+        }
+
+        advisorParams.put(ChatConstant.PARENT_ID, listPromptsFrontRequest.getParentId());
 
         User user = userMapper.selectById(userId);
         if (user.getToken() <= 0){
@@ -102,7 +114,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }
 
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
-                .eq(Message::getChatId, chatId));
+                .eq(Message::getChatId, chatId)
+        );
 
         if (messages.isEmpty()) {
             throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
@@ -115,8 +128,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
         ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
-                .system(systemMessage -> systemMessage.params(Map.of(ChatConstant.SIZE, size)))
-                .messages(new AssistantMessage(assistantMessage.getContent()))
+                .system(systemMessage -> systemMessage.params(Map.of(ChatConstant.SIZE, listPromptsFrontRequest.getSize())))
+                .advisors(advisorSpec -> advisorSpec.params(advisorParams))
                 .options(DeepSeekChatOptions.builder()
                         .responseFormat(ResponseFormat.builder()
                                 .type(ResponseFormat.Type.JSON_OBJECT)
@@ -155,7 +168,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
     @Override
     @Transactional
-    public Flux<String> addChatTitle(Long userId, Long chatId) {
+    public void addChatTitle(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
@@ -165,7 +178,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        if (chat.getTitle() != null && !chat.getTitle().isBlank()) {
+        if (StringUtils.hasText(chat.getTitle())) {
             throw new ChatTitleAlreadyExistsException(FailMessageConstant.CHAT_TITLE_ALREADY_EXISTS);
         }
 
@@ -187,35 +200,34 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
 
-        return chatClient.prompt()
+        ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)
                 .messages(List.of(new UserMessage(userMessage.getContent()),
                         new AssistantMessage(assistantMessage.getContent())))
-                .stream()
-                .chatResponse()
-                .doOnNext(chatResponse -> {
-                    Usage usage = chatResponse.getMetadata().getUsage();
-                    String title = chatResponse.getResult().getOutput().getText();
-                    if (title != null && !title.isBlank()) {
-                        title = title.replaceAll(RegexConstant.QUOTE_PREFIX, "")
-                                .replaceAll(RegexConstant.QUOTE_SUFFIX, "")
-                                .replaceAll(RegexConstant.TITLE_INDICATION, "");
+                .call()
+                .chatResponse();
 
-                        chatMapper.update(new LambdaUpdateWrapper<Chat>()
-                                .eq(Chat::getId, chatId)
-                                .set(Chat::getTitle, title)
-                                .setIncrBy(Chat::getToken, usage.getTotalTokens())
-                                .setIncrBy(Chat::getVersion, 1)
-                        );
+        if (chatResponse == null) {
+            throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
+        }
 
-                        userMapper.update(new LambdaUpdateWrapper<User>()
-                                .eq(User::getId, userId)
-                                .setDecrBy(User::getToken, usage.getTotalTokens())
-                                .setIncrBy(User::getVersion, 1)
-                        );
-                    }
-                })
-                .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());// TODO 注意NotNull是否有问题;
+        Usage usage = chatResponse.getMetadata().getUsage();
+        String title = chatResponse.getResult().getOutput().getText();
+
+        if (StringUtils.hasText(title)) {
+            chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                    .eq(Chat::getId, chatId)
+                    .set(Chat::getTitle, title)
+                    .setIncrBy(Chat::getToken, usage.getTotalTokens())
+                    .setIncrBy(Chat::getVersion, 1)
+            );
+
+            userMapper.update(new LambdaUpdateWrapper<User>()
+                    .eq(User::getId, userId)
+                    .setDecrBy(User::getToken, usage.getTotalTokens())
+                    .setIncrBy(User::getVersion, 1)
+            );
+        }
     }
 
     @Override

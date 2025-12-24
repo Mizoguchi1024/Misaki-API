@@ -23,17 +23,32 @@ public class ChatConstant {
     public static final String USER_OCCUPATION = "userOccupation";
     public static final String USER_DETAIL = "userDetail";
     public static final String SYSTEM_GENERATE_PROMPTS = """
-            Generate {size} user prompt suggestions based on assistant message, output in JSON format.
+            Generate {size} user prompt suggestions based on the latest assistant message, output in JSON format.
             
             EXAMPLE JSON OUTPUT:
-            {
-                "prompts": ["prompts1", "prompts2", "prompts3"]
-            }
+            \\{
+                "prompts": \\["prompts1", "prompts2", "prompts3"\\]
+            \\}
             """;
     public static final String SIZE = "size";
-    public static final String SYSTEM_GENERATE_TITLE = "Generate a concise title for this conversation without quotation marks.";
+    public static final String SYSTEM_GENERATE_TITLE = """
+            You are an assistant that generates a concise title for a chat conversation.
+            
+            Rules:
+            - Generate ONE short title only.
+            - The title must be clear, specific, and descriptive.
+            - Use no more than 8 words.
+            - Focus on the general topic, not specific answers.
+            - Do NOT use quotation marks.
+            - Do NOT add any prefixes like "Title:" or "Chat Title:".
+            - Do NOT include emojis.
+            - Do NOT explain or add extra text.
+            
+            Return only the title text.
+            """;
     public static final String CODE_QUOTE = "```";
     public static final String CONVERSATION_ID = "chat_memory_conversation_id";
     public static final String PARENT_ID = "chat_memory_parent_id";
     public static final String LAST_USER_MESSAGE_ID = "chat_memory_last_user_message_id";
+    public static final String DISABLE_DB_WRITE = "disable_db_write";
 }

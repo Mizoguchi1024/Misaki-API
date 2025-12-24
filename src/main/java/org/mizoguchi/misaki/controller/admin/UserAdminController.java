@@ -14,6 +14,7 @@ import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,7 @@ public class UserAdminController {
                                                        @RequestParam(required = false) String sortField,
                                                        @RequestParam(defaultValue = "asc") String sortOrder,
                                                        @RequestBody @Validated SearchUserAdminRequest searchUserAdminRequest){
-        if (sortField != null && !sortField.isBlank()){
+        if (StringUtils.hasText(sortField)){
             try {
                 User.class.getDeclaredField(sortField);
             } catch (NoSuchFieldException e) {

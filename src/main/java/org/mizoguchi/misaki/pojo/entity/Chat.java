@@ -32,5 +32,6 @@ public class Chat {
     private LocalDateTime updateTime;
 
     @Version
+    @TableField(fill =  FieldFill.INSERT)
     private Integer version;
 }

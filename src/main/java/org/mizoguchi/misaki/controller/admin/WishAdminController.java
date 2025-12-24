@@ -12,6 +12,7 @@ import org.mizoguchi.misaki.pojo.entity.Wish;
 import org.mizoguchi.misaki.pojo.vo.admin.WishAdminResponse;
 import org.mizoguchi.misaki.service.admin.WishAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class WishAdminController {
                                                         @RequestParam(required = false) String sortField,
                                                         @RequestParam(defaultValue = "asc") String sortOrder,
                                                         @RequestBody @Validated SearchWishAdminRequest searchWishAdminRequest){
-        if (sortField != null && !sortField.isBlank()){
+        if (StringUtils.hasText(sortField)){
             try {
                 Wish.class.getDeclaredField(sortField);
             } catch (NoSuchFieldException e) {
