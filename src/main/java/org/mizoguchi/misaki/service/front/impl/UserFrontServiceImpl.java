@@ -66,7 +66,9 @@ public class UserFrontServiceImpl implements UserFrontService {
                 .setIncrBy(User::getVersion, 1)
         );
 
-        redisTemplate.opsForValue().set(RedisConstant.BLOCKED_JWT + jwtId, "1", Duration.ofMillis(JWT_EXPIRATION_IN_MS));
+        redisTemplate.opsForValue().set(RedisConstant.BLOCKED_JWT + jwtId,
+                String.valueOf(System.currentTimeMillis()),
+                Duration.ofMillis(JWT_EXPIRATION_IN_MS));
     }
 
     @Override

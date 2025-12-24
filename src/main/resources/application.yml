@@ -1,20 +1,24 @@
 server:
   servlet:
     context-path: /api
-  port: 8080
+
 spring:
   application:
     name: Misaki
+
   servlet:
     multipart:
-      max-file-size: 10MB       # 单个文件最大 10MB
-      max-request-size: 20MB    # 单次请求总大小（多个文件加起来）
+      max-file-size: 10MB
+      max-request-size: 20MB
+
   web:
     locale: en_US
     locale-resolver: fixed
+
   jackson:
     time-zone: Asia/Shanghai
     locale: zh
+
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     hikari:
@@ -28,6 +32,7 @@ spring:
     url: ${misaki.mysql.url}
     username: ${misaki.mysql.username}
     password: ${misaki.mysql.password}
+
   mail:
     host: smtp.qq.com
     port: 465
@@ -39,11 +44,13 @@ spring:
         smtp:
           ssl:
             enable: true
+
   data:
     redis:
       host: ${misaki.redis.host}
       port: ${misaki.redis.port}
       database: 0
+
   ai:
     deepseek:
       base-url: ${misaki.ai.base-url}
@@ -52,6 +59,7 @@ spring:
         options:
           model: deepseek-chat
           temperature: 0.8
+
     mcp:
       client:
         name: misaki-mcp-client
@@ -77,16 +85,10 @@ management:
       exposure:
         include: health, metrics
 
-#logging:
-#  level:
-#    org.springframework.web: DEBUG
-
 mybatis-plus:
   mapper-locations: classpath:mapper/*Mapper.xml
   global-config:
     banner: false
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 minio:
   endpoint: ${misaki.minio.endpoint}
@@ -98,28 +100,11 @@ misaki:
   jwt:
     secret: kotoshi_nakahara_misaki_wa_kitto_kuru
     expiration: 7200000
-  mysql:
-    url: jdbc:mysql://localhost:3306/misaki?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: admin
-  redis:
-    host: localhost
-    port: 6379
-  mail:
-    username: kiyomizu_wx@qq.com
-    password: yexqazyxodclecdg
-  ai:
-    base-url: https://api.deepseek.com
-    api-key: sk-c846b63a4b544b248b414725883123b2
-  minio:
-    endpoint: http://localhost:9000
-    access-key: misaki
-    secret-key: nakahara
-    bucket: misaki
+
   business:
     auth:
       max-password-retry-count: 5
-      password-retry-time-window: 5  #分钟
+      password-retry-time-window: 5
     user:
       check-in:
         token: 10000
