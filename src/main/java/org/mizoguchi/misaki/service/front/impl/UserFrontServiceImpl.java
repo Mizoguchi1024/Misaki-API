@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.exception.AlreadyCheckedInException;
+import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
@@ -84,12 +85,18 @@ public class UserFrontServiceImpl implements UserFrontService {
         BeanUtils.copyProperties(updateUserFrontRequest, user);
         user.setId(userId);
 
-        userMapper.updateById(user);
+        int affectedRows = userMapper.updateById(user);
+
+        if (affectedRows == 0) {
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
     }
 
     @Override
     public SettingFrontResponse getSetting(Long userId) {
-        Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
+        Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>()
+                .eq(Settings::getUserId, userId)
+        );
 
         SettingFrontResponse settingFrontResponse = new SettingFrontResponse();
         BeanUtils.copyProperties(settings, settingFrontResponse);
@@ -103,6 +110,12 @@ public class UserFrontServiceImpl implements UserFrontService {
         BeanUtils.copyProperties(updateSettingFrontRequest, settings);
         settings.setUserId(userId);
 
-        settingsMapper.update(settings, new LambdaUpdateWrapper<Settings>().eq(Settings::getUserId, userId));
+        int affectedRows = settingsMapper.update(settings, new LambdaUpdateWrapper<Settings>()
+                .eq(Settings::getUserId, userId)
+        );
+
+        if (affectedRows == 0) {
+            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
     }
 }

@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getId, Long.valueOf(userId))
+                .eq(User::getId, userId)
                 .eq(User::getDeleteFlag, false));
 
         if (user == null) {
@@ -33,7 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         AuthRoleEnum authRoleEnum = AuthRoleEnum.fromCode(user.getAuthRole());
 
-        return new CustomUserDetails(userId, user.getPassword(), null, Set.of(new SimpleGrantedAuthority(authRoleEnum.getRoleName()))
-        );
+        return CustomUserDetails.builder()
+                .username(userId)
+                .password(user.getPassword())
+                .authorities(Set.of(new SimpleGrantedAuthority(authRoleEnum.getRoleName())))
+                .build();
     }
 }

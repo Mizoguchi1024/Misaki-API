@@ -80,13 +80,12 @@ public class AuthServiceImpl implements AuthService {
             throw new WrongPasswordException(FailMessageConstant.WRONG_PASSWORD);
         }
 
-        user.setLastLoginTime(LocalDateTime.now());
-        user.setDeletePendingFlag(false);
-        int affectedRows = userMapper.updateById(user);
-
-        if (affectedRows == 0) {
-            throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
-        }
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, user.getId())
+                .set(User::getLastLoginTime, LocalDateTime.now())
+                .set(User::getDeletePendingFlag, false)
+                .setIncrBy(User::getVersion, 1)
+        );
 
         return LoginResponse.builder()
                 .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))

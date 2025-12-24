@@ -1,15 +1,13 @@
 package org.mizoguchi.misaki.config.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
+@Builder
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private String username;
