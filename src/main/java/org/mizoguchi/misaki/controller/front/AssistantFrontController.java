@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
@@ -26,6 +27,7 @@ public class AssistantFrontController {
     private final AssistantFrontService assistantFrontService;
     private final LikesFrontService likesFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "获取该用户拥有的指定的助手存档")
     @GetMapping("/{id}")
     public Result<AssistantFrontResponse> getAssistant(@AuthenticationPrincipal UserDetails userDetails,
@@ -33,12 +35,14 @@ public class AssistantFrontController {
         return Result.success(assistantFrontService.getAssistant(Long.valueOf(userDetails.getUsername()), id));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "获取该用户拥有的助手存档")
     @GetMapping()
     public Result<List<AssistantFrontResponse>> listAssistants(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(assistantFrontService.listAssistants(Long.valueOf(userDetails.getUsername())));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "获取市场公开的助手存档")
     @GetMapping("/public")
     public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails userDetails,
@@ -48,6 +52,7 @@ public class AssistantFrontController {
                 pageIndex, pageSize));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "新建助手存档")
     @PostMapping()
     public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
@@ -56,6 +61,7 @@ public class AssistantFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "复制助手存档")
     @PostMapping("/{id}")
     public Result<Void> copyAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){
@@ -63,6 +69,7 @@ public class AssistantFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "编辑助手存档")
     @PutMapping("/{id}")
     public Result<Void> updateAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
@@ -71,6 +78,7 @@ public class AssistantFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/like")
     public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
@@ -78,6 +86,7 @@ public class AssistantFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "删除助手存档")
     @DeleteMapping("/{id}")
     public Result<Void> deleteAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){

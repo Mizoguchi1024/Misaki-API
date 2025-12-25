@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,166 +99,34 @@ public class WishFrontServiceImpl implements WishFrontService {
     @Transactional
     public List<WishFrontResponse> gacha(Long userId, Integer times) {
         User user = userMapper.selectById(userId);
-
         if (user.getPuzzle() < times) {
             throw new PuzzleNotEnoughException(FailMessageConstant.PUZZLE_NOT_ENOUGH);
         }
 
-        List<WishFrontResponse> wishFrontResponses = new ArrayList<>();
-
-        Random random = new Random(System.currentTimeMillis());
+        List<WishFrontResponse> result = new ArrayList<>();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int i = 0; i < times; i++) {
-            int randomResult = random.nextInt(baseProbability);
+            int r = random.nextInt(baseProbability);
 
-            if (randomResult <= tokenProbability) { // 抽到 token
-                int token = random.nextInt(tokenLimit);
-
-                userMapper.update(new LambdaUpdateWrapper<User>()
-                        .eq(User::getId, userId)
-                        .setIncrBy(User::getToken, token)
-                        .setIncrBy(User::getVersion, 1)
-                );
-
-                Wish wish = Wish.builder()
-                        .userId(userId)
-                        .hitFlag(false)
-                        .duplicateFlag(false)
-                        .amount(token)
-                        .build();
-
-                wishMapper.insert(wish);
-
-                WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                BeanUtils.copyProperties(wish, wishFrontResponse);
-
-                wishFrontResponses.add(wishFrontResponse);
-            } else if (randomResult <= fourStarProbability) { // 抽到4星模型
-                List<Model> models = modelMapper.selectList(new LambdaQueryWrapper<Model>()
-                        .eq(Model::getGrade, 4));
-
-                if (models.isEmpty()) {
-                    throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
-                }
-
-                int index = random.nextInt(0, models.size());
-
-                ModelUser existingModel = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
-                        .eq(ModelUser::getUserId, userId)
-                        .eq(ModelUser::getModelId, models.get(index).getId()));
-
-                if (existingModel != null) { // 抽到已有模型
-                    userMapper.update(new LambdaUpdateWrapper<User>()
-                            .eq(User::getId, userId)
-                            .setIncrBy(User::getStardust, fourStarCompensation)
-                            .setIncrBy(User::getVersion, 1)
-                );
-
-                    Wish wish = Wish.builder()
-                            .userId(userId)
-                            .hitFlag(true)
-                            .duplicateFlag(true)
-                            .modelId(models.get(index).getId())
-                            .amount(fourStarCompensation) // 补偿100星尘
-                            .build();
-
-                    wishMapper.insert(wish);
-
-                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                    BeanUtils.copyProperties(wish, wishFrontResponse);
-
-                    wishFrontResponses.add(wishFrontResponse);
-                }else{ // 抽到未拥有模型
-                    ModelUser modelUser = ModelUser.builder()
-                            .userId(userId)
-                            .modelId(models.get(index).getId())
-                            .build();
-
-                    modelUserMapper.insert(modelUser);
-
-                    Wish wish = Wish.builder()
-                            .userId(userId)
-                            .hitFlag(true)
-                            .duplicateFlag(false)
-                            .modelId(models.get(index).getId())
-                            .amount(1)
-                            .build();
-
-                    wishMapper.insert(wish);
-
-                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                    BeanUtils.copyProperties(wish, wishFrontResponse);
-
-                    wishFrontResponses.add(wishFrontResponse);
-                }
-            } else { // 抽到5星模型
-                List<Model> models = modelMapper.selectList(new LambdaQueryWrapper<Model>()
-                        .eq(Model::getGrade, 5));
-
-                if (models.isEmpty()) {
-                    throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
-                }
-
-                int index = random.nextInt(0, models.size());
-
-                ModelUser existingModel = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
-                        .eq(ModelUser::getUserId, userId)
-                        .eq(ModelUser::getModelId, models.get(index).getId()));
-
-                if (existingModel != null) { // 抽到已有模型
-                    userMapper.update(new LambdaUpdateWrapper<User>()
-                            .eq(User::getId, userId)
-                            .setIncrBy(User::getStardust, fiveStarCompensation)
-                            .setIncrBy(User::getVersion, 1)
-                );
-
-                    Wish wish = Wish.builder()
-                            .userId(userId)
-                            .hitFlag(true)
-                            .duplicateFlag(true)
-                            .modelId(models.get(index).getId())
-                            .amount(fiveStarCompensation) // 补偿200星尘
-                            .build();
-
-                    wishMapper.insert(wish);
-
-                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                    BeanUtils.copyProperties(wish, wishFrontResponse);
-
-                    wishFrontResponses.add(wishFrontResponse);
-                }else{ // 抽到未拥有模型
-                    ModelUser modelUser = ModelUser.builder()
-                            .userId(userId)
-                            .modelId(models.get(index).getId())
-                            .build();
-
-                    modelUserMapper.insert(modelUser);
-
-                    Wish wish = Wish.builder()
-                            .userId(userId)
-                            .hitFlag(true)
-                            .duplicateFlag(false)
-                            .modelId(models.get(index).getId())
-                            .amount(1)
-                            .build();
-
-                    wishMapper.insert(wish);
-
-                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                    BeanUtils.copyProperties(wish, wishFrontResponse);
-
-                    wishFrontResponses.add(wishFrontResponse);
-                }
+            if (r <= tokenProbability) {
+                result.add(drawToken(userId));
+            } else if (r <= fourStarProbability) {
+                result.add(drawModel(userId, 4, fourStarCompensation));
+            } else {
+                result.add(drawModel(userId, 5, fiveStarCompensation));
             }
         }
+
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
                 .setDecrBy(User::getPuzzle, times)
                 .setIncrBy(User::getVersion, 1)
         );
 
-        return wishFrontResponses;
+        return result;
     }
+
 
     @Override
     public List<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize) {
@@ -273,4 +141,85 @@ public class WishFrontServiceImpl implements WishFrontService {
                     return wishFrontResponse;
                 }).collect(Collectors.toList());
     }
+
+    private WishFrontResponse drawToken(Long userId) {
+        int token = ThreadLocalRandom.current().nextInt(tokenLimit);
+
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setIncrBy(User::getToken, token)
+                .setIncrBy(User::getVersion, 1)
+        );
+
+        Wish wish = Wish.builder()
+                .userId(userId)
+                .hitFlag(false)
+                .duplicateFlag(false)
+                .amount(token)
+                .build();
+
+        wishMapper.insert(wish);
+
+        WishFrontResponse wishFrontResponse = new WishFrontResponse();
+        BeanUtils.copyProperties(wish, wishFrontResponse);
+
+        return wishFrontResponse;
+    }
+
+    private WishFrontResponse drawModel(Long userId, int grade, int compensation) {
+        List<Model> models = modelMapper.selectList(
+                new LambdaQueryWrapper<Model>().eq(Model::getGrade, grade)
+        );
+        if (models.isEmpty()) {
+            throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
+        }
+
+        Model model = models.get(ThreadLocalRandom.current().nextInt(models.size()));
+
+        ModelUser existing = modelUserMapper.selectOne(
+                new LambdaQueryWrapper<ModelUser>()
+                        .eq(ModelUser::getUserId, userId)
+                        .eq(ModelUser::getModelId, model.getId())
+        );
+
+        Wish wish;
+        if (existing != null) {
+            userMapper.update(new LambdaUpdateWrapper<User>()
+                    .eq(User::getId, userId)
+                    .setIncrBy(User::getStardust, compensation)
+                    .setIncrBy(User::getVersion, 1)
+            );
+
+            wish = Wish.builder()
+                    .userId(userId)
+                    .hitFlag(true)
+                    .duplicateFlag(true)
+                    .modelId(model.getId())
+                    .amount(compensation)
+                    .build();
+        } else {
+            modelUserMapper.insert(
+                    ModelUser.builder()
+                            .userId(userId)
+                            .modelId(model.getId())
+                            .build()
+            );
+
+            wish = Wish.builder()
+                    .userId(userId)
+                    .hitFlag(true)
+                    .duplicateFlag(false)
+                    .modelId(model.getId())
+                    .amount(1)
+                    .build();
+        }
+
+        wishMapper.insert(wish);
+
+        WishFrontResponse wishFrontResponse = new WishFrontResponse();
+        BeanUtils.copyProperties(wish, wishFrontResponse);
+
+        return wishFrontResponse;
+    }
+
 }

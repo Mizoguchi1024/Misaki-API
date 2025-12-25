@@ -1,0 +1,14 @@
+package org.mizoguchi.misaki.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EnableRateLimit {
+    int limit() default 8;
+
+    int window() default 1;
+}

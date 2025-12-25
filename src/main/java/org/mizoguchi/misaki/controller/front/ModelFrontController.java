@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.vo.front.ModelFrontResponse;
 import org.mizoguchi.misaki.service.front.ModelFrontService;
@@ -22,12 +23,14 @@ import java.util.List;
 public class ModelFrontController {
     private final ModelFrontService modelFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "获取所有模型")
     @GetMapping()
     public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(modelFrontService.listModels(Long.valueOf(userDetails.getUsername())));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "购买模型")
     @PostMapping("/{id}")
     public Result<Void> buyModel(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive Long id){

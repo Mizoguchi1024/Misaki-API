@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 import org.mizoguchi.misaki.service.front.WishFrontService;
@@ -25,6 +26,7 @@ import java.util.List;
 public class WishFrontController {
     private final WishFrontService wishFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "购买拼图")
     @PostMapping("/puzzles")
     public Result<Void> buyPuzzle(@AuthenticationPrincipal UserDetails userDetails,
@@ -39,13 +41,15 @@ public class WishFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
     public Result<List<WishFrontResponse>> gacha(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @RequestParam @Positive Integer times){
+                                                 @RequestParam @Positive @Max(10) Integer times){
         return Result.success(wishFrontService.gacha(Long.valueOf(userDetails.getUsername()), times));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "抽卡历史记录")
     @GetMapping("/gacha/history")
     public Result<List<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails,

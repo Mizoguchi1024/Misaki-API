@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.result.Result;
@@ -30,12 +31,14 @@ public class AuthController {
     private final EmailService emailService;
     private final RedisTemplate<String, String> redisTemplate;
 
+    @EnableRateLimit()
     @Operation(summary = "登录")
     @PostMapping("/login")
     public Result<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
         return Result.success(authService.login(loginRequest));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "注册")
     @PostMapping("/register")
     public Result<Void> register(@RequestBody @Validated RegisterRequest registerRequest) {
@@ -43,6 +46,7 @@ public class AuthController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "重设密码")
     @PostMapping("/reset-password")
     public Result<Void> resetPassword(@RequestBody @Validated ResetPasswordRequest resetPasswordRequest){
@@ -50,6 +54,7 @@ public class AuthController {
         return Result.success();
     }
 
+    @EnableRateLimit(limit = 2)
     @Operation(summary = "发送电子邮箱验证码")
     @PostMapping("/verification/{email}")
     public Result<Void> sendVerificationCode(@PathVariable @Email() String email){

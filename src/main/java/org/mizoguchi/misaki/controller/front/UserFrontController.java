@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.controller.front;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.config.security.CustomUserDetails;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserFrontController {
     private final UserFrontService userFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "每日签到")
     @PutMapping("/check-in")
     public Result<Void> checkIn(@AuthenticationPrincipal UserDetails userDetails){
@@ -30,12 +32,14 @@ public class UserFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "获取个人资料")
     @GetMapping("/profiles")
     public Result<UserFrontResponse> getProfile(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(userFrontService.getUser(Long.valueOf(userDetails.getUsername())));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "修改个人资料")
     @PutMapping("/profiles")
     public Result<Void> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
@@ -44,12 +48,14 @@ public class UserFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "获取设置项")
     @GetMapping("/settings")
     public Result<SettingFrontResponse> getSetting(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(userFrontService.getSetting(Long.valueOf(userDetails.getUsername())));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "修改设置项")
     @PutMapping("/settings")
     public Result<Void> updateSetting(@AuthenticationPrincipal UserDetails userDetails,
@@ -58,6 +64,7 @@ public class UserFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "注销账号")
     @DeleteMapping
     public Result<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails){

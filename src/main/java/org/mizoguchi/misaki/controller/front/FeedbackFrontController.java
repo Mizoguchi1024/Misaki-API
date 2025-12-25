@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.AddFeedbackFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.FeedbackFrontResponse;
@@ -23,6 +24,7 @@ import java.util.List;
 public class FeedbackFrontController {
     private final FeedbackFrontService feedbackFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "新建反馈")
     @PostMapping()
     public Result<Void> createFeedback(@AuthenticationPrincipal UserDetails userDetails,
@@ -31,12 +33,14 @@ public class FeedbackFrontController {
         return Result.success();
     }
 
+    @EnableRateLimit()
     @Operation(summary = "获取历史反馈")
     @GetMapping()
     public Result<List<FeedbackFrontResponse>> listFeedbacks(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(feedbackFrontService.listFeedbacks(Long.valueOf(userDetails.getUsername())));
     }
 
+    @EnableRateLimit()
     @Operation(summary = "删除反馈")
     @DeleteMapping("/{id}")
     public Result<Void> deleteFeedback(@AuthenticationPrincipal UserDetails userDetails,

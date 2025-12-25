@@ -6,6 +6,7 @@ public class FailMessageConstant {
     public static final String REQUEST_MISSING_HEADERS = "Request missing headers";
     public static final String REQUEST_EXPIRED = "Request expired";
     public static final String REPLAY_ATTACK_DETECTED = "Replay attack detected";
+    public static final String TOO_MANY_REQUESTS = "Too many requests";
 
     public static final String INVALID_PARAMETER = "Invalid parameter";
     public static final String INVALID_FIELD_PATTERN = "Invalid field pattern";

@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.controller.front;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.service.front.PuppetFrontService;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Flux;
 public class PuppetFrontController {
     private final PuppetFrontService puppetFrontService;
 
+    @EnableRateLimit()
     @Operation(summary = "事件回应")
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_EVENT_STREAM_VALUE})
     public Flux<String> puppetEvent(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String event) {
