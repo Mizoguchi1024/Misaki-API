@@ -32,7 +32,7 @@ public class ChatConstant {
             """;
     public static final String SIZE = "size";
     public static final String SYSTEM_GENERATE_TITLE = """
-            You are an assistant that generates a concise title for a chat conversation.
+            Generate a concise title for this conversation.
             
             Rules:
             - Generate ONE short title only.
