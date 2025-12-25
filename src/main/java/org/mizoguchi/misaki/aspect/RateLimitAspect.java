@@ -29,13 +29,11 @@ public class RateLimitAspect {
 
     @Around("@annotation(enableRateLimit)")
     public Object rateLimit(ProceedingJoinPoint joinPoint, EnableRateLimit enableRateLimit) throws Throwable {
-
         int limit = enableRateLimit.limit();
         int window = enableRateLimit.window();
 
         // 获取请求
-        ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             return joinPoint.proceed();
         }

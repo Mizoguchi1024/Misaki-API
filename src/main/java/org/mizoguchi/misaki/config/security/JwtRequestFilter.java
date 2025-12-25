@@ -17,6 +17,7 @@ import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -42,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain chain) throws ServletException, IOException {
         final String timestampHeader = request.getHeader(WebConstant.HEADER_TIMESTAMP);
         final String nonceHeader = request.getHeader(WebConstant.HEADER_NONCE);
-        final String authHeader = request.getHeader(WebConstant.HEADER_AUTHORIZATION);
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (request.getRequestURI().startsWith("/api/swagger-ui") || request.getRequestURI().startsWith("/api/v3/api-docs")){
             chain.doFilter(request, response);
