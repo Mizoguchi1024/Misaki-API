@@ -34,6 +34,8 @@ public class AssistantFrontResponse {
 
     private Integer likes;
 
+    private Boolean likedFlag;
+
     private Integer duplicateName;
 
     private Boolean publicFlag;

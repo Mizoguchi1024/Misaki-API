@@ -42,7 +42,8 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
         ModelUser modelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
                 .eq(ModelUser::getUserId, userId)
-                .eq(ModelUser::getModelId, addAssistantFrontRequest.getModelId()));
+                .eq(ModelUser::getModelId, addAssistantFrontRequest.getModelId())
+        );
 
         if (modelUser == null) {
             throw new ModelNotOwnedException(FailMessageConstant.MODEL_NOT_OWNED);
@@ -68,7 +69,8 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
         ModelUser modelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
                 .eq(ModelUser::getUserId, userId)
-                .eq(ModelUser::getModelId, assistant.getModelId()));
+                .eq(ModelUser::getModelId, assistant.getModelId())
+        );
 
         if (modelUser == null) {
             throw new ModelNotOwnedException(FailMessageConstant.MODEL_NOT_OWNED);
@@ -101,8 +103,16 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
         Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
-                .eq(Likes::getTargetId, assistant.getId()));
+                .eq(Likes::getTargetId, assistant.getId())
+        );
         assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
+
+        boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
+                .eq(Likes::getUserId, userId)
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                .eq(Likes::getTargetId, assistant.getId())
+        );
+        assistantFrontResponse.setLikedFlag(likedFlag);
 
         Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getName, assistant.getName())
@@ -117,7 +127,8 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
     public List<AssistantFrontResponse> listAssistants(Long userId) {
         List<Assistant> assistants = assistantMapper.selectList(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getOwnerId, userId)
-                .eq(Assistant::getDeleteFlag, false));
+                .eq(Assistant::getDeleteFlag, false)
+        );
 
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
@@ -125,13 +136,22 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
             Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
                     .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
-                    .eq(Likes::getTargetId, assistant.getId()));
+                    .eq(Likes::getTargetId, assistant.getId())
+            );
             assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
+
+            boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
+                    .eq(Likes::getUserId, userId)
+                    .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                    .eq(Likes::getTargetId, assistant.getId())
+            );
+            assistantFrontResponse.setLikedFlag(likedFlag);
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                     .eq(Assistant::getName, assistant.getName())
                     .ne(Assistant::getId, assistant.getId())
-                    .eq(Assistant::getDeleteFlag, false));
+                    .eq(Assistant::getDeleteFlag, false)
+            );
             assistantFrontResponse.setDuplicateName(Math.toIntExact(duplicateNameCount));
 
             return assistantFrontResponse;
@@ -153,6 +173,13 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                     .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
                     .eq(Likes::getTargetId, assistant.getId()));
             assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
+
+            boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
+                    .eq(Likes::getUserId, userId)
+                    .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                    .eq(Likes::getTargetId, assistant.getId())
+            );
+            assistantFrontResponse.setLikedFlag(likedFlag);
 
             Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                     .eq(Assistant::getName, assistant.getName())
