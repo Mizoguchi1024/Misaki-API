@@ -62,7 +62,11 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
 
     @Override
     public void updateAssistant(Long assistantId, UpdateAssistantAdminRequest updateAssistantAdminRequest) {
-        if (!assistantMapper.exists(new LambdaQueryWrapper<Assistant>().eq(Assistant::getId, assistantId))) {
+        boolean existsFlag = assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getId, assistantId)
+        );
+
+        if (!existsFlag) {
             throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 

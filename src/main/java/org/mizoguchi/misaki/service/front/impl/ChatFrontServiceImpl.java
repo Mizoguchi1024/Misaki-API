@@ -87,11 +87,13 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
     @Override
     public List<String> listPrompts(Long userId, Long chatId, ListPromptsFrontRequest listPromptsFrontRequest) {
-        if(!chatMapper.exists(new LambdaQueryWrapper<Chat>()
+        boolean chatExistsFlag = chatMapper.exists(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-        )) {
+        );
+
+        if(!chatExistsFlag) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
@@ -99,10 +101,12 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
         advisorParams.put(ChatConstant.DISABLE_DB_WRITE, true);
 
-        if (!messageMapper.exists(new LambdaQueryWrapper<Message>()
+        boolean parentMessageExistsFlag = messageMapper.exists(new LambdaQueryWrapper<Message>()
                 .eq(Message::getId, listPromptsFrontRequest.getParentId())
                 .eq(Message::getChatId, chatId)
-        )) {
+        );
+
+        if (!parentMessageExistsFlag) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
         }
 

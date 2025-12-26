@@ -53,7 +53,11 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
 
     @Override
     public void updateFeedback(Long feedbackId, UpdateFeedbackAdminRequest updateFeedbackAdminRequest) {
-        if (!feedbackMapper.exists(new LambdaQueryWrapper<Feedback>().eq(Feedback::getId, feedbackId))) {
+        boolean existsFlag = feedbackMapper.exists(new LambdaQueryWrapper<Feedback>()
+                .eq(Feedback::getId, feedbackId)
+        );
+
+        if (!existsFlag) {
             throw new FeedbackNotExistsException(FailMessageConstant.FEEDBACK_NOT_EXISTS);
         }
 

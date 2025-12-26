@@ -193,11 +193,13 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
     @Override
     public void updateAssistant(Long userId, Long assistantId, UpdateAssistantFrontRequest updateAssistantFrontRequest) {
-        if(!assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
+        boolean existsFlag = assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false)
-        )){
+        );
+
+        if(!existsFlag){
             throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
         }
 

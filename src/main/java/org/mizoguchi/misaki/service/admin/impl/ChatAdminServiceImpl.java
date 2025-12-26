@@ -54,7 +54,11 @@ public class ChatAdminServiceImpl implements ChatAdminService {
 
     @Override
     public void updateChat(Long chatId, UpdateChatAdminRequest updateChatAdminRequest) {
-        if (!chatMapper.exists(new LambdaQueryWrapper<Chat>().eq(Chat::getId, chatId))) {
+        boolean existsFlag = chatMapper.exists(new LambdaQueryWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+        );
+
+        if (!existsFlag) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 

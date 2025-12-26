@@ -72,7 +72,11 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public void updateUser(Long userId, UpdateUserAdminRequest updateUserAdminRequest) {
-        if (!userMapper.exists(new LambdaQueryWrapper<User>().eq(User::getId, userId))) {
+        boolean existsFlag = userMapper.exists(new LambdaQueryWrapper<User>()
+                .eq(User::getId, userId)
+        );
+
+        if (!existsFlag) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         }
 

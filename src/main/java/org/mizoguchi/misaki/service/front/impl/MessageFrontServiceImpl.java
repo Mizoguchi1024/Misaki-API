@@ -55,10 +55,12 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
 
         if (sendMessageFrontRequest.getParentId() != null) {
-            if (!messageMapper.exists(new LambdaQueryWrapper<Message>()
+            boolean parentMessageExistsFlag = messageMapper.exists(new LambdaQueryWrapper<Message>()
                     .eq(Message::getId, sendMessageFrontRequest.getParentId())
                     .eq(Message::getChatId, chatId)
-            )) {
+            );
+
+            if (!parentMessageExistsFlag) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
             }
 

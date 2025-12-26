@@ -57,7 +57,11 @@ public class ModelAdminServiceImpl implements ModelAdminService {
 
     @Override
     public void updateModel(Long modelId, UpdateModelAdminRequest updateModelAdminRequest) {
-        if (!modelMapper.exists(new LambdaQueryWrapper<Model>().eq(Model::getId, modelId))) {
+        boolean existsFlag = modelMapper.exists(new LambdaQueryWrapper<Model>()
+                .eq(Model::getId, modelId)
+        );
+
+        if (!existsFlag) {
             throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
 
