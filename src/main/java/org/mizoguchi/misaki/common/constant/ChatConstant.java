@@ -32,17 +32,17 @@ public class ChatConstant {
             """;
     public static final String SIZE = "size";
     public static final String SYSTEM_GENERATE_TITLE = """
-            Generate a concise title for this conversation.
+            Generate a concise title for this conversation NOW.
             
             Rules:
             - Generate ONE short title only.
             - The title must be clear, specific, and descriptive.
             - Use no more than 8 words.
             - Focus on the general topic, not specific answers.
+            - In user's language.
             - Do NOT use quotation marks.
             - Do NOT add any prefixes like "Title:" or "Chat Title:".
             - Do NOT include emojis.
-            - Do NOT explain or add extra text.
             
             Return only the title text.
             """;

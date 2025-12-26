@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
@@ -21,9 +22,7 @@ import org.mizoguchi.misaki.pojo.entity.Chat;
 import org.mizoguchi.misaki.pojo.entity.Message;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.MessageType;
-import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.deepseek.DeepSeekChatOptions;
@@ -36,6 +35,8 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -191,23 +192,24 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
         }
 
+        Map<String, Object> advisorParams = new HashMap<>();
+        advisorParams.put(ChatConstant.CONVERSATION_ID, chatId);
+
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
                 .eq(Message::getChatId, chatId)
-                .orderBy(true, true, Message::getCreateTime));
+        );
 
-        Message userMessage = messages.stream()
-                .filter(message -> MessageType.USER.getValue().equalsIgnoreCase(message.getType()))
-                .findFirst()
-                .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
         Message assistantMessage = messages.stream()
                 .filter(message -> MessageType.ASSISTANT.getValue().equalsIgnoreCase(message.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT));
 
+        advisorParams.put(ChatConstant.PARENT_ID, assistantMessage.getId());
+        advisorParams.put(ChatConstant.DISABLE_DB_WRITE, true);
+
         ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)
-                .messages(List.of(new UserMessage(userMessage.getContent()),
-                        new AssistantMessage(assistantMessage.getContent())))
+                .advisors(advisorSpec -> advisorSpec.params(advisorParams))
                 .call()
                 .chatResponse();
 
@@ -218,20 +220,22 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         Usage usage = chatResponse.getMetadata().getUsage();
         String title = chatResponse.getResult().getOutput().getText();
 
-        if (StringUtils.hasText(title)) {
-            chatMapper.update(new LambdaUpdateWrapper<Chat>()
-                    .eq(Chat::getId, chatId)
-                    .set(Chat::getTitle, title)
-                    .setIncrBy(Chat::getToken, usage.getTotalTokens())
-                    .setIncrBy(Chat::getVersion, 1)
-            );
-
-            userMapper.update(new LambdaUpdateWrapper<User>()
-                    .eq(User::getId, userId)
-                    .setDecrBy(User::getToken, usage.getTotalTokens())
-                    .setIncrBy(User::getVersion, 1)
-            );
+        if (!StringUtils.hasText(title) || !isTitleLengthValid(title)) {
+            throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
         }
+
+        chatMapper.update(new LambdaUpdateWrapper<Chat>()
+                .eq(Chat::getId, chatId)
+                .set(Chat::getTitle, title)
+                .setIncrBy(Chat::getToken, usage.getTotalTokens())
+                .setIncrBy(Chat::getVersion, 1)
+        );
+
+        userMapper.update(new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setDecrBy(User::getToken, usage.getTotalTokens())
+                .setIncrBy(User::getVersion, 1)
+        );
     }
 
     @Override
@@ -280,5 +284,26 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         if(affectedRows == 0) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
+    }
+
+    public boolean isTitleLengthValid(String title) {
+        int cjkCount = 0;
+        int engCount = 0;
+
+        // 中文按字算
+        Pattern hanPattern = Pattern.compile(RegexConstant.CJK_CHARACTER);
+        Matcher hanMatcher = hanPattern.matcher(title);
+        while (hanMatcher.find()) {
+            cjkCount++;
+        }
+
+        // 英文按词算
+        Pattern engPattern = Pattern.compile(RegexConstant.ENGLISH_WORD);
+        Matcher engMatcher = engPattern.matcher(title);
+        while (engMatcher.find()) {
+            engCount++;
+        }
+
+        return cjkCount < 20 && engCount < 10;
     }
 }
