@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.FeedbackNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.FeedbackMapper;
@@ -27,7 +28,7 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
     @Override
     public List<FeedbackAdminResponse> searchFeedbacks(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchFeedbackAdminRequest searchFeedbackAdminRequest) {
         List<Feedback> feedbacks = feedbackMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Feedback>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchFeedbackAdminRequest.getId() != null, Feedback::getId, searchFeedbackAdminRequest.getId())
                 .like(searchFeedbackAdminRequest.getUserId() != null, Feedback::getUserId, searchFeedbackAdminRequest.getUserId())

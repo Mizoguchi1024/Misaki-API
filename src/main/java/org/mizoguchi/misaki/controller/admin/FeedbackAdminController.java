@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchFeedbackAdminRequest;
@@ -32,7 +33,7 @@ public class FeedbackAdminController {
     public Result<List<FeedbackAdminResponse>> searchFeedbacks(@RequestParam @Positive Integer pageIndex,
                                                                @RequestParam @Positive Integer pageSize,
                                                                @RequestParam(required = false) String sortField,
-                                                               @RequestParam(defaultValue = "asc") String sortOrder,
+                                                               @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,
                                                                @RequestBody @Validated SearchFeedbackAdminRequest searchFeedbackAdminRequest){
         if (StringUtils.hasText(sortField)){
             try {

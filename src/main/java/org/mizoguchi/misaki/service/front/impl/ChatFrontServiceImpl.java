@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.mapper.UserMapper;
@@ -133,7 +134,9 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
         ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
-                .system(systemMessage -> systemMessage.params(Map.of(ChatConstant.SIZE, listPromptsFrontRequest.getSize())))
+                .system(systemMessage -> systemMessage.params(
+                        Map.of(ChatConstant.SIZE, listPromptsFrontRequest.getSize())
+                ))
                 .advisors(advisorSpec -> advisorSpec.params(advisorParams))
                 .options(DeepSeekChatOptions.builder()
                         .responseFormat(ResponseFormat.builder()
@@ -163,7 +166,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         String jsonString = chatResponse.getResult().getOutput().getText();
         JsonNode promptsNode;
         try {
-            promptsNode = objectMapper.readTree(jsonString).get("prompts");
+            promptsNode = objectMapper.readTree(jsonString).get(JsonConstant.PROMPTS_NODE);
         } catch (JsonProcessingException e) {
             throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
         }

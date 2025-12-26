@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.ModelMapper;
@@ -35,7 +36,7 @@ public class ModelAdminServiceImpl implements ModelAdminService {
     @Override
     public List<ModelAdminResponse> searchModels(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchModelAdminRequest searchModelAdminRequest) {
         List<Model> models = modelMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Model>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchModelAdminRequest.getId() != null, Model::getId, searchModelAdminRequest.getId())
                 .like(searchModelAdminRequest.getName() != null, Model::getName, searchModelAdminRequest.getName())

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.EmailLogNotExistsException;
 import org.mizoguchi.misaki.common.exception.ExceptionLogNotExistsException;
 import org.mizoguchi.misaki.mapper.EmailLogMapper;
@@ -33,7 +34,7 @@ public class LogAdminServiceImpl implements LogAdminService {
     @Override
     public List<EmailLogAdminResponse> searchEmailLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchEmailLogAdminRequest searchEmailLogAdminRequest) {
         List<EmailLog> emailLogs = emailLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<EmailLog>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchEmailLogAdminRequest.getId() != null, EmailLog::getId, searchEmailLogAdminRequest.getId())
                 .like(searchEmailLogAdminRequest.getSender() != null, EmailLog::getSender, searchEmailLogAdminRequest.getSender())
@@ -65,7 +66,7 @@ public class LogAdminServiceImpl implements LogAdminService {
     @Override
     public List<ExceptionLogAdminResponse> searchExceptionLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchExceptionLogAdminRequest searchExceptionLogAdminRequest) {
         List<ExceptionLog> exceptionLogs = exceptionLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<ExceptionLog>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchExceptionLogAdminRequest.getId() != null, ExceptionLog::getId, searchExceptionLogAdminRequest.getId())
                 .like(searchExceptionLogAdminRequest.getException() != null, ExceptionLog::getException, searchExceptionLogAdminRequest.getException())

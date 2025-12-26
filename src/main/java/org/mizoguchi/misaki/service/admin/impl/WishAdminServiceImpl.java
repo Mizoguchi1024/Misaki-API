@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.WishNotExistsException;
 import org.mizoguchi.misaki.mapper.WishMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchWishAdminRequest;
@@ -26,7 +27,7 @@ public class WishAdminServiceImpl implements WishAdminService {
     @Override
     public List<WishAdminResponse> searchWishes(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchWishAdminRequest searchWishAdminRequest) {
         List<Wish> wishes = wishMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Wish>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchWishAdminRequest.getId() != null, Wish::getId, searchWishAdminRequest.getId())
                 .like(searchWishAdminRequest.getUserId() != null, Wish::getUserId, searchWishAdminRequest.getUserId())

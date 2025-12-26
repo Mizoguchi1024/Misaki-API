@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.ChatMapper;
@@ -33,7 +34,7 @@ public class ChatAdminServiceImpl implements ChatAdminService {
     public List<ChatAdminResponse> searchChats(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
                                                SearchChatAdminRequest searchChatAdminRequest) {
         List<Chat> chats = chatMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Chat>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchChatAdminRequest.getId() != null, Chat::getId, searchChatAdminRequest.getId())
                 .like(searchChatAdminRequest.getUserId() != null, Chat::getUserId, searchChatAdminRequest.getUserId())

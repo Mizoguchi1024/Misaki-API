@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
@@ -35,7 +36,7 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
     @Override
     public List<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest) {
         List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Assistant>()
-                .orderBy(sortField != null, sortOrder.equalsIgnoreCase("asc"), sortField)
+                .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchAssistantAdminRequest.getId() != null, Assistant::getId, searchAssistantAdminRequest.getId())
                 .like(searchAssistantAdminRequest.getName() != null, Assistant::getName, searchAssistantAdminRequest.getName())

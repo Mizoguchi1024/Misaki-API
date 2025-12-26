@@ -163,7 +163,8 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
         List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
                 .ne(Assistant::getOwnerId, userId)
                 .eq(Assistant::getPublicFlag, true)
-                .eq(Assistant::getDeleteFlag, false));
+                .eq(Assistant::getDeleteFlag, false)
+        );
 
         return assistants.stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();

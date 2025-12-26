@@ -45,7 +45,8 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
-                .eq(Chat::getUserId, userId));
+                .eq(Chat::getUserId, userId)
+        );
 
         if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
@@ -149,13 +150,16 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     public List<MessageFrontResponse> listMessages(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
-                .eq(Chat::getUserId, userId));
+                .eq(Chat::getUserId, userId)
+        );
 
         if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>().eq(Message::getChatId, chatId));
+        List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
+                .eq(Message::getChatId, chatId)
+        );
 
         return messages.stream().map(message -> {
             MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
