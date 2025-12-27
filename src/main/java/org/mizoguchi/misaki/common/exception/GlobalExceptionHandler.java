@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.mizoguchi.misaki.annotation.EnableExceptionLog;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.result.Result;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.io.IOException;
 
 @Slf4j
 @RestControllerAdvice
@@ -70,35 +73,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理缺少 RequestParam 异常
+     * 处理 RequestParam 异常
      */
     @EnableExceptionLog
-    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
     public ResponseEntity<Result<Void>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e, HttpServletRequest request){
-        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
-                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
-    }
-
-    /**
-     * 处理 RequestParam 类型不匹配异常
-     */
-    @EnableExceptionLog
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Result<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, HttpServletRequest request){
-        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
-                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Result.fail(40000, e.getMessage()));
-    }
-
-    /**
-     * 处理反序列化失败异常
-     */
-    @EnableExceptionLog
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Result<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request){
         log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
                 e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
 
@@ -133,10 +112,10 @@ public class GlobalExceptionHandler {
      * 处理流式输出中断异常
      */
     @EnableExceptionLog
-    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    @ExceptionHandler({AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class})
     public void handleAsyncRequestNotUsableException(Exception e, HttpServletRequest request) {
-        log.error("Exception={} | IP={} | URI={} | Method={} | Message={}",
-                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.INTERNAL_SERVER_ERROR);
+        log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.CLIENT_DISCONNECTED);
     }
 
     /**
