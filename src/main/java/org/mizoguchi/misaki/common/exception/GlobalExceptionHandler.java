@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -126,6 +127,16 @@ public class GlobalExceptionHandler {
                 e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.RESOURCE_NOT_FOUND);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Result.fail(40400, FailMessageConstant.RESOURCE_NOT_FOUND));
+    }
+
+    /**
+     * 处理流式输出中断异常
+     */
+    @EnableExceptionLog
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncRequestNotUsableException(Exception e, HttpServletRequest request) {
+        log.error("Exception={} | IP={} | URI={} | Method={} | Message={}",
+                e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.INTERNAL_SERVER_ERROR);
     }
 
     /**

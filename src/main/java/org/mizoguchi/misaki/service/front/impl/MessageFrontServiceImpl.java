@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.service.front.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
@@ -18,19 +19,19 @@ import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageFrontServiceImpl implements MessageFrontService {
@@ -117,19 +118,19 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             chatClientRequestSpec.messages(userMessage);
         }
 
-        Flux<ChatResponse> responseFlux = chatClientRequestSpec
+        AtomicLong tokenCounter = new AtomicLong(0);
+
+        return chatClientRequestSpec
                 .stream()
                 .chatResponse()
-                .cache(); // 复用同一个流
-
-        Mono<Long> tokenMono = responseFlux.map(chatResponse -> {
+                .doOnNext(chatResponse -> {
                     Usage usage = chatResponse.getMetadata().getUsage();
-                    return usage == null ? 0L : usage.getTotalTokens();
+                    if (usage.getTotalTokens() > 0) {
+                        tokenCounter.addAndGet(usage.getTotalTokens());
+                    }
                 })
-                .reduce(0L, Long::sum);
-
-        return responseFlux.mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText())
-                .doOnComplete(() -> tokenMono.subscribe(tokens -> {
+                .doOnComplete(() -> {
+                    long tokens = tokenCounter.get();
                     if (tokens > 0) {
                         chatMapper.update(new LambdaUpdateWrapper<Chat>()
                                 .eq(Chat::getId, chatId)
@@ -143,7 +144,8 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                                 .setIncrBy(User::getVersion, 1)
                         );
                     }
-                }));
+                })
+                .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());
     }
 
     @Override

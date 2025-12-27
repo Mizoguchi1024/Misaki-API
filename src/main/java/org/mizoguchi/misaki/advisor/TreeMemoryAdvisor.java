@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Getter
 public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
-
     private final MessageMapper messageMapper;
     private final int order;
     private final Scheduler scheduler;
@@ -112,22 +111,20 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
         }
 
         if (chatClientResponse.chatResponse() != null) {
-            AssistantMessage assistantMessage =
-                    chatClientResponse.chatResponse()
-                            .getResults()
-                            .stream()
-                            .map(Generation::getOutput)
-                            .findFirst()
-                            .orElse(null);
+            AssistantMessage assistantMessage = chatClientResponse.chatResponse()
+                    .getResults()
+                    .stream()
+                    .map(Generation::getOutput)
+                    .findFirst()
+                    .orElse(null);
 
             if (assistantMessage != null) {
-                org.mizoguchi.misaki.pojo.entity.Message assistantEntity =
-                        org.mizoguchi.misaki.pojo.entity.Message.builder()
-                                .chatId(Long.valueOf(conversationId))
-                                .parentId(lastUserMessageId == null ? null : Long.valueOf(lastUserMessageId))
-                                .type(MessageType.ASSISTANT.getValue())
-                                .content(assistantMessage.getText())
-                                .build();
+                org.mizoguchi.misaki.pojo.entity.Message assistantEntity = org.mizoguchi.misaki.pojo.entity.Message.builder()
+                        .chatId(Long.valueOf(conversationId))
+                        .parentId(lastUserMessageId == null ? null : Long.valueOf(lastUserMessageId))
+                        .type(MessageType.ASSISTANT.getValue())
+                        .content(assistantMessage.getText())
+                        .build();
 
                 messageMapper.insert(assistantEntity);
             }
@@ -136,13 +133,38 @@ public class TreeMemoryAdvisor implements BaseChatMemoryAdvisor {
     }
 
     @Override
-    public @NonNull Flux<ChatClientResponse> adviseStream(@NonNull ChatClientRequest chatClientRequest, StreamAdvisorChain streamAdvisorChain) {
+    public @NonNull Flux<ChatClientResponse> adviseStream(@NonNull ChatClientRequest chatClientRequest, @NonNull StreamAdvisorChain streamAdvisorChain) {
         Scheduler scheduler = this.getScheduler();
 
         return Mono.just(chatClientRequest)
                 .publishOn(scheduler)
                 .map(request -> this.before(request, streamAdvisorChain))
-                .flatMapMany(streamAdvisorChain::nextStream)
+                .flatMapMany(request -> {
+                    String conversationId = getConversationId(request.context());
+                    String lastUserMessageId = getLastUserMessageId(request.context());
+
+                    StringBuffer contentBuffer = new StringBuffer();
+
+                    return streamAdvisorChain.nextStream(request)
+                            .doOnNext(response -> {
+                                if (response.chatResponse() != null) {
+                                    String text = response.chatResponse().getResult().getOutput().getText();
+                                    if (text != null) {
+                                        contentBuffer.append(text);
+                                    }
+                                }
+                            })
+                            .doOnCancel(() -> {
+                                org.mizoguchi.misaki.pojo.entity.Message assistantEntity = org.mizoguchi.misaki.pojo.entity.Message.builder()
+                                        .chatId(Long.valueOf(conversationId))
+                                        .parentId(lastUserMessageId == null ? null : Long.valueOf(lastUserMessageId))
+                                        .type(MessageType.ASSISTANT.getValue())
+                                        .content(contentBuffer.toString())
+                                        .build();
+
+                                messageMapper.insert(assistantEntity);
+                            });
+                })
                 .transform(flux -> new ChatClientMessageAggregator().aggregateChatClientResponse(flux, response -> this.after(response, streamAdvisorChain)));
     }
 
