@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +29,7 @@ public class ModelAdminResponse {
 
     private Boolean onSaleFlag;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 
     @Version

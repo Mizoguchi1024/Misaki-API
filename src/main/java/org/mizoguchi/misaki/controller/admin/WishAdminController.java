@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
 import org.mizoguchi.misaki.common.result.Result;
@@ -13,6 +14,7 @@ import org.mizoguchi.misaki.pojo.entity.Wish;
 import org.mizoguchi.misaki.pojo.vo.admin.WishAdminResponse;
 import org.mizoguchi.misaki.service.admin.WishAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +57,7 @@ public class WishAdminController {
 
     @Operation(summary = "删除某日期及以前的祈愿记录")
     @DeleteMapping()
-    public Result<Void> deleteWishes(@RequestParam LocalDate date){
+    public Result<Void> deleteWishes(@RequestParam @DateTimeFormat(pattern = JsonConstant.DATE_FORMAT) LocalDate date){
         wishAdminService.deleteWishes(date);
         return Result.success();
     }

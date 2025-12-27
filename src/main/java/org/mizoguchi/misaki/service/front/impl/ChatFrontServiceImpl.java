@@ -307,6 +307,6 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             engCount++;
         }
 
-        return cjkCount < 20 && engCount < 10;
+        return engCount <= 10 && cjkCount + engCount <= 20;
     }
 }

@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.pojo.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDateTime;
 
@@ -15,9 +16,9 @@ public class SearchChatAdminRequest {
 
     private Boolean deleteFlag;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime updateTime;
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDateTime;
 
@@ -24,10 +25,10 @@ public class ChatAdminResponse {
 
     private Boolean deleteFlag;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime updateTime;
 
     @Version

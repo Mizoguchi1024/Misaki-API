@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -17,7 +19,7 @@ public class UpdateUserAdminRequest {
 
     private Integer gender;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
     private String avatarPath;
@@ -28,7 +30,7 @@ public class UpdateUserAdminRequest {
 
     private Integer authRole;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime lastLoginTime;
 
     private String token;
@@ -39,7 +41,7 @@ public class UpdateUserAdminRequest {
 
     private Integer stardust;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate lastCheckInDate;
 
     private Boolean deleteFlag;

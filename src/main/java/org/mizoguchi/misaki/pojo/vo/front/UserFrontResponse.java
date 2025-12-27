@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class UserFrontResponse {
 
     private Integer gender;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
     private String avatarPath;
@@ -38,13 +39,13 @@ public class UserFrontResponse {
 
     private Integer stardust;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime lastLoginTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate lastCheckInDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 
     @Version

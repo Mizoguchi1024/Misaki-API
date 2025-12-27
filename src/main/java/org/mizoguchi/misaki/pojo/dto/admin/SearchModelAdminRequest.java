@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.pojo.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,6 @@ public class SearchModelAdminRequest {
 
     private String avatarPath;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 }

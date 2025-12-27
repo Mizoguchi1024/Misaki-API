@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDate;
 
@@ -19,7 +20,7 @@ public class AddAssistantFrontRequest {
     private Integer gender;
 
     @PastOrPresent
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
     private String avatarPath;

@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.pojo.dto.front;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 
 import java.time.LocalDate;
 
@@ -18,7 +19,7 @@ public class UpdateUserFrontRequest {
     private Integer gender;
 
     @PastOrPresent()
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
     private String avatarPath;

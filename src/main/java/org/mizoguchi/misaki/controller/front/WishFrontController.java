@@ -45,7 +45,7 @@ public class WishFrontController {
     @Operation(summary = "抽卡")
     @PostMapping("/gacha")
     public Result<List<WishFrontResponse>> gacha(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @RequestParam @Positive @Max(10) Integer times){
+                                                 @RequestParam @Min(1) @Max(10) Integer times){
         return Result.success(wishFrontService.gacha(Long.valueOf(userDetails.getUsername()), times));
     }
 

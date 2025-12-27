@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
+import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
 import org.mizoguchi.misaki.common.result.Result;
@@ -15,6 +16,7 @@ import org.mizoguchi.misaki.pojo.vo.admin.EmailLogAdminResponse;
 import org.mizoguchi.misaki.pojo.vo.admin.ExceptionLogAdminResponse;
 import org.mizoguchi.misaki.service.admin.LogAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +52,7 @@ public class LogAdminController {
 
     @Operation(summary = "删除某日期及以前的邮件日志")
     @DeleteMapping("/email")
-    public Result<Void> deleteEmailLogs(@RequestParam LocalDate date){
+    public Result<Void> deleteEmailLogs(@RequestParam @DateTimeFormat(pattern = JsonConstant.DATE_FORMAT) LocalDate date){
         logAdminService.deleteEmailLogs(date);
         return Result.success();
     }
@@ -74,7 +76,7 @@ public class LogAdminController {
 
     @Operation(summary = "删除某日期及以前的异常日志")
     @DeleteMapping("/exception")
-    public Result<Void> deleteExceptionLogs(@RequestParam LocalDate date){
+    public Result<Void> deleteExceptionLogs(@RequestParam @DateTimeFormat(pattern = JsonConstant.DATE_FORMAT) LocalDate date){
         logAdminService.deleteExceptionLogs(date);
         return Result.success();
     }
