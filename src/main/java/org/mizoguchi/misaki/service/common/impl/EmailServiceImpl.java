@@ -4,10 +4,11 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mizoguchi.misaki.annotation.EnableEmailLog;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.FailedToSendEmailException;
+import org.mizoguchi.misaki.mapper.EmailLogMapper;
+import org.mizoguchi.misaki.pojo.entity.EmailLog;
 import org.mizoguchi.misaki.service.common.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -23,26 +24,30 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
+    private final EmailLogMapper emailLogMapper;
 
     @Value("${spring.mail.username}")
     private String from;
 
     @Override
-    @EnableEmailLog()
     public void sendEmail(String to, String subject, String body, String code) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, EmailConstant.EMAIL_ENCODING);
-
-            helper.setFrom(from, EmailConstant.SENDER_FRIENDLY_NAME);
-            helper.setTo(to);
-            helper.setSubject(subject);
 
             if (code == null) {
+                MimeMessageHelper helper = new MimeMessageHelper(message, EmailConstant.EMAIL_ENCODING);
+
+                helper.setFrom(from, EmailConstant.SENDER_FRIENDLY_NAME);
+                helper.setTo(to);
+                helper.setSubject(subject);
                 helper.setText(body);
             }else {
-                String html = body.formatted(code);
-                helper.setText(html, true);
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, EmailConstant.EMAIL_ENCODING);
+
+                helper.setFrom(from, EmailConstant.SENDER_FRIENDLY_NAME);
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(body.formatted(code), true);
 
                 FileSystemResource res = new FileSystemResource(new File("src/main/resources/static/Misaki_logo.svg"));
                 helper.addInline(EmailConstant.LOGO_CONTENT_ID, res);
@@ -50,6 +55,14 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
             log.info("Successfully send email to {} | Subject={}", to, subject);
+
+            EmailLog emailLog = EmailLog.builder()
+                    .sender(from)
+                    .receiver(to)
+                    .subject(subject)
+                    .build();
+
+            emailLogMapper.insert(emailLog);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new FailedToSendEmailException(FailMessageConstant.FAILED_TO_SEND_EMAIL);
         }
