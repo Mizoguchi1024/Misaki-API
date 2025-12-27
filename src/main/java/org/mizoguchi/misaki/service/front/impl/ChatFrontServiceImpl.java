@@ -51,7 +51,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Long addChat(Long userId) {
+    public ChatFrontResponse addChat(Long userId) {
         Chat chat = Chat.builder()
                 .userId(userId)
                 .token(0)
@@ -59,7 +59,9 @@ public class ChatFrontServiceImpl implements ChatFrontService {
 
         chatMapper.insert(chat);
 
-        return chat.getId();
+        ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
+        BeanUtils.copyProperties(chat, chatFrontResponse);
+        return chatFrontResponse;
     }
 
     @Override

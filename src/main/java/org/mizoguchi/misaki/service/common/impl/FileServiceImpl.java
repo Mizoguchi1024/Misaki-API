@@ -6,6 +6,7 @@ import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.InternalServerErrorException;
+import org.mizoguchi.misaki.pojo.vo.common.UploadResponse;
 import org.mizoguchi.misaki.service.common.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class FileServiceImpl implements FileService {
     private String bucket;
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public UploadResponse uploadFile(MultipartFile file) {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         try{
@@ -38,7 +39,9 @@ public class FileServiceImpl implements FileService {
             throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);
         }
 
-        return "/" + bucket + "/" + fileName;
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setPath("/" + bucket + "/" + fileName);
+        return uploadResponse;
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import java.util.List;
 
 public interface ChatFrontService {
-    Long addChat(Long userId);
+    ChatFrontResponse addChat(Long userId);
     List<ChatFrontResponse> listChats(Long userId);
     List<ChatFrontResponse> searchChats(Long userId, String keyword);
     List<String> listPrompts(Long userId, Long chatId, ListPromptsFrontRequest listPromptsFrontRequest);

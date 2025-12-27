@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.common.TtsRequest;
+import org.mizoguchi.misaki.pojo.vo.common.UploadResponse;
 import org.mizoguchi.misaki.service.common.FileService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,10 +21,8 @@ public class CommonController {
     @EnableRateLimit()
     @Operation(summary = "上传文件")
     @PostMapping("/files")
-    public Result<String> upload(MultipartFile file) {
-        String url = fileService.uploadFile(file);
-
-        return Result.success(url);
+    public Result<UploadResponse> upload(MultipartFile file) {
+        return Result.success(fileService.uploadFile(file));
     }
 
     @EnableRateLimit()

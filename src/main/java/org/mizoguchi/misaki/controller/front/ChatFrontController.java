@@ -34,7 +34,7 @@ public class ChatFrontController {
     @EnableRateLimit()
     @Operation(summary = "新建会话")
     @PostMapping()
-    public Result<Long> createChat(@AuthenticationPrincipal UserDetails userDetails){
+    public Result<ChatFrontResponse> createChat(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(chatFrontService.addChat(Long.valueOf(userDetails.getUsername())));
     }
 
