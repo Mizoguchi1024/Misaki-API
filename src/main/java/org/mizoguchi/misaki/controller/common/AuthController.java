@@ -3,6 +3,8 @@ package org.mizoguchi.misaki.controller.common;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
 import org.mizoguchi.misaki.common.constant.EmailConstant;
@@ -57,11 +59,12 @@ public class AuthController {
     @EnableRateLimit(limit = 2)
     @Operation(summary = "发送电子邮箱验证码")
     @PostMapping("/verification/{email}")
-    public Result<Void> sendVerificationCode(@PathVariable @Email() String email){
+    public Result<Void> sendVerificationCode(@PathVariable @Email() String email,
+                                             @RequestParam @Min(0) @Max(2) Integer lang) {
         Random random = new Random(System.currentTimeMillis());
         String code = String.format(EmailConstant.VERIFICATION_CODE_FORMAT,random.nextInt(EmailConstant.VERIFICATION_CODE_LIMIT));
 
-        emailService.sendVerificationEmail(email, EmailConstant.VERIFICATION_EMAIL_SUBJECT, code);
+        emailService.sendVerificationEmail(email, code, lang);
         redisTemplate.opsForValue().set(RedisConstant.EMAIL + email, code, Duration.ofMinutes(5)); // 覆盖旧值
 
         return Result.success();

@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @EnableEmailLog()
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String to, String subject, String body, String code) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, EmailConstant.EMAIL_ENCODING);
@@ -37,37 +37,35 @@ public class EmailServiceImpl implements EmailService {
             helper.setFrom(from, EmailConstant.SENDER_FRIENDLY_NAME);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(body);
+
+            if (code == null) {
+                helper.setText(body);
+            }else {
+                String html = body.formatted(code);
+                helper.setText(html, true);
+
+                FileSystemResource res = new FileSystemResource(new File("src/main/resources/static/Misaki_logo.svg"));
+                helper.addInline(EmailConstant.LOGO_CONTENT_ID, res);
+            }
 
             mailSender.send(message);
-            log.info("邮件成功发送到{} | 主题={}", to, subject);
+            log.info("Successfully send email to {} | Subject={}", to, subject);
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new FailedToSendEmailException(FailMessageConstant.FAILED_TO_SEND_EMAIL);
         }
     }
 
     @Override
-    @EnableEmailLog()
-    public void sendVerificationEmail(String to, String subject, String code) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, EmailConstant.EMAIL_ENCODING);
-
-            helper.setFrom(from, EmailConstant.SENDER_FRIENDLY_NAME);
-            helper.setTo(to);
-            helper.setSubject(subject);
-
-            String html = EmailConstant.VERIFICATION_EMAIL_BODY.formatted(code);
-
-            helper.setText(html, true);
-
-            FileSystemResource res = new FileSystemResource(new File("src/main/resources/static/Misaki_logo.svg"));
-            helper.addInline(EmailConstant.LOGO_CONTENT_ID, res);
-
-            mailSender.send(message);
-            log.info("验证码成功发送到{} | 主题={}", to, subject);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new FailedToSendEmailException(FailMessageConstant.FAILED_TO_SEND_EMAIL);
+    public void sendVerificationEmail(String to, String code, Integer lang) {
+        switch (lang) {
+            case 0:
+                sendEmail(to, EmailConstant.VERIFICATION_EMAIL_SUBJECT_ZH + code, EmailConstant.VERIFICATION_EMAIL_BODY_ZH, code);
+                break;
+            case 1:
+                sendEmail(to, EmailConstant.VERIFICATION_EMAIL_SUBJECT_EN + code, EmailConstant.VERIFICATION_EMAIL_BODY_EN, code);
+                break;
+            case 2:
+                sendEmail(to, EmailConstant.VERIFICATION_EMAIL_SUBJECT_JP + code, EmailConstant.VERIFICATION_EMAIL_BODY_JP, code);
         }
     }
 }
