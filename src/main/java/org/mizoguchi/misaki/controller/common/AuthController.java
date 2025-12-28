@@ -59,7 +59,7 @@ public class AuthController {
     @EnableRateLimit(limit = 2)
     @Operation(summary = "发送电子邮箱验证码")
     @PostMapping("/verification/{email}")
-    public Result<Void> sendVerificationCode(@PathVariable @Email() String email,
+    public Result<Void> sendVerificationCode(@PathVariable @Email String email,
                                              @RequestParam @Min(0) @Max(2) Integer lang) {
         Random random = new Random(System.currentTimeMillis());
         String code = String.format(EmailConstant.VERIFICATION_CODE_FORMAT,random.nextInt(EmailConstant.VERIFICATION_CODE_LIMIT));

@@ -8,11 +8,11 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 @Data
 public class RegisterRequest {
     @NotBlank
-    @Size(min = 2, max = 20)
+    @Size(min = 1, max = 20)
     private String username;
 
     @NotNull
-    @Email()
+    @Email
     private String email;
 
     @NotBlank

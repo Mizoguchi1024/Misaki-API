@@ -119,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
                 .username(registerRequest.getUsername())
                 .password(encryptPassword)
                 .gender(GenderEnum.UNKNOWN.getCode())
-                .token(100000)
+                .token(10000)
                 .crystal(0)
                 .puzzle(0)
                 .stardust(0)

@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class LoginRequest {
     @NotNull
-    @Email()
+    @Email
     private String email;
 
     @NotBlank

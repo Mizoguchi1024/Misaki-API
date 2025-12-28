@@ -17,6 +17,8 @@ public class User {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
+    private Integer authRole;
+
     private String email;
 
     private String password;
@@ -32,8 +34,6 @@ public class User {
     private String occupation;
 
     private String detail;
-
-    private Integer authRole;
 
     private Integer token;
 

@@ -11,6 +11,8 @@ import java.time.LocalDate;
 public class SearchUserAdminRequest {
     private Long id;
 
+    private Integer authRole;
+
     private String email;
 
     private String username;
@@ -24,8 +26,6 @@ public class SearchUserAdminRequest {
     private String occupation;
 
     private String detail;
-
-    private Integer authRole;
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     @PastOrPresent

@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class AddFeedbackFrontRequest {
+    @NotNull
     @Min(0)
     @Max(10)
     private Integer type;

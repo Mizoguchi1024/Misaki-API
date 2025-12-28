@@ -8,7 +8,7 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 @Data
 public class ResetPasswordRequest {
     @NotNull
-    @Email()
+    @Email
     private String email;
 
     @NotBlank

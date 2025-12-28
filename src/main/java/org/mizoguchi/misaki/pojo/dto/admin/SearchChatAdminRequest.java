@@ -1,10 +1,11 @@
 package org.mizoguchi.misaki.pojo.dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 import org.mizoguchi.misaki.common.constant.JsonConstant;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class SearchChatAdminRequest {
@@ -16,9 +17,11 @@ public class SearchChatAdminRequest {
 
     private Boolean deleteFlag;
 
-    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
-    private LocalDateTime createTime;
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
+    @PastOrPresent
+    private LocalDate createTime;
 
-    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
-    private LocalDateTime updateTime;
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
+    @PastOrPresent
+    private LocalDate updateTime;
 }

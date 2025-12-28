@@ -16,6 +16,7 @@ import org.mizoguchi.misaki.pojo.entity.*;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class UserAdminServiceImpl implements UserAdminService {
+    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
     private final AssistantMapper assistantMapper;
@@ -38,7 +40,15 @@ public class UserAdminServiceImpl implements UserAdminService {
     public void addUser(AddUserAdminRequest addUserAdminRequest) {
         User user = new User();
         BeanUtils.copyProperties(addUserAdminRequest, user);
+        String encryptPassword = passwordEncoder.encode(addUserAdminRequest.getPassword());
+        user.setPassword(encryptPassword);
+        user.setToken(10000);
+        user.setCrystal(0);
+        user.setStardust(0);
+        user.setStardust(0);
+
         userMapper.insert(user);
+        // TODO 其他表的插入
     }
 
     @Override
@@ -48,13 +58,13 @@ public class UserAdminServiceImpl implements UserAdminService {
                         .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                         .lambda()
                         .like(searchUserAdminRequest.getId() != null, User::getId, searchUserAdminRequest.getId())
+                        .eq(searchUserAdminRequest.getAuthRole() != null, User::getAuthRole, searchUserAdminRequest.getAuthRole())
                         .like(searchUserAdminRequest.getEmail() != null, User::getEmail, searchUserAdminRequest.getEmail())
                         .like(searchUserAdminRequest.getUsername() != null, User::getUsername, searchUserAdminRequest.getUsername())
                         .eq(searchUserAdminRequest.getGender() != null, User::getGender, searchUserAdminRequest.getGender())
                         .eq(searchUserAdminRequest.getBirthday() != null, User::getBirthday, searchUserAdminRequest.getBirthday())
                         .like(searchUserAdminRequest.getOccupation() != null, User::getOccupation, searchUserAdminRequest.getOccupation())
                         .like(searchUserAdminRequest.getDetail() != null, User::getDetail, searchUserAdminRequest.getDetail())
-                        .eq(searchUserAdminRequest.getAuthRole() != null, User::getAuthRole, searchUserAdminRequest.getAuthRole())
                         .eq(searchUserAdminRequest.getLastCheckInDate() != null, User::getLastCheckInDate, searchUserAdminRequest.getLastCheckInDate())
                         .eq(searchUserAdminRequest.getDeletePendingFlag() != null, User::getDeletePendingFlag, searchUserAdminRequest.getDeletePendingFlag())
                         .eq(searchUserAdminRequest.getDeleteFlag() != null, User::getDeleteFlag, searchUserAdminRequest.getDeleteFlag())
