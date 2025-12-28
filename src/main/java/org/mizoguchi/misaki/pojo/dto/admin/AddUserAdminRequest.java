@@ -41,10 +41,10 @@ public class AddUserAdminRequest {
     private String avatarPath;
 
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
-    @Size(min = 1, max = 20)
+    @Size(max = 20)
     private String occupation;
 
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
-    @Size(min = 1, max = 100)
+    @Size(max = 255)
     private String detail;
 }

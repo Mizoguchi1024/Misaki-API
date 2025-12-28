@@ -39,7 +39,7 @@ public class ChatAdminServiceImpl implements ChatAdminService {
                 .like(searchChatAdminRequest.getId() != null, Chat::getId, searchChatAdminRequest.getId())
                 .like(searchChatAdminRequest.getUserId() != null, Chat::getUserId, searchChatAdminRequest.getUserId())
                 .like(searchChatAdminRequest.getTitle() != null, Chat::getTitle, searchChatAdminRequest.getTitle())
-                .like(searchChatAdminRequest.getDeleteFlag() != null, Chat::getDeleteFlag, searchChatAdminRequest.getDeleteFlag())
+                .eq(searchChatAdminRequest.getDeleteFlag() != null, Chat::getDeleteFlag, searchChatAdminRequest.getDeleteFlag())
                 .like(searchChatAdminRequest.getCreateTime() != null, Chat::getCreateTime, searchChatAdminRequest.getCreateTime())
                 .like(searchChatAdminRequest.getUpdateTime() != null, Chat::getUpdateTime, searchChatAdminRequest.getUpdateTime())
         );

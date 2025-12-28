@@ -49,8 +49,8 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
                 .like(searchAssistantAdminRequest.getOwnerId() != null, Assistant::getOwnerId, searchAssistantAdminRequest.getOwnerId())
                 .eq(searchAssistantAdminRequest.getPublicFlag() != null, Assistant::getPublicFlag, searchAssistantAdminRequest.getPublicFlag())
                 .eq(searchAssistantAdminRequest.getDeleteFlag() != null, Assistant::getDeleteFlag, searchAssistantAdminRequest.getDeleteFlag())
-                .eq(searchAssistantAdminRequest.getCreateTime() != null, Assistant::getCreateTime, searchAssistantAdminRequest.getCreateTime())
-                .eq(searchAssistantAdminRequest.getUpdateTime() != null, Assistant::getUpdateTime, searchAssistantAdminRequest.getUpdateTime())
+                .like(searchAssistantAdminRequest.getCreateTime() != null, Assistant::getCreateTime, searchAssistantAdminRequest.getCreateTime())
+                .like(searchAssistantAdminRequest.getUpdateTime() != null, Assistant::getUpdateTime, searchAssistantAdminRequest.getUpdateTime())
         );
 
         return assistants.stream()

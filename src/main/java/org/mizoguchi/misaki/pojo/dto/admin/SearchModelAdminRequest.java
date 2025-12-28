@@ -17,10 +17,6 @@ public class SearchModelAdminRequest {
 
     private Integer price;
 
-    private String path;
-
-    private String avatarPath;
-
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     @PastOrPresent
     private LocalDate createTime;

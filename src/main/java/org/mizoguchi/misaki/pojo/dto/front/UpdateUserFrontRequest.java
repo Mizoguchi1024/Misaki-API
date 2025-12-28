@@ -15,22 +15,19 @@ public class UpdateUserFrontRequest {
     @Size(min = 1, max = 20)
     private String username;
 
-    @Min(value = 0)
-    @Max(value = 2)
+    @Min(0)
+    @Max(2)
     private Integer gender;
 
     @PastOrPresent()
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     private String avatarPath;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 20)
     private String occupation;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 255)
     private String detail;
 

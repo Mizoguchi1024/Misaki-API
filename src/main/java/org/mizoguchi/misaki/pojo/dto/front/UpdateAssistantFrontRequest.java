@@ -14,12 +14,10 @@ public class UpdateAssistantFrontRequest {
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     private String name;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
-    @Size(min = 1, max = 20)
+    @Size(max = 20)
     private String personality;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
-    @Size(min = 1, max = 100)
+    @Size(max = 100)
     private String detail;
 
     @Min(0)

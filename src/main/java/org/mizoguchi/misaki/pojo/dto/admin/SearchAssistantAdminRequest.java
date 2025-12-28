@@ -20,6 +20,7 @@ public class SearchAssistantAdminRequest {
     private Integer gender;
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
+    @PastOrPresent
     private LocalDate birthday;
 
     private Long modelId;

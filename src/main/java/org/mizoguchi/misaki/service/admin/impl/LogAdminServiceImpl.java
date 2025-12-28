@@ -40,7 +40,7 @@ public class LogAdminServiceImpl implements LogAdminService {
                 .like(searchEmailLogAdminRequest.getSender() != null, EmailLog::getSender, searchEmailLogAdminRequest.getSender())
                 .like(searchEmailLogAdminRequest.getReceiver() != null, EmailLog::getReceiver, searchEmailLogAdminRequest.getReceiver())
                 .like(searchEmailLogAdminRequest.getSubject() != null, EmailLog::getSubject, searchEmailLogAdminRequest.getSubject())
-                .eq(searchEmailLogAdminRequest.getCreateTime() != null, EmailLog::getCreateTime, searchEmailLogAdminRequest.getCreateTime())
+                .like(searchEmailLogAdminRequest.getCreateTime() != null, EmailLog::getCreateTime, searchEmailLogAdminRequest.getCreateTime())
         );
 
         return emailLogs.stream()
@@ -74,7 +74,7 @@ public class LogAdminServiceImpl implements LogAdminService {
                 .like(searchExceptionLogAdminRequest.getIp() != null, ExceptionLog::getIp, searchExceptionLogAdminRequest.getIp())
                 .like(searchExceptionLogAdminRequest.getUri() != null, ExceptionLog::getUri, searchExceptionLogAdminRequest.getUri())
                 .eq(searchExceptionLogAdminRequest.getMethod() != null, ExceptionLog::getMethod, searchExceptionLogAdminRequest.getMethod())
-                .eq(searchExceptionLogAdminRequest.getCreateTime() != null, ExceptionLog::getCreateTime, searchExceptionLogAdminRequest.getCreateTime())
+                .like(searchExceptionLogAdminRequest.getCreateTime() != null, ExceptionLog::getCreateTime, searchExceptionLogAdminRequest.getCreateTime())
         );
 
         return exceptionLogs.stream()

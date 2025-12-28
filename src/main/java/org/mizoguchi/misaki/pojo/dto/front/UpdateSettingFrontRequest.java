@@ -24,7 +24,6 @@ public class UpdateSettingFrontRequest {
     @Max(16)
     private Integer borderRadius;
 
-    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     private String backgroundPath;
 
     private Long enabledAssistantId;

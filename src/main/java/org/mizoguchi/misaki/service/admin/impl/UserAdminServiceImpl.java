@@ -66,6 +66,7 @@ public class UserAdminServiceImpl implements UserAdminService {
                         .like(searchUserAdminRequest.getOccupation() != null, User::getOccupation, searchUserAdminRequest.getOccupation())
                         .like(searchUserAdminRequest.getDetail() != null, User::getDetail, searchUserAdminRequest.getDetail())
                         .eq(searchUserAdminRequest.getLastCheckInDate() != null, User::getLastCheckInDate, searchUserAdminRequest.getLastCheckInDate())
+                        .like(searchUserAdminRequest.getLastLoginTime() != null, User::getLastLoginTime, searchUserAdminRequest.getLastLoginTime())
                         .eq(searchUserAdminRequest.getDeletePendingFlag() != null, User::getDeletePendingFlag, searchUserAdminRequest.getDeletePendingFlag())
                         .eq(searchUserAdminRequest.getDeleteFlag() != null, User::getDeleteFlag, searchUserAdminRequest.getDeleteFlag())
                         .like(searchUserAdminRequest.getCreateTime() != null, User::getCreateTime, searchUserAdminRequest.getCreateTime())

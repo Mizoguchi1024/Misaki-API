@@ -35,7 +35,7 @@ public class WishAdminServiceImpl implements WishAdminService {
                 .eq(searchWishAdminRequest.getDuplicateFlag() != null, Wish::getDuplicateFlag, searchWishAdminRequest.getDuplicateFlag())
                 .like(searchWishAdminRequest.getModelId() != null, Wish::getModelId, searchWishAdminRequest.getModelId())
                 .eq(searchWishAdminRequest.getAmount() != null, Wish::getAmount, searchWishAdminRequest.getAmount())
-                .eq(searchWishAdminRequest.getCreateTime() != null, Wish::getCreateTime, searchWishAdminRequest.getCreateTime())
+                .like(searchWishAdminRequest.getCreateTime() != null, Wish::getCreateTime, searchWishAdminRequest.getCreateTime())
         );
 
         return wishes.stream()

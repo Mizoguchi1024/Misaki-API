@@ -39,8 +39,8 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
                 .like(searchFeedbackAdminRequest.getReply() != null, Feedback::getReply, searchFeedbackAdminRequest.getReply())
                 .eq(searchFeedbackAdminRequest.getStatus() != null, Feedback::getStatus, searchFeedbackAdminRequest.getStatus())
                 .eq(searchFeedbackAdminRequest.getDeleteFlag() != null, Feedback::getDeleteFlag, searchFeedbackAdminRequest.getDeleteFlag())
-                .eq(searchFeedbackAdminRequest.getCreateTime() != null, Feedback::getCreateTime, searchFeedbackAdminRequest.getCreateTime())
-                .eq(searchFeedbackAdminRequest.getUpdateTime() != null, Feedback::getUpdateTime, searchFeedbackAdminRequest.getUpdateTime())
+                .like(searchFeedbackAdminRequest.getCreateTime() != null, Feedback::getCreateTime, searchFeedbackAdminRequest.getCreateTime())
+                .like(searchFeedbackAdminRequest.getUpdateTime() != null, Feedback::getUpdateTime, searchFeedbackAdminRequest.getUpdateTime())
         );
 
         return feedbacks.stream()
