@@ -2,10 +2,13 @@ package org.mizoguchi.misaki.common.constant;
 
 public class ChatConstant {
     public static final String SYSTEM_DEFAULT = """
+            The following information defines the assistant and the user. Some fields could not be set.
+            
             AssistantName: {assistantName}
             AssistantGender: {assistantGender}
             AssistantBirthday: {assistantBirthday}
             AssistantPersonality: {assistantPersonality}
+            AssistantDetail: {assistantDetail}
             
             UserName: {userName}
             UserGender: {userGender}
@@ -17,6 +20,7 @@ public class ChatConstant {
     public static final String ASSISTANT_GENDER = "assistantGender";
     public static final String ASSISTANT_BIRTHDAY = "assistantBirthday";
     public static final String ASSISTANT_PERSONALITY = "assistantPersonality";
+    public static final String ASSISTANT_DETAIL = "assistantDetail";
     public static final String USER_NAME = "userName";
     public static final String USER_GENDER = "userGender";
     public static final String USER_BIRTHDAY = "userBirthday";

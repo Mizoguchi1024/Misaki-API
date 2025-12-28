@@ -9,12 +9,10 @@ public class AddFeedbackFrontRequest {
     @Max(10)
     private Integer type;
 
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 50)
     private String title;
 
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 500)
     private String content;

@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
      */
     @EnableExceptionLog
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<Result<Void>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e, HttpServletRequest request){
+    public ResponseEntity<Result<Void>> handleRequestParameterException(Exception e, HttpServletRequest request){
         log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
                 e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), e.getMessage());
 
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
      */
     @EnableExceptionLog
     @ExceptionHandler({AsyncRequestNotUsableException.class, ClientAbortException.class, IOException.class})
-    public void handleAsyncRequestNotUsableException(Exception e, HttpServletRequest request) {
+    public void handleClientAbortException(Exception e, HttpServletRequest request) {
         log.warn("Exception={} | IP={} | URI={} | Method={} | Message={}",
                 e.getClass().getSimpleName(), request.getRemoteAddr(), request.getRequestURI(), request.getMethod(), FailMessageConstant.CLIENT_DISCONNECTED);
     }

@@ -86,6 +86,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         systemMessageParams.put(ChatConstant.ASSISTANT_GENDER, GenderEnum.fromCode(assistant.getGender()).getGender());
         systemMessageParams.put(ChatConstant.ASSISTANT_BIRTHDAY, assistant.getBirthday());
         systemMessageParams.put(ChatConstant.ASSISTANT_PERSONALITY, assistant.getPersonality());
+        systemMessageParams.put(ChatConstant.ASSISTANT_DETAIL, assistant.getDetail());
         systemMessageParams.put(ChatConstant.USER_NAME, user.getUsername());
         systemMessageParams.put(ChatConstant.USER_GENDER, GenderEnum.fromCode(user.getGender()).getGender());
         systemMessageParams.put(ChatConstant.USER_BIRTHDAY, user.getBirthday());

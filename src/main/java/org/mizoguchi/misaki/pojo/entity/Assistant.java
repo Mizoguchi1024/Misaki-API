@@ -21,6 +21,8 @@ public class Assistant {
 
     private String personality;
 
+    private String detail;
+
     private Integer gender;
 
     private LocalDate birthday;

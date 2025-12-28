@@ -7,9 +7,8 @@ import lombok.Data;
 
 @Data
 public class UpdateChatTitleFrontRequest {
-    @NotNull
     @NotBlank
-    @Size(min = 1, max = 20)
+    @Size(min = 1, max = 50)
     private String title;
 
     @NotNull

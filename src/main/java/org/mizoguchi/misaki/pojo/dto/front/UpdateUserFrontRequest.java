@@ -3,17 +3,18 @@ package org.mizoguchi.misaki.pojo.dto.front;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.JsonConstant;
+import org.mizoguchi.misaki.common.constant.RegexConstant;
 
 import java.time.LocalDate;
 
 @Data
 public class UpdateUserFrontRequest {
-    @NotBlank
-    @Size(min = 2, max = 20)
+    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
+    @Size(min = 1, max = 20)
     private String username;
 
-    @NotNull
     @Min(value = 0)
     @Max(value = 2)
     private Integer gender;
@@ -22,11 +23,14 @@ public class UpdateUserFrontRequest {
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate birthday;
 
+    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     private String avatarPath;
 
+    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 20)
     private String occupation;
 
+    @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 255)
     private String detail;
 

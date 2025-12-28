@@ -12,6 +12,8 @@ public class AddAssistantAdminRequest {
 
     private String personality;
 
+    private String detail;
+
     private Integer gender;
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
