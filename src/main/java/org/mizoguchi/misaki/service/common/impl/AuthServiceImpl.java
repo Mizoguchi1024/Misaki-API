@@ -98,18 +98,21 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequest registerRequest) {
         User existingUser = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, registerRequest.getEmail())
-                .eq(User::getDeleteFlag, false));
+                .eq(User::getDeleteFlag, false)
+        );
 
         if (existingUser != null) {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
         }
 
-        String verificationCode = redisTemplate.opsForValue().get(RedisConstant.EMAIL + registerRequest.getEmail());
+        String key = RedisConstant.EMAIL + registerRequest.getEmail();
+        String verificationCode = redisTemplate.opsForValue().get(key);
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
         } else if (!verificationCode.equals(registerRequest.getVerificationCode())) {
             throw new WrongVerificationCodeException(FailMessageConstant.WRONG_VERIFICATION_CODE);
         }
+        redisTemplate.delete(key);
 
         String encryptPassword = passwordEncoder.encode(registerRequest.getPassword());
 
@@ -164,13 +167,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        String verificationCode = redisTemplate.opsForValue().get(RedisConstant.EMAIL + resetPasswordRequest.getEmail());
+        String key = RedisConstant.EMAIL + resetPasswordRequest.getEmail();
+        String verificationCode = redisTemplate.opsForValue().get(key);
 
         if (verificationCode == null) {
             throw new VerificationCodeExpiredException(FailMessageConstant.VERIFICATION_CODE_EXPIRED);
         } else if (!verificationCode.equals(resetPasswordRequest.getVerificationCode())) {
             throw new WrongVerificationCodeException(FailMessageConstant.WRONG_VERIFICATION_CODE);
         }
+
+        redisTemplate.delete(key);
 
         String encryptPassword = passwordEncoder.encode(resetPasswordRequest.getPassword());
 
