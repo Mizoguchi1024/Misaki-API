@@ -3,6 +3,7 @@ package org.mizoguchi.misaki.service.common.impl;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.exception.InternalServerErrorException;
@@ -27,13 +28,12 @@ public class FileServiceImpl implements FileService {
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         try{
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(fileName)
-                            .stream(file.getInputStream(), file.getSize(), -1)
-                            .contentType(file.getContentType())
-                            .build()
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(fileName)
+                    .stream(file.getInputStream(), file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build()
             );
         }catch (Exception e){
             throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);
@@ -47,11 +47,23 @@ public class FileServiceImpl implements FileService {
     @Override
     public InputStream downloadFile(String fileName) {
         try{
-            return minioClient.getObject(
-                    GetObjectArgs.builder()
-                            .bucket(bucket)
-                            .object(fileName)
-                            .build()
+            return minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(fileName)
+                    .build()
+            );
+        } catch (Exception e) {
+            throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteFile(String fileName) {
+        try{
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(fileName)
+                    .build()
             );
         } catch (Exception e) {
             throw new InternalServerErrorException(FailMessageConstant.INTERNAL_SERVER_ERROR);

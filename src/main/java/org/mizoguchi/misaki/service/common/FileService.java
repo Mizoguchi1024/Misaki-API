@@ -8,4 +8,5 @@ import java.io.InputStream;
 public interface FileService {
     UploadResponse uploadFile(MultipartFile file);
     InputStream downloadFile(String fileName);
+    void deleteFile(String fileName);
 }

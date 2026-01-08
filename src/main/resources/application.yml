@@ -100,7 +100,8 @@ misaki:
   jwt:
     secret: kotoshi_nakahara_misaki_wa_kitto_kuru
     expiration: 7200000
-
+  request:
+    expiration: 60000
   business:
     auth:
       max-password-retry-count: 5

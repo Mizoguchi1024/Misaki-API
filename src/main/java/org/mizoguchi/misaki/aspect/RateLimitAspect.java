@@ -23,7 +23,6 @@ import java.time.Duration;
 @Component
 @RequiredArgsConstructor
 public class RateLimitAspect {
-
     @Resource
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -16,6 +16,7 @@ import org.mizoguchi.misaki.common.exception.UserNotExistsException;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.common.util.JwtUtil;
 import org.mizoguchi.misaki.service.common.impl.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+
+    @Value("${misaki.request.expiration}")
+    private Integer requestExpiration;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -67,7 +71,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (Math.abs(System.currentTimeMillis() - timestamp) > WebConstant.REQUEST_EXPIRE_TIME){
+        if (Math.abs(System.currentTimeMillis() - timestamp) > requestExpiration){
             log.warn("{} | IP={} | URI={} | Method={}",
                     FailMessageConstant.REQUEST_EXPIRED, request.getRemoteAddr(), request.getRequestURI(), request.getMethod());
             writeError(response, HttpServletResponse.SC_BAD_REQUEST, 40002, FailMessageConstant.REQUEST_EXPIRED);
@@ -83,7 +87,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        redisTemplate.opsForValue().set(redisKey, timestampHeader, Duration.ofMillis(WebConstant.REQUEST_EXPIRE_TIME));
+        redisTemplate.opsForValue().set(redisKey, timestampHeader, Duration.ofMillis(requestExpiration));
 
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(WebConstant.BEARER_PREFIX)) {
             chain.doFilter(request, response);

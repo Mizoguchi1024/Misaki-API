@@ -38,7 +38,7 @@ public class UserFrontServiceImpl implements UserFrontService {
     private Integer checkInCrystalAmount;
 
     @Value("${misaki.jwt.expiration}")
-    private long JWT_EXPIRATION_IN_MS;
+    private long jwtExpiration;
 
     @Override
     public void checkIn(Long userId) {
@@ -68,7 +68,7 @@ public class UserFrontServiceImpl implements UserFrontService {
 
         redisTemplate.opsForValue().set(RedisConstant.BLOCKED_JWT + jwtId,
                 String.valueOf(System.currentTimeMillis()),
-                Duration.ofMillis(JWT_EXPIRATION_IN_MS));
+                Duration.ofMillis(jwtExpiration));
     }
 
     @Override
