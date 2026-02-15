@@ -15,12 +15,15 @@ import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 import org.mizoguchi.misaki.mapper.SettingsMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.entity.User;
+import org.mizoguchi.misaki.service.common.FileService;
 import org.mizoguchi.misaki.service.front.UserFrontService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 
@@ -30,6 +33,7 @@ public class UserFrontServiceImpl implements UserFrontService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
     private final RedisTemplate<String, String> redisTemplate;
+    private final FileService fileService;
 
     @Value("${misaki.business.user.check-in.token}")
     private Integer checkInTokenAmount;
@@ -83,6 +87,8 @@ public class UserFrontServiceImpl implements UserFrontService {
 
     @Override
     public void updateUser(Long userId, UpdateUserFrontRequest updateUserFrontRequest) {
+        String originalAvatarPath = userMapper.selectById(userId).getAvatarPath();
+
         User user = new User();
         BeanUtils.copyProperties(updateUserFrontRequest, user);
         user.setId(userId);
@@ -91,6 +97,11 @@ public class UserFrontServiceImpl implements UserFrontService {
 
         if (affectedRows == 0) {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
+
+        if (StringUtils.hasText(originalAvatarPath) && StringUtils.hasText(updateUserFrontRequest.getAvatarPath())) {
+            String fileName = new File(originalAvatarPath).getName();
+            fileService.deleteFile(fileName);
         }
     }
 
@@ -108,6 +119,10 @@ public class UserFrontServiceImpl implements UserFrontService {
 
     @Override
     public void updateSetting(Long userId, UpdateSettingFrontRequest updateSettingFrontRequest) {
+        String originalBackgroundPath = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>()
+                .eq(Settings::getUserId, userId)
+        ).getBackgroundPath();
+
         Settings settings = new Settings();
         BeanUtils.copyProperties(updateSettingFrontRequest, settings);
         settings.setUserId(userId);
@@ -118,6 +133,11 @@ public class UserFrontServiceImpl implements UserFrontService {
 
         if (affectedRows == 0) {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
+
+        if (StringUtils.hasText(originalBackgroundPath) && StringUtils.hasText(updateSettingFrontRequest.getBackgroundPath())) {
+            String fileName = new File(originalBackgroundPath).getName();
+            fileService.deleteFile(fileName);
         }
     }
 }

@@ -15,11 +15,14 @@ import org.mizoguchi.misaki.pojo.dto.admin.UpdateUserAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.*;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
+import org.mizoguchi.misaki.service.common.FileService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     private final MessageMapper messageMapper;
     private final ModelUserMapper modelUserMapper;
     private final WishMapper wishMapper;
+    private final FileService fileService;
 
     @Override
     public void addUser(AddUserAdminRequest addUserAdminRequest) {
@@ -84,13 +88,12 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     @Override
     public void updateUser(Long userId, UpdateUserAdminRequest updateUserAdminRequest) {
-        boolean existsFlag = userMapper.exists(new LambdaQueryWrapper<User>()
-                .eq(User::getId, userId)
-        );
+        User originalUser = userMapper.selectById(userId);
 
-        if (!existsFlag) {
+        if (originalUser == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
         }
+        String originalAvatarPath = originalUser.getAvatarPath();
 
         User user = new User();
         BeanUtils.copyProperties(updateUserAdminRequest, user);
@@ -99,6 +102,11 @@ public class UserAdminServiceImpl implements UserAdminService {
 
         if (affectedRows == 0) {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
+        }
+
+        if (StringUtils.hasText(originalAvatarPath) && StringUtils.hasText(updateUserAdminRequest.getAvatarPath())) {
+            String fileName = new File(originalAvatarPath).getName();
+            fileService.deleteFile(fileName);
         }
     }
 
@@ -110,8 +118,11 @@ public class UserAdminServiceImpl implements UserAdminService {
         modelUserMapper.delete(new LambdaQueryWrapper<ModelUser>().eq(ModelUser::getUserId, userId));
         wishMapper.delete(new LambdaQueryWrapper<Wish>().eq(Wish::getUserId, userId));
 
-        chatMapper.selectList(new LambdaQueryWrapper<Chat>().eq(Chat::getUserId, userId)).forEach(chat ->
-                messageMapper.delete(new LambdaQueryWrapper<Message>().eq(Message::getChatId, chat.getId())));
+        chatMapper.selectList(new LambdaQueryWrapper<Chat>()
+                .eq(Chat::getUserId, userId)
+        ).forEach(chat -> messageMapper.delete(new LambdaQueryWrapper<Message>()
+                .eq(Message::getChatId, chat.getId())
+        ));
         chatMapper.delete(new LambdaQueryWrapper<Chat>().eq(Chat::getUserId, userId));
         int affectedRows = userMapper.deleteById(userId);
 
