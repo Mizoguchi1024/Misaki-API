@@ -40,10 +40,10 @@ public class ChatFrontController {
 
     @EnableRateLimit()
     @Operation(summary = "生成提示词建议")
-    @GetMapping("/{id}/prompts")
+    @PostMapping("/{id}/prompts")
     public Result<List<String>> listPrompts(@AuthenticationPrincipal UserDetails userDetails,
                                             @PathVariable Long id,
-                                            @RequestBody @Validated ListPromptsFrontRequest  listPromptsFrontRequest){
+                                            @RequestBody @Validated ListPromptsFrontRequest listPromptsFrontRequest){
         return Result.success(chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, listPromptsFrontRequest));
     }
 

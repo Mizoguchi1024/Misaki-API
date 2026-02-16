@@ -5,7 +5,8 @@ server:
 spring:
   application:
     name: Misaki
-
+  profiles:
+      active: dev
   servlet:
     multipart:
       max-file-size: 10MB
