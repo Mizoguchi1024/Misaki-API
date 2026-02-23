@@ -33,7 +33,7 @@ public class AboutFrontController {
 
     @EnableRateLimit()
     @Operation(summary = "获取应用点赞数")
-    @GetMapping()
+    @GetMapping("/like")
     public Result<AboutFrontResponse> getMisakiLikes(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(likesFrontService.getMisakiLikes(Long.valueOf(userDetails.getUsername())));
     }

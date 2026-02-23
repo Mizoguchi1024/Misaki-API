@@ -7,22 +7,10 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 
 @Data
 public class UpdateSettingFrontRequest {
-    @Min(0)
-    @Max(2)
-    private Integer appearance;
-
-    @Min(0)
-    @Max(2)
-    private Integer language;
-
     private Boolean ttsAutoplay;
 
     @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     private String mainColor;
-
-    @Min(0)
-    @Max(16)
-    private Integer borderRadius;
 
     private String backgroundPath;
 

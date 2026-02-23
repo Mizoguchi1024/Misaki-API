@@ -84,7 +84,7 @@ public class LikesFrontServiceImpl implements LikesFrontService {
 
         boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue())
         );
 
         return AboutFrontResponse.builder()

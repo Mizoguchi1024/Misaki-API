@@ -21,10 +21,15 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
+import org.springframework.ai.deepseek.DeepSeekChatOptions;
+import org.springframework.ai.deepseek.api.DeepSeekApi;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import reactor.core.publisher.Flux;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +107,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         // DeepSeek-对话前缀续写（Beta）
         String prefix = sendMessageFrontRequest.getPrefix();
         UserMessage userMessage = new UserMessage(sendMessageFrontRequest.getContent());
-        if (prefix != null) {
+        if (StringUtils.hasText(prefix)) {
             DeepSeekAssistantMessage assistantMessage = new DeepSeekAssistantMessage.Builder()
                     .content(prefix)
                     .prefix(true)
@@ -116,6 +121,16 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                 );
             }
         }else {
+            if (sendMessageFrontRequest.getTools() != null) {
+                List<DeepSeekApi.FunctionTool> functionTools = Arrays.stream(sendMessageFrontRequest.getTools())
+                    .map(DeepSeekApi.FunctionTool::new)
+                    .collect(Collectors.toList());
+
+                chatClientRequestSpec.options(DeepSeekChatOptions.builder()
+                    .tools(functionTools)
+                    .build() 
+                );
+            }
             chatClientRequestSpec.messages(userMessage);
         }
 

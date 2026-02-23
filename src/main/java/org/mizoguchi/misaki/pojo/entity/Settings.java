@@ -18,13 +18,7 @@ public class Settings {
 
     private Long userId;
 
-    private Integer appearance;
-
-    private Integer language;
-
     private String mainColor;
-
-    private Integer borderRadius;
 
     private String backgroundPath;
 

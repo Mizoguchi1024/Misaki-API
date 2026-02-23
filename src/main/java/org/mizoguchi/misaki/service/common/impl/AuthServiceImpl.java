@@ -88,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
         );
 
         return LoginResponse.builder()
-                .token(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
+                .jwt(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
                 .authRole(user.getAuthRole())
                 .build();
     }
@@ -153,10 +153,7 @@ public class AuthServiceImpl implements AuthService {
 
         Settings settings = Settings.builder()
                 .userId(user.getId())
-                .appearance(0)
-                .language(0)
                 .mainColor("#3142ef")
-                .borderRadius(16)
                 .ttsAutoplay(false)
                 .enabledAssistantId(assistant.getId())
                 .build();

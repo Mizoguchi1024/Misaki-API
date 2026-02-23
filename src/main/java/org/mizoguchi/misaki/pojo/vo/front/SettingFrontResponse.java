@@ -11,17 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SettingFrontResponse {
-    private Integer appearance;
-
-    private Integer language;
-
     private Integer ttsAutoplay;
 
     private String mainColor;
 
-    private Integer borderRadius;
-
     private String backgroundPath;
+
+    private Long enabledAssistantId;
 
     @Version
     private Integer version;

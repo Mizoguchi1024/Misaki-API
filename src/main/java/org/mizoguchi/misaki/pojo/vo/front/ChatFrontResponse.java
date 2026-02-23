@@ -19,8 +19,13 @@ public class ChatFrontResponse {
 
     private String title;
 
+    private Integer token;
+
     @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
+
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
+    private LocalDateTime updateTime;
 
     @Version
     private Integer version;
