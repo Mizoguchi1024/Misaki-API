@@ -26,6 +26,7 @@ public class FeedbackFrontServiceImpl implements FeedbackFrontService {
         Feedback feedback = new Feedback();
         BeanUtils.copyProperties(addFeedbackFrontRequest, feedback);
         feedback.setUserId(userId);
+        feedback.setStatus(0);
         feedbackMapper.insert(feedback);
     }
 

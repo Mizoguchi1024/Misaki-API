@@ -22,6 +22,10 @@ public class Settings {
 
     private String backgroundPath;
 
+    private Integer backgroundOpacity;
+
+    private Integer backgroundBlur;
+
     @TableField("tts_autoplay")
     private Boolean ttsAutoplay;
 

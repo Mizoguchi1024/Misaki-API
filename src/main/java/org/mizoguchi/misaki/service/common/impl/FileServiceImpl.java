@@ -11,9 +11,11 @@ import org.mizoguchi.misaki.pojo.vo.common.UploadResponse;
 import org.mizoguchi.misaki.service.common.FileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public UploadResponse uploadFile(MultipartFile file) {
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String fileName = UUID.randomUUID().toString() + '.' + StringUtils.getFilenameExtension(file.getOriginalFilename());
 
         try{
             minioClient.putObject(PutObjectArgs.builder()

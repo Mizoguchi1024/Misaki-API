@@ -155,6 +155,8 @@ public class AuthServiceImpl implements AuthService {
                 .userId(user.getId())
                 .mainColor("#3142ef")
                 .ttsAutoplay(false)
+                .backgroundOpacity(100)
+                .backgroundBlur(0)
                 .enabledAssistantId(assistant.getId())
                 .build();
 

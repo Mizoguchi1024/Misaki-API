@@ -17,6 +17,10 @@ public class SettingFrontResponse {
 
     private String backgroundPath;
 
+    private Integer backgroundOpacity;
+
+    private Integer backgroundBlur;
+
     private Long enabledAssistantId;
 
     @Version

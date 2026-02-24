@@ -15,6 +15,6 @@ public class AddFeedbackFrontRequest {
     private String title;
 
     @NotBlank
-    @Size(min = 1, max = 500)
+    @Size(min = 1, max = 1000)
     private String content;
 }
