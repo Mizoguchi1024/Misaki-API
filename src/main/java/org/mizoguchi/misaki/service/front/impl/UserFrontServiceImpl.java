@@ -99,7 +99,7 @@ public class UserFrontServiceImpl implements UserFrontService {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
 
-        if (StringUtils.hasText(originalAvatarPath) && StringUtils.hasText(updateUserFrontRequest.getAvatarPath())) {
+        if (StringUtils.hasText(originalAvatarPath) && updateUserFrontRequest.getAvatarPath() != null) {
             String fileName = new File(originalAvatarPath).getName();
             fileService.deleteFile(fileName);
         }
@@ -135,7 +135,7 @@ public class UserFrontServiceImpl implements UserFrontService {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
 
-        if (StringUtils.hasText(originalBackgroundPath) && StringUtils.hasText(updateSettingFrontRequest.getBackgroundPath())) {
+        if (StringUtils.hasText(originalBackgroundPath) && updateSettingFrontRequest.getBackgroundPath() != null) {
             String fileName = new File(originalBackgroundPath).getName();
             fileService.deleteFile(fileName);
         }
