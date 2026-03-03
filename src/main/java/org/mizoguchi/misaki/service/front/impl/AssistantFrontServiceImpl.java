@@ -2,11 +2,13 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.enumeration.LikesTargetTypeEnum;
 import org.mizoguchi.misaki.common.exception.*;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.LikesMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
@@ -159,14 +161,15 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
     }
 
     @Override
-    public List<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize) {
-        List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
+    public PageResult<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize) {
+        IPage<Assistant> assistantPages = assistantMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
                 .ne(Assistant::getOwnerId, userId)
                 .eq(Assistant::getPublicFlag, true)
                 .eq(Assistant::getDeleteFlag, false)
         );
 
-        return assistants.stream().map(assistant -> {
+        PageResult<AssistantFrontResponse> pageResult = new PageResult<>();
+        pageResult.setList(assistantPages.getRecords().stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
@@ -188,8 +191,14 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                     .eq(Assistant::getDeleteFlag, false));
             assistantFrontResponse.setDuplicateName(Math.toIntExact(duplicateNameCount));
 
+            pageResult.setTotal(assistantPages.getTotal());
+            pageResult.setPageIndex(assistantPages.getCurrent());
+            pageResult.setPageSize(assistantPages.getSize());
+
             return assistantFrontResponse;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()));
+
+        return pageResult;
     }
 
     @Override

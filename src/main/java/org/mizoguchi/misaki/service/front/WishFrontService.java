@@ -1,12 +1,13 @@
 package org.mizoguchi.misaki.service.front;
 
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.pojo.vo.front.WishFrontResponse;
 
 import java.util.List;
 
 public interface WishFrontService {
     List<WishFrontResponse> gacha(Long userId, Integer times);
-    List<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize);
+    PageResult<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize);
     void buyPuzzleWithCrystal(Long userId, Integer amount);
     void buyPuzzleWithStardust(Long userId, Integer amount);
 }

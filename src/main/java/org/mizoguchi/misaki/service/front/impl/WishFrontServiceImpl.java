@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
@@ -9,6 +10,7 @@ import org.mizoguchi.misaki.common.exception.CrystalNotEnoughException;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
 import org.mizoguchi.misaki.common.exception.PuzzleNotEnoughException;
 import org.mizoguchi.misaki.common.exception.StardustNotEnoughException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
@@ -62,7 +64,6 @@ public class WishFrontServiceImpl implements WishFrontService {
     @Value("${misaki.business.wish.probability.four-star}")
     private Integer fourStarProbability;
 
-
     @Override
     public void buyPuzzleWithCrystal(Long userId, Integer amount) {
         User user = userMapper.selectById(userId);
@@ -75,8 +76,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                 .eq(User::getId, userId)
                 .setDecrBy(User::getCrystal, amount * puzzleCrystal)
                 .setIncrBy(User::getPuzzle, amount)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
     }
 
     @Override
@@ -91,8 +91,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                 .eq(User::getId, userId)
                 .setDecrBy(User::getStardust, amount * stardust)
                 .setIncrBy(User::getPuzzle, amount)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
     }
 
     @Override
@@ -121,25 +120,29 @@ public class WishFrontServiceImpl implements WishFrontService {
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
                 .setDecrBy(User::getPuzzle, times)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
 
         return result;
     }
 
-
     @Override
-    public List<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize) {
-        List<Wish> wishes = wishMapper.selectList(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Wish>()
+    public PageResult<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize) {
+        IPage<Wish> wishPages = wishMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Wish>()
                 .eq(Wish::getUserId, userId)
                 .orderBy(true, false, Wish::getCreateTime));
 
-        return wishes.stream()
-                .map(wish -> {
-                    WishFrontResponse wishFrontResponse = new WishFrontResponse();
-                    BeanUtils.copyProperties(wish, wishFrontResponse);
-                    return wishFrontResponse;
-                }).collect(Collectors.toList());
+        PageResult<WishFrontResponse> pageResult = new PageResult<>();
+        pageResult.setList(wishPages.getRecords().stream().map(wish -> {
+            WishFrontResponse wishFrontResponse = new WishFrontResponse();
+            BeanUtils.copyProperties(wish, wishFrontResponse);
+            return wishFrontResponse;
+        }).collect(Collectors.toList()));
+
+        pageResult.setTotal(wishPages.getTotal());
+        pageResult.setPageIndex(wishPages.getCurrent());
+        pageResult.setPageSize(wishPages.getSize());
+
+        return pageResult;
     }
 
     private WishFrontResponse drawToken(Long userId) {
@@ -148,8 +151,7 @@ public class WishFrontServiceImpl implements WishFrontService {
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
                 .setIncrBy(User::getToken, token)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
 
         Wish wish = Wish.builder()
                 .userId(userId)
@@ -168,8 +170,7 @@ public class WishFrontServiceImpl implements WishFrontService {
 
     private WishFrontResponse drawModel(Long userId, int grade, int compensation) {
         List<Model> models = modelMapper.selectList(
-                new LambdaQueryWrapper<Model>().eq(Model::getGrade, grade)
-        );
+                new LambdaQueryWrapper<Model>().eq(Model::getGrade, grade));
         if (models.isEmpty()) {
             throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
@@ -179,16 +180,14 @@ public class WishFrontServiceImpl implements WishFrontService {
         ModelUser existing = modelUserMapper.selectOne(
                 new LambdaQueryWrapper<ModelUser>()
                         .eq(ModelUser::getUserId, userId)
-                        .eq(ModelUser::getModelId, model.getId())
-        );
+                        .eq(ModelUser::getModelId, model.getId()));
 
         Wish wish;
         if (existing != null) {
             userMapper.update(new LambdaUpdateWrapper<User>()
                     .eq(User::getId, userId)
                     .setIncrBy(User::getStardust, compensation)
-                    .setIncrBy(User::getVersion, 1)
-            );
+                    .setIncrBy(User::getVersion, 1));
 
             wish = Wish.builder()
                     .userId(userId)
@@ -202,8 +201,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                     ModelUser.builder()
                             .userId(userId)
                             .modelId(model.getId())
-                            .build()
-            );
+                            .build());
 
             wish = Wish.builder()
                     .userId(userId)

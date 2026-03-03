@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
@@ -43,9 +44,9 @@ public class AssistantFrontController {
     }
 
     @EnableRateLimit()
-    @Operation(summary = "获取市场公开的助手存档")
+    @Operation(summary = "分页获取市场公开的助手存档")
     @GetMapping("/public")
-    public Result<List<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails userDetails,
+    public Result<PageResult<AssistantFrontResponse>> listPublicAssistants(@AuthenticationPrincipal UserDetails userDetails,
                                                                      @RequestParam @Positive Integer pageIndex,
                                                                      @RequestParam @Positive Integer pageSize){
         return Result.success(assistantFrontService.listPublicAssistants(Long.valueOf(userDetails.getUsername()),
