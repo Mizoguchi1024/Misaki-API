@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RedisConstant;
 import org.mizoguchi.misaki.common.exception.AlreadyCheckedInException;
+import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
+import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.mapper.SettingsMapper;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.entity.User;
@@ -32,6 +35,7 @@ import java.time.LocalDate;
 public class UserFrontServiceImpl implements UserFrontService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
+    private final AssistantMapper assistantMapper;
     private final RedisTemplate<String, String> redisTemplate;
     private final FileService fileService;
 
@@ -48,7 +52,7 @@ public class UserFrontServiceImpl implements UserFrontService {
     public void checkIn(Long userId) {
         User user = userMapper.selectById(userId);
 
-        if (user.getLastCheckInDate() != null && user.getLastCheckInDate().equals(LocalDate.now())){
+        if (user.getLastCheckInDate() != null && user.getLastCheckInDate().equals(LocalDate.now())) {
             throw new AlreadyCheckedInException(FailMessageConstant.ALREADY_CHECKED_IN);
         }
 
@@ -57,8 +61,7 @@ public class UserFrontServiceImpl implements UserFrontService {
                 .set(User::getLastCheckInDate, LocalDate.now())
                 .setIncrBy(User::getToken, checkInTokenAmount)
                 .setIncrBy(User::getCrystal, checkInCrystalAmount)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
     }
 
     @Override
@@ -67,8 +70,7 @@ public class UserFrontServiceImpl implements UserFrontService {
                 .eq(User::getId, userId)
                 .set(User::getLastLoginTime, LocalDate.now())
                 .set(User::getDeletePendingFlag, true)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
 
         redisTemplate.opsForValue().set(RedisConstant.BLOCKED_JWT + jwtId,
                 String.valueOf(System.currentTimeMillis()),
@@ -108,8 +110,7 @@ public class UserFrontServiceImpl implements UserFrontService {
     @Override
     public SettingFrontResponse getSetting(Long userId) {
         Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>()
-                .eq(Settings::getUserId, userId)
-        );
+                .eq(Settings::getUserId, userId));
 
         SettingFrontResponse settingFrontResponse = new SettingFrontResponse();
         BeanUtils.copyProperties(settings, settingFrontResponse);
@@ -120,16 +121,25 @@ public class UserFrontServiceImpl implements UserFrontService {
     @Override
     public void updateSetting(Long userId, UpdateSettingFrontRequest updateSettingFrontRequest) {
         String originalBackgroundPath = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>()
-                .eq(Settings::getUserId, userId)
-        ).getBackgroundPath();
+                .eq(Settings::getUserId, userId)).getBackgroundPath();
+
+        if (updateSettingFrontRequest.getEnabledAssistantId() != null) {
+            boolean isAssistantExists = assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
+                    .eq(Assistant::getId, updateSettingFrontRequest.getEnabledAssistantId())
+                    .eq(Assistant::getOwnerId, userId)
+                    .eq(Assistant::getDeleteFlag, false)
+            );
+            if (!isAssistantExists) {
+                throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+            }
+        }
 
         Settings settings = new Settings();
         BeanUtils.copyProperties(updateSettingFrontRequest, settings);
         settings.setUserId(userId);
 
         int affectedRows = settingsMapper.update(settings, new LambdaUpdateWrapper<Settings>()
-                .eq(Settings::getUserId, userId)
-        );
+                .eq(Settings::getUserId, userId));
 
         if (affectedRows == 0) {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);

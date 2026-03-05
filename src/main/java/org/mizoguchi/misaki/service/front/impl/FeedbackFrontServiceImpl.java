@@ -34,7 +34,9 @@ public class FeedbackFrontServiceImpl implements FeedbackFrontService {
     public List<FeedbackFrontResponse> listFeedbacks(Long userId) {
         List<Feedback> feedbacks = feedbackMapper.selectList(new LambdaQueryWrapper<Feedback>()
                 .eq(Feedback::getUserId, userId)
-                .eq(Feedback::getDeleteFlag, false));
+                .eq(Feedback::getDeleteFlag, false)
+                .orderByDesc(true, Feedback::getUpdateTime)
+        );
 
         return feedbacks.stream().map(feedback -> {
             FeedbackFrontResponse feedbackFrontResponse = new FeedbackFrontResponse();

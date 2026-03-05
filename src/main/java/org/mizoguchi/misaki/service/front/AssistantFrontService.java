@@ -8,7 +8,7 @@ import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import java.util.List;
 
 public interface AssistantFrontService {
-    void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest);
+    AssistantFrontResponse addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest);
     void copyAssistant(Long userId, Long assistantId);
     AssistantFrontResponse getAssistant(Long userId, Long assistantId);
     List<AssistantFrontResponse> listAssistants(Long userId);

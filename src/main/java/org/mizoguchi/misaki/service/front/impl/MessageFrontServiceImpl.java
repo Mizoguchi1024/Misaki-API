@@ -51,8 +51,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     public Flux<String> sendMessage(Long userId, Long chatId, SendMessageFrontRequest sendMessageFrontRequest) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
-                .eq(Chat::getUserId, userId)
-        );
+                .eq(Chat::getUserId, userId));
 
         if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
@@ -64,8 +63,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         if (sendMessageFrontRequest.getParentId() != null) {
             boolean parentMessageExistsFlag = messageMapper.exists(new LambdaQueryWrapper<Message>()
                     .eq(Message::getId, sendMessageFrontRequest.getParentId())
-                    .eq(Message::getChatId, chatId)
-            );
+                    .eq(Message::getChatId, chatId));
 
             if (!parentMessageExistsFlag) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
@@ -76,11 +74,12 @@ public class MessageFrontServiceImpl implements MessageFrontService {
 
         User user = userMapper.selectById(userId);
 
-        if (user.getToken() <= 0){
+        if (user.getToken() <= 0) {
             throw new TokenNotEnoughException(FailMessageConstant.TOKEN_NOT_ENOUGH);
         }
 
-        Settings settings = settingsMapper.selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
+        Settings settings = settingsMapper
+                .selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
         Assistant assistant = assistantMapper.selectById(settings.getEnabledAssistantId());
         if (assistant == null || !assistant.getOwnerId().equals(userId)) {
             throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
@@ -117,19 +116,17 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             if (prefix.startsWith(ChatConstant.CODE_QUOTE)) {
                 chatClientRequestSpec.options(ChatOptions.builder()
                         .stopSequences(List.of(ChatConstant.CODE_QUOTE))
-                        .build()
-                );
+                        .build());
             }
-        }else {
+        } else {
             if (sendMessageFrontRequest.getTools() != null) {
                 List<DeepSeekApi.FunctionTool> functionTools = Arrays.stream(sendMessageFrontRequest.getTools())
-                    .map(DeepSeekApi.FunctionTool::new)
-                    .collect(Collectors.toList());
+                        .map(DeepSeekApi.FunctionTool::new)
+                        .collect(Collectors.toList());
 
                 chatClientRequestSpec.options(DeepSeekChatOptions.builder()
-                    .tools(functionTools)
-                    .build() 
-                );
+                        .tools(functionTools)
+                        .build());
             }
             chatClientRequestSpec.messages(userMessage);
         }
@@ -151,14 +148,12 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                         chatMapper.update(new LambdaUpdateWrapper<Chat>()
                                 .eq(Chat::getId, chatId)
                                 .setIncrBy(Chat::getToken, tokens)
-                                .setIncrBy(Chat::getVersion, 1)
-                        );
+                                .setIncrBy(Chat::getVersion, 1));
 
                         userMapper.update(new LambdaUpdateWrapper<User>()
                                 .eq(User::getId, userId)
                                 .setDecrBy(User::getToken, tokens)
-                                .setIncrBy(User::getVersion, 1)
-                        );
+                                .setIncrBy(User::getVersion, 1));
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());
@@ -168,16 +163,14 @@ public class MessageFrontServiceImpl implements MessageFrontService {
     public List<MessageFrontResponse> listMessages(Long userId, Long chatId) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
-                .eq(Chat::getUserId, userId)
-        );
+                .eq(Chat::getUserId, userId));
 
         if (chat == null) {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
         List<Message> messages = messageMapper.selectList(new LambdaQueryWrapper<Message>()
-                .eq(Message::getChatId, chatId)
-        );
+                .eq(Message::getChatId, chatId));
 
         return messages.stream().map(message -> {
             MessageFrontResponse messageFrontResponse = new MessageFrontResponse();

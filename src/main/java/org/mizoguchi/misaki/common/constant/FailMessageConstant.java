@@ -50,6 +50,7 @@ public class FailMessageConstant {
     public static final String TOO_MANY_ASSISTANTS = "Too many assistants";
     public static final String AT_LEAST_ONE_ASSISTANT = "At least one assistant";
     public static final String MODEL_NOT_ON_SALE = "Model not on sale";
+    public static final String ENABLED_ASSISTANT_DELETION = "Enabled assistant deletion is not allowed";
 
 
     // ===== 资源不足类 =====

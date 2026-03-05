@@ -56,10 +56,9 @@ public class AssistantFrontController {
     @EnableRateLimit()
     @Operation(summary = "新建助手存档")
     @PostMapping()
-    public Result<Void> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
+    public Result<AssistantFrontResponse> createAssistant(@AuthenticationPrincipal UserDetails userDetails,
                                         @RequestBody @Validated AddAssistantFrontRequest addAssistantFrontRequest){
-        assistantFrontService.addAssistant(Long.valueOf(userDetails.getUsername()), addAssistantFrontRequest);
-        return Result.success();
+        return Result.success(assistantFrontService.addAssistant(Long.valueOf(userDetails.getUsername()), addAssistantFrontRequest));
     }
 
     @EnableRateLimit()

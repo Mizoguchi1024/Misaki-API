@@ -11,11 +11,13 @@ import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.LikesMapper;
 import org.mizoguchi.misaki.mapper.ModelUserMapper;
+import org.mizoguchi.misaki.mapper.SettingsMapper;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateAssistantFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.Likes;
 import org.mizoguchi.misaki.pojo.entity.ModelUser;
+import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.service.front.AssistantFrontService;
@@ -29,11 +31,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AssistantFrontServiceImpl implements AssistantFrontService {
     private final AssistantMapper assistantMapper;
+    private final SettingsMapper settingsMapper;
     private final LikesMapper likesMapper;
     private final ModelUserMapper modelUserMapper;
 
     @Override
-    public void addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest) {
+    public AssistantFrontResponse addAssistant(Long userId, AddAssistantFrontRequest addAssistantFrontRequest) {
         Long existingAssistantCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
                 .eq(Assistant::getOwnerId, userId)
                 .eq(Assistant::getDeleteFlag, false));
@@ -56,6 +59,11 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
         assistant.setCreatorId(userId);
         assistant.setOwnerId(userId);
         assistantMapper.insert(assistant);
+
+        AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
+        BeanUtils.copyProperties(assistant, assistantFrontResponse);
+
+        return assistantFrontResponse;
     }
 
     @Override
@@ -225,12 +233,20 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
     @Override
     public void deleteAssistant(Long userId, Long assistantId) {
-        Long assistantCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
-                .eq(Assistant::getOwnerId, userId)
-                .eq(Assistant::getDeleteFlag, false));
+        // Long assistantCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+        //         .eq(Assistant::getOwnerId, userId)
+        //         .eq(Assistant::getDeleteFlag, false));
 
-        if (assistantCount <= 1){
-            throw new AtLeastOneAssistantException(FailMessageConstant.AT_LEAST_ONE_ASSISTANT);
+        // if (assistantCount <= 1){
+        //     throw new AtLeastOneAssistantException(FailMessageConstant.AT_LEAST_ONE_ASSISTANT);
+        // }
+
+        Settings settings = settingsMapper.selectOne(new LambdaUpdateWrapper<Settings>()
+            .eq(Settings::getUserId, userId)
+        );
+        
+        if (settings.getEnabledAssistantId() == assistantId) {
+            throw new EnabledAssistantDeletionException(FailMessageConstant.ENABLED_ASSISTANT_DELETION);
         }
 
         int affectedRows = assistantMapper.update(new LambdaUpdateWrapper<Assistant>()

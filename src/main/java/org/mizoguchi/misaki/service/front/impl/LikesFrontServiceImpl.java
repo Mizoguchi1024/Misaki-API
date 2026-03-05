@@ -44,6 +44,7 @@ public class LikesFrontServiceImpl implements LikesFrontService {
                 .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getOwnerId, userId)
                 .or()
+                .eq(Assistant::getId, assistantId)
                 .eq(Assistant::getPublicFlag, true)
                 .eq(Assistant::getDeleteFlag, false)
         );
