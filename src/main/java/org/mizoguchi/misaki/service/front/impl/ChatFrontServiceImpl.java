@@ -17,6 +17,7 @@ import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.ChatTitleFrontResponse;
 import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.pojo.entity.Chat;
@@ -215,6 +216,11 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_TITLE)
                 .advisors(advisorSpec -> advisorSpec.params(advisorParams))
+                .options(DeepSeekChatOptions.builder()
+                        .responseFormat(ResponseFormat.builder()
+                                .type(ResponseFormat.Type.JSON_OBJECT)
+                                .build())
+                        .build())
                 .call()
                 .chatResponse();
 
@@ -223,7 +229,13 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         }
 
         Usage usage = chatResponse.getMetadata().getUsage();
-        String title = chatResponse.getResult().getOutput().getText();
+        ChatTitleFrontResponse chatTitleFrontResponse;
+        try {
+            chatTitleFrontResponse = objectMapper.readValue(chatResponse.getResult().getOutput().getText(), ChatTitleFrontResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);
+        }
+        String title = chatTitleFrontResponse.getTitle();
 
         if (!StringUtils.hasText(title) || !isTitleLengthValid(title)) {
             throw new BadAiOutputException(FailMessageConstant.BAD_AI_OUTPUT);

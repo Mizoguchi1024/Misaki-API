@@ -31,24 +31,24 @@ public class ChatConstant {
             
             EXAMPLE JSON OUTPUT:
             \\{
-                "prompts": \\["prompts1", "prompts2", "prompts3"\\]
+                "prompts": \\["prompt1", "prompt2", "prompt3"\\]
             \\}
             """;
     public static final String SIZE = "size";
     public static final String SYSTEM_GENERATE_TITLE = """
-            Generate a concise title for this conversation NOW.
+            Generate a concise title for this conversation.
             
             Rules:
-            - Generate ONE short title only.
-            - The title must be clear, specific, and descriptive.
-            - Use no more than 8 words.
-            - Focus on the general topic, not specific answers.
             - In user's language.
-            - Do NOT use quotation marks.
-            - Do NOT add any prefixes like "Title:" or "Chat Title:".
-            - Do NOT include emojis.
+            - As short as possible.
+            - Focus on user's intention.
+            - Ignore assistant's roleplay words.
+            - Do not include emojis.
             
-            Return only the title text.
+            EXAMPLE JSON OUTPUT:
+            \\{
+                "title": ""
+            \\}
             """;
     public static final String CODE_QUOTE = "```";
     public static final String CONVERSATION_ID = "chat_memory_conversation_id";
