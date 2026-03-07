@@ -26,6 +26,9 @@ public class Settings {
 
     private Integer backgroundBlur;
 
+    @TableField("prompts_suggestion")
+    private Boolean promptsSuggestion;
+
     @TableField("tts_autoplay")
     private Boolean ttsAutoplay;
 

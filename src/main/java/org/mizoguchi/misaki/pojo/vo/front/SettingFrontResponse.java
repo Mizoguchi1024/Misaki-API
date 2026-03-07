@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SettingFrontResponse {
-    private Integer ttsAutoplay;
+    private Boolean promptsSuggestion;
+
+    private Boolean ttsAutoplay;
 
     private String mainColor;
 

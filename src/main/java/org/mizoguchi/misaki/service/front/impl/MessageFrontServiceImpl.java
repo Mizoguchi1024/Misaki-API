@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -148,12 +149,15 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                         chatMapper.update(new LambdaUpdateWrapper<Chat>()
                                 .eq(Chat::getId, chatId)
                                 .setIncrBy(Chat::getToken, tokens)
-                                .setIncrBy(Chat::getVersion, 1));
+                                .set(Chat::getUpdateTime, LocalDateTime.now())
+                                .setIncrBy(Chat::getVersion, 1)
+                        );
 
                         userMapper.update(new LambdaUpdateWrapper<User>()
                                 .eq(User::getId, userId)
                                 .setDecrBy(User::getToken, tokens)
-                                .setIncrBy(User::getVersion, 1));
+                                .setIncrBy(User::getVersion, 1)
+                        );
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());

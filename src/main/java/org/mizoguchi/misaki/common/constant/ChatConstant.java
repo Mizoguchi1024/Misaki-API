@@ -2,6 +2,7 @@ package org.mizoguchi.misaki.common.constant;
 
 public class ChatConstant {
     public static final String SYSTEM_DEFAULT = """
+            Use Mermaid code if user wants to create diagrams.
             The following information defines the assistant and the user. Some fields could not be set.
             
             AssistantName: {assistantName}
@@ -27,7 +28,20 @@ public class ChatConstant {
     public static final String USER_OCCUPATION = "userOccupation";
     public static final String USER_DETAIL = "userDetail";
     public static final String SYSTEM_GENERATE_PROMPTS = """
-            Generate {size} user prompt suggestions based on the latest assistant message, output in JSON format.
+            Generate {size} user prompt suggestions as the user reply for the last assistant message, output in JSON format.
+            The following information defines the assistant and the user. Some fields could not be set.
+            
+            AssistantName: {assistantName}
+            AssistantGender: {assistantGender}
+            AssistantBirthday: {assistantBirthday}
+            AssistantPersonality: {assistantPersonality}
+            AssistantDetail: {assistantDetail}
+            
+            UserName: {userName}
+            UserGender: {userGender}
+            UserBirthday: {userBirthday}
+            UserOccupation: {userOccupation}
+            UserDetail: {userDetail}
             
             EXAMPLE JSON OUTPUT:
             \\{

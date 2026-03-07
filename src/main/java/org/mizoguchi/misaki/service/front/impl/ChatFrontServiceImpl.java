@@ -11,6 +11,7 @@ import org.mizoguchi.misaki.common.constant.ChatConstant;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
+import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
@@ -18,10 +19,14 @@ import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.ChatTitleFrontResponse;
+import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
+import org.mizoguchi.misaki.mapper.SettingsMapper;
+import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.entity.Chat;
 import org.mizoguchi.misaki.pojo.entity.Message;
+import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.MessageType;
@@ -49,6 +54,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
     private final UserMapper userMapper;
+    private final SettingsMapper settingsMapper;
+    private final AssistantMapper assistantMapper;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -70,7 +77,8 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         List<Chat> chats = chatMapper.selectList(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-                .orderBy(true, false, Chat::getUpdateTime));
+                .orderByDesc(true, Chat::getUpdateTime)
+        );
 
         return chats.stream().map(chat -> {
             ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
@@ -135,11 +143,30 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new IncompleteChatException(FailMessageConstant.INCOMPLETE_CHAT);
         }
 
+        Settings settings = settingsMapper
+                .selectOne(new LambdaQueryWrapper<Settings>().eq(Settings::getUserId, userId));
+        Assistant assistant = assistantMapper.selectById(settings.getEnabledAssistantId());
+        if (assistant == null || !assistant.getOwnerId().equals(userId)) {
+            throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+        }
+
+        Map<String, Object> systemMessageParams = new HashMap<>();
+        systemMessageParams.put(ChatConstant.SIZE, listPromptsFrontRequest.getSize());
+        systemMessageParams.put(ChatConstant.ASSISTANT_NAME, assistant.getName());
+        systemMessageParams.put(ChatConstant.ASSISTANT_GENDER, GenderEnum.fromCode(assistant.getGender()).getGender());
+        systemMessageParams.put(ChatConstant.ASSISTANT_BIRTHDAY, assistant.getBirthday());
+        systemMessageParams.put(ChatConstant.ASSISTANT_PERSONALITY, assistant.getPersonality());
+        systemMessageParams.put(ChatConstant.ASSISTANT_DETAIL, assistant.getDetail());
+        systemMessageParams.put(ChatConstant.USER_NAME, user.getUsername());
+        systemMessageParams.put(ChatConstant.USER_GENDER, GenderEnum.fromCode(user.getGender()).getGender());
+        systemMessageParams.put(ChatConstant.USER_BIRTHDAY, user.getBirthday());
+        systemMessageParams.put(ChatConstant.USER_OCCUPATION, user.getOccupation());
+        systemMessageParams.put(ChatConstant.USER_DETAIL, user.getDetail());
+        systemMessageParams.replaceAll((k, v) -> v == null ? "" : v);
+
         ChatResponse chatResponse = chatClient.prompt()
                 .system(ChatConstant.SYSTEM_GENERATE_PROMPTS)
-                .system(systemMessage -> systemMessage.params(
-                        Map.of(ChatConstant.SIZE, listPromptsFrontRequest.getSize())
-                ))
+                .system(systemMessage -> systemMessage.params(systemMessageParams))
                 .advisors(advisorSpec -> advisorSpec.params(advisorParams))
                 .options(DeepSeekChatOptions.builder()
                         .responseFormat(ResponseFormat.builder()

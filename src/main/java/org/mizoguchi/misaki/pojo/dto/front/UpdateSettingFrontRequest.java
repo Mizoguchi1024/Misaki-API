@@ -7,6 +7,8 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 
 @Data
 public class UpdateSettingFrontRequest {
+    private Boolean promptsSuggestion;
+
     private Boolean ttsAutoplay;
 
     @Pattern(regexp = RegexConstant.HEX_COLOR, message = FailMessageConstant.INVALID_FIELD_PATTERN)
