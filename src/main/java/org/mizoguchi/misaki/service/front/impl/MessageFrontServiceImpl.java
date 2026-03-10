@@ -64,7 +64,8 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         if (sendMessageFrontRequest.getParentId() != null) {
             boolean parentMessageExistsFlag = messageMapper.exists(new LambdaQueryWrapper<Message>()
                     .eq(Message::getId, sendMessageFrontRequest.getParentId())
-                    .eq(Message::getChatId, chatId));
+                    .eq(Message::getChatId, chatId)
+            );
 
             if (!parentMessageExistsFlag) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);

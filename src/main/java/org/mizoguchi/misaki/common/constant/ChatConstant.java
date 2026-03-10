@@ -2,7 +2,6 @@ package org.mizoguchi.misaki.common.constant;
 
 public class ChatConstant {
     public static final String SYSTEM_DEFAULT = """
-            Use Mermaid code if user wants to create diagrams.
             The following information defines the assistant and the user. Some fields could not be set.
             
             AssistantName: {assistantName}
@@ -16,6 +15,11 @@ public class ChatConstant {
             UserBirthday: {userBirthday}
             UserOccupation: {userOccupation}
             UserDetail: {userDetail}
+
+            Additional:
+            - Always reply in the same language as the user's latest message.
+            - If the AssistantName is "Misaki", it's the alias of "中原岬".
+            - Use Mermaid code if user ask for creating diagrams.
             """;
     public static final String ASSISTANT_NAME = "assistantName";
     public static final String ASSISTANT_GENDER = "assistantGender";
@@ -42,7 +46,10 @@ public class ChatConstant {
             UserBirthday: {userBirthday}
             UserOccupation: {userOccupation}
             UserDetail: {userDetail}
-            
+
+            Additional:
+            - If the AssistantName is "Misaki", it's the alias of "中原岬".
+
             EXAMPLE JSON OUTPUT:
             \\{
                 "prompts": \\["prompt1", "prompt2", "prompt3"\\]

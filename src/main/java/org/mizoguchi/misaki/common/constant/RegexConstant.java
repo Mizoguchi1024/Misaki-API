@@ -1,7 +1,7 @@
 package org.mizoguchi.misaki.common.constant;
 
 public class RegexConstant {
-    public static final String NOT_BLANK = "\\S+";
+    public static final String NOT_BLANK = ".*\\S.*";
     public static final String HEX_COLOR = "^#(?:[0-9a-fA-F]{3}){1,2}$";
     public static final String PURE_NUMBER = "^[0-9]*$";
     public static final String QUOTE_PREFIX = "^[\"'“”‘’《（(【「『]+";

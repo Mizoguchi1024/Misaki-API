@@ -2,12 +2,14 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.FeedbackNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.FeedbackMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchFeedbackAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateFeedbackAdminRequest;
@@ -17,7 +19,6 @@ import org.mizoguchi.misaki.service.admin.FeedbackAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,8 +27,8 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
     private final FeedbackMapper feedbackMapper;
 
     @Override
-    public List<FeedbackAdminResponse> searchFeedbacks(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchFeedbackAdminRequest searchFeedbackAdminRequest) {
-        List<Feedback> feedbacks = feedbackMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Feedback>()
+    public PageResult<FeedbackAdminResponse> searchFeedbacks(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchFeedbackAdminRequest searchFeedbackAdminRequest) {
+        IPage<Feedback> feedbacksPage = feedbackMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<Feedback>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchFeedbackAdminRequest.getId() != null, Feedback::getId, searchFeedbackAdminRequest.getId())
@@ -43,13 +44,20 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
                 .like(searchFeedbackAdminRequest.getUpdateTime() != null, Feedback::getUpdateTime, searchFeedbackAdminRequest.getUpdateTime())
         );
 
-        return feedbacks.stream()
-            .map(feedback -> {
-                FeedbackAdminResponse feedbackAdminResponse = new FeedbackAdminResponse();
-                BeanUtils.copyProperties(feedback, feedbackAdminResponse);
-                
-                return feedbackAdminResponse;
-            }).collect(Collectors.toList());
+        PageResult<FeedbackAdminResponse>  pageResult = new PageResult<>();
+        pageResult.setList(feedbacksPage.getRecords().stream()
+                .map(feedback -> {
+                    FeedbackAdminResponse feedbackAdminResponse = new FeedbackAdminResponse();
+                    BeanUtils.copyProperties(feedback, feedbackAdminResponse);
+                    
+                    return feedbackAdminResponse;
+                }).collect(Collectors.toList()));
+        
+        pageResult.setTotal(feedbacksPage.getTotal());
+        pageResult.setPageIndex(feedbacksPage.getCurrent());
+        pageResult.setPageSize(feedbacksPage.getSize());
+
+        return pageResult;
     }
 
     @Override

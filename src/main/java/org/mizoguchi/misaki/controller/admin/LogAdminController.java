@@ -8,6 +8,7 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchEmailLogAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchExceptionLogAdminRequest;
@@ -22,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Validated
 @RestController
@@ -34,7 +34,7 @@ public class LogAdminController {
 
     @Operation(summary = "分页条件搜索邮件日志")
     @PostMapping("/email/search")
-    public Result<List<EmailLogAdminResponse>> searchEmailLogs(@RequestParam @Positive Integer pageIndex,
+    public Result<PageResult<EmailLogAdminResponse>> searchEmailLogs(@RequestParam @Positive Integer pageIndex,
                                                                @RequestParam @Positive Integer pageSize,
                                                                @RequestParam(required = false) String sortField,
                                                                @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,
@@ -59,7 +59,7 @@ public class LogAdminController {
 
     @Operation(summary = "分页条件搜索异常日志")
     @PostMapping("/exception/search")
-    public Result<List<ExceptionLogAdminResponse>> searchExceptionLogs(@RequestParam @Positive Integer pageIndex,
+    public Result<PageResult<ExceptionLogAdminResponse>> searchExceptionLogs(@RequestParam @Positive Integer pageIndex,
                                                                        @RequestParam @Positive Integer pageSize,
                                                                        @RequestParam(required = false) String sortField,
                                                                        @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,

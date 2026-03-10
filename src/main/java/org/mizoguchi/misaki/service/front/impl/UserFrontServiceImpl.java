@@ -13,6 +13,7 @@ import org.mizoguchi.misaki.pojo.entity.Settings;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.CheckInFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.mapper.SettingsMapper;
@@ -49,7 +50,7 @@ public class UserFrontServiceImpl implements UserFrontService {
     private long jwtExpiration;
 
     @Override
-    public void checkIn(Long userId) {
+    public CheckInFrontResponse checkIn(Long userId) {
         User user = userMapper.selectById(userId);
 
         if (user.getLastCheckInDate() != null && user.getLastCheckInDate().equals(LocalDate.now())) {
@@ -61,7 +62,10 @@ public class UserFrontServiceImpl implements UserFrontService {
                 .set(User::getLastCheckInDate, LocalDate.now())
                 .setIncrBy(User::getToken, checkInTokenAmount)
                 .setIncrBy(User::getCrystal, checkInCrystalAmount)
-                .setIncrBy(User::getVersion, 1));
+                .setIncrBy(User::getVersion, 1)
+        );
+        
+        return new CheckInFrontResponse(checkInTokenAmount, checkInCrystalAmount);
     }
 
     @Override

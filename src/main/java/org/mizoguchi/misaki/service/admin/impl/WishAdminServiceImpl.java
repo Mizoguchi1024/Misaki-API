@@ -2,11 +2,13 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.WishNotExistsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.WishMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchWishAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Wish;
@@ -16,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +26,8 @@ public class WishAdminServiceImpl implements WishAdminService {
     private final WishMapper wishMapper;
 
     @Override
-    public List<WishAdminResponse> searchWishes(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchWishAdminRequest searchWishAdminRequest) {
-        List<Wish> wishes = wishMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Wish>()
+    public PageResult<WishAdminResponse> searchWishes(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchWishAdminRequest searchWishAdminRequest) {
+        IPage<Wish> wishes = wishMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<Wish>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchWishAdminRequest.getId() != null, Wish::getId, searchWishAdminRequest.getId())
@@ -38,13 +39,20 @@ public class WishAdminServiceImpl implements WishAdminService {
                 .like(searchWishAdminRequest.getCreateTime() != null, Wish::getCreateTime, searchWishAdminRequest.getCreateTime())
         );
 
-        return wishes.stream()
+        PageResult<WishAdminResponse> pageResult = new PageResult<>();
+        pageResult.setList(wishes.getRecords().stream()
                 .map(wish -> {
                     WishAdminResponse wishAdminResponse = new WishAdminResponse();
                     BeanUtils.copyProperties(wish, wishAdminResponse);
 
                     return wishAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(wishes.getTotal());
+        pageResult.setPageIndex(wishes.getCurrent());
+        pageResult.setPageSize(wishes.getSize());
+
+        return pageResult;
     }
 
     @Override

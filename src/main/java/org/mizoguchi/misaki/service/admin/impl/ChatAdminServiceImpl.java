@@ -2,12 +2,14 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.ChatNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.ChatMapper;
 import org.mizoguchi.misaki.mapper.MessageMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchChatAdminRequest;
@@ -31,9 +33,9 @@ public class ChatAdminServiceImpl implements ChatAdminService {
     private final MessageMapper messageMapper;
 
     @Override
-    public List<ChatAdminResponse> searchChats(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
+    public PageResult<ChatAdminResponse> searchChats(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
                                                SearchChatAdminRequest searchChatAdminRequest) {
-        List<Chat> chats = chatMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Chat>()
+        IPage<Chat> chatsPage = chatMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<Chat>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchChatAdminRequest.getId() != null, Chat::getId, searchChatAdminRequest.getId())
@@ -44,13 +46,20 @@ public class ChatAdminServiceImpl implements ChatAdminService {
                 .like(searchChatAdminRequest.getUpdateTime() != null, Chat::getUpdateTime, searchChatAdminRequest.getUpdateTime())
         );
 
-        return chats.stream()
+        PageResult<ChatAdminResponse>  pageResult = new PageResult<>();
+        pageResult.setList(chatsPage.getRecords().stream()
                 .map(chat -> {
                     ChatAdminResponse chatAdminResponse = new ChatAdminResponse();
                     BeanUtils.copyProperties(chat, chatAdminResponse);
 
                     return chatAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+        
+        pageResult.setTotal(chatsPage.getTotal());
+        pageResult.setPageIndex(chatsPage.getCurrent());
+        pageResult.setPageSize(chatsPage.getSize());
+
+        return pageResult;
     }
 
     @Override

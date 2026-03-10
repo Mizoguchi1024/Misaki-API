@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.admin.AddAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchAssistantAdminRequest;
@@ -18,8 +19,6 @@ import org.springframework.data.util.ParsingUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -38,7 +37,7 @@ public class AssistantAdminController {
 
     @Operation(summary = "分页条件搜索助手")
     @PostMapping("/search")
-    public Result<List<AssistantAdminResponse>> searchAssistants(@RequestParam @Positive Integer pageIndex,
+    public Result<PageResult<AssistantAdminResponse>> searchAssistants(@RequestParam @Positive Integer pageIndex,
                                                                  @RequestParam @Positive Integer pageSize,
                                                                  @RequestParam(required = false) String sortField,
                                                                  @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,

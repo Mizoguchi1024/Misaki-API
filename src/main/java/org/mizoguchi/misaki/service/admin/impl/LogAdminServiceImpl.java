@@ -2,12 +2,14 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.EmailLogNotExistsException;
 import org.mizoguchi.misaki.common.exception.ExceptionLogNotExistsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.EmailLogMapper;
 import org.mizoguchi.misaki.mapper.ExceptionLogMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchEmailLogAdminRequest;
@@ -21,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +33,8 @@ public class LogAdminServiceImpl implements LogAdminService {
 
 
     @Override
-    public List<EmailLogAdminResponse> searchEmailLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchEmailLogAdminRequest searchEmailLogAdminRequest) {
-        List<EmailLog> emailLogs = emailLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<EmailLog>()
+    public PageResult<EmailLogAdminResponse> searchEmailLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchEmailLogAdminRequest searchEmailLogAdminRequest) {
+        IPage<EmailLog> emailLogsPage = emailLogMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<EmailLog>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchEmailLogAdminRequest.getId() != null, EmailLog::getId, searchEmailLogAdminRequest.getId())
@@ -43,13 +44,20 @@ public class LogAdminServiceImpl implements LogAdminService {
                 .like(searchEmailLogAdminRequest.getCreateTime() != null, EmailLog::getCreateTime, searchEmailLogAdminRequest.getCreateTime())
         );
 
-        return emailLogs.stream()
+        PageResult<EmailLogAdminResponse> pageResult = new PageResult<>();
+        pageResult.setList(emailLogsPage.getRecords().stream()
                 .map(emailLog -> {
                     EmailLogAdminResponse emailLogAdminResponse = new EmailLogAdminResponse();
                     BeanUtils.copyProperties(emailLog, emailLogAdminResponse);
 
                     return emailLogAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(emailLogsPage.getTotal());
+        pageResult.setPageIndex(emailLogsPage.getCurrent());
+        pageResult.setPageSize(emailLogsPage.getSize());
+
+        return pageResult;
     }
 
     @Override
@@ -64,8 +72,8 @@ public class LogAdminServiceImpl implements LogAdminService {
     }
 
     @Override
-    public List<ExceptionLogAdminResponse> searchExceptionLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchExceptionLogAdminRequest searchExceptionLogAdminRequest) {
-        List<ExceptionLog> exceptionLogs = exceptionLogMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<ExceptionLog>()
+    public PageResult<ExceptionLogAdminResponse> searchExceptionLogs(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchExceptionLogAdminRequest searchExceptionLogAdminRequest) {
+        IPage<ExceptionLog> exceptionLogsPage = exceptionLogMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<ExceptionLog>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchExceptionLogAdminRequest.getId() != null, ExceptionLog::getId, searchExceptionLogAdminRequest.getId())
@@ -76,14 +84,21 @@ public class LogAdminServiceImpl implements LogAdminService {
                 .eq(searchExceptionLogAdminRequest.getMethod() != null, ExceptionLog::getMethod, searchExceptionLogAdminRequest.getMethod())
                 .like(searchExceptionLogAdminRequest.getCreateTime() != null, ExceptionLog::getCreateTime, searchExceptionLogAdminRequest.getCreateTime())
         );
-
-        return exceptionLogs.stream()
+        
+        PageResult<ExceptionLogAdminResponse> pageResult = new PageResult<>();
+        pageResult.setList(exceptionLogsPage.getRecords().stream()
                 .map(exceptionLog -> {
                     ExceptionLogAdminResponse exceptionLogAdminResponse = new ExceptionLogAdminResponse();
                     BeanUtils.copyProperties(exceptionLog, exceptionLogAdminResponse);
 
                     return exceptionLogAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(exceptionLogsPage.getTotal());
+        pageResult.setPageIndex(exceptionLogsPage.getCurrent());
+        pageResult.setPageSize(exceptionLogsPage.getSize());
+
+        return pageResult;
     }
 
     @Override

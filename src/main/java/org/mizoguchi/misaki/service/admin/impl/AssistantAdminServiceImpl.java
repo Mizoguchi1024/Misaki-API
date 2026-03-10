@@ -2,18 +2,21 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.AssistantNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.AssistantMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.AddAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.vo.admin.AssistantAdminResponse;
+import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.service.admin.AssistantAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -34,8 +37,8 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
     }
 
     @Override
-    public List<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest) {
-        List<Assistant> assistants = assistantMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Assistant>()
+    public PageResult<AssistantAdminResponse> searchAssistants(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchAssistantAdminRequest searchAssistantAdminRequest) {
+        IPage<Assistant> assistantsPage = assistantMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<Assistant>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchAssistantAdminRequest.getId() != null, Assistant::getId, searchAssistantAdminRequest.getId())
@@ -53,13 +56,20 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
                 .like(searchAssistantAdminRequest.getUpdateTime() != null, Assistant::getUpdateTime, searchAssistantAdminRequest.getUpdateTime())
         );
 
-        return assistants.stream()
+        PageResult<AssistantAdminResponse> pageResult = new PageResult<>();
+        pageResult.setList(assistantsPage.getRecords().stream()
                 .map(assistant -> {
                     AssistantAdminResponse assistantAdminResponse = new AssistantAdminResponse();
                     BeanUtils.copyProperties(assistant, assistantAdminResponse);
 
                     return assistantAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(assistantsPage.getTotal());
+        pageResult.setPageIndex(assistantsPage.getCurrent());
+        pageResult.setPageSize(assistantsPage.getSize());
+
+        return pageResult;
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.mizoguchi.misaki.config.security.CustomUserDetails;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateUserFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateSettingFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.UserFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.CheckInFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.SettingFrontResponse;
 import org.mizoguchi.misaki.service.front.UserFrontService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +28,8 @@ public class UserFrontController {
     @EnableRateLimit()
     @Operation(summary = "每日签到")
     @PutMapping("/check-in")
-    public Result<Void> checkIn(@AuthenticationPrincipal UserDetails userDetails){
-        userFrontService.checkIn(Long.valueOf(userDetails.getUsername()));
-        return Result.success();
+    public Result<CheckInFrontResponse> checkIn(@AuthenticationPrincipal UserDetails userDetails){
+        return Result.success(userFrontService.checkIn(Long.valueOf(userDetails.getUsername())));
     }
 
     @EnableRateLimit()

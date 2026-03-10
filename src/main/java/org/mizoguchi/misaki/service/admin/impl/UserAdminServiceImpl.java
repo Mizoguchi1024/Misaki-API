@@ -2,12 +2,14 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
 import org.mizoguchi.misaki.common.exception.UserNotExistsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.admin.AddUserAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchUserAdminRequest;
@@ -56,9 +58,9 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
-    public List<UserAdminResponse> searchUsers(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
+    public PageResult<UserAdminResponse> searchUsers(Integer pageIndex, Integer pageSize, String sortField, String sortOrder,
                                                SearchUserAdminRequest searchUserAdminRequest) {
-        List<User> users = userMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<User>()
+        IPage<User> users = userMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<User>()
                         .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                         .lambda()
                         .like(searchUserAdminRequest.getId() != null, User::getId, searchUserAdminRequest.getId())
@@ -76,14 +78,21 @@ public class UserAdminServiceImpl implements UserAdminService {
                         .like(searchUserAdminRequest.getCreateTime() != null, User::getCreateTime, searchUserAdminRequest.getCreateTime())
                         .like(searchUserAdminRequest.getUpdateTime() != null, User::getUpdateTime, searchUserAdminRequest.getUpdateTime())
         );
-
-        return users.stream()
+        
+        PageResult<UserAdminResponse>  pageResult = new PageResult<>();
+        pageResult.setList(users.getRecords().stream()
                 .map(user -> {
                     UserAdminResponse userAdminResponse = new UserAdminResponse();
                     BeanUtils.copyProperties(user, userAdminResponse);
 
                     return userAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(users.getTotal());
+        pageResult.setPageIndex(users.getCurrent());
+        pageResult.setPageSize(users.getSize());
+
+        return pageResult;
     }
 
     @Override

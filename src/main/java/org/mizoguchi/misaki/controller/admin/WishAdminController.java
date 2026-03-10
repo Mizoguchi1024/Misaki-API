@@ -8,6 +8,7 @@ import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchWishAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Wish;
@@ -20,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Validated
 @RestController
@@ -32,7 +32,7 @@ public class WishAdminController {
 
     @Operation(summary = "分页条件搜索祈愿记录")
     @PostMapping("/search")
-    public Result<List<WishAdminResponse>> searchWishes(@RequestParam @Positive Integer pageIndex,
+    public Result<PageResult<WishAdminResponse>> searchWishes(@RequestParam @Positive Integer pageIndex,
                                                         @RequestParam @Positive Integer pageSize,
                                                         @RequestParam(required = false) String sortField,
                                                         @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,

@@ -127,20 +127,20 @@ public class WishFrontServiceImpl implements WishFrontService {
 
     @Override
     public PageResult<WishFrontResponse> listWishes(Long userId, Integer pageIndex, Integer pageSize) {
-        IPage<Wish> wishPages = wishMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Wish>()
+        IPage<Wish> wishesPage = wishMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Wish>()
                 .eq(Wish::getUserId, userId)
                 .orderBy(true, false, Wish::getCreateTime));
 
         PageResult<WishFrontResponse> pageResult = new PageResult<>();
-        pageResult.setList(wishPages.getRecords().stream().map(wish -> {
+        pageResult.setList(wishesPage.getRecords().stream().map(wish -> {
             WishFrontResponse wishFrontResponse = new WishFrontResponse();
             BeanUtils.copyProperties(wish, wishFrontResponse);
             return wishFrontResponse;
         }).collect(Collectors.toList()));
 
-        pageResult.setTotal(wishPages.getTotal());
-        pageResult.setPageIndex(wishPages.getCurrent());
-        pageResult.setPageSize(wishPages.getSize());
+        pageResult.setTotal(wishesPage.getTotal());
+        pageResult.setPageIndex(wishesPage.getCurrent());
+        pageResult.setPageSize(wishesPage.getSize());
 
         return pageResult;
     }

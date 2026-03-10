@@ -63,6 +63,25 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
         AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
         BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
+        Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                .eq(Likes::getTargetId, assistant.getId())
+        );
+        assistantFrontResponse.setLikes(Math.toIntExact(likesCount));
+
+        boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
+                .eq(Likes::getUserId, userId)
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
+                .eq(Likes::getTargetId, assistant.getId())
+        );
+        assistantFrontResponse.setLikedFlag(likedFlag);
+
+        Long duplicateNameCount = assistantMapper.selectCount(new LambdaQueryWrapper<Assistant>()
+                .eq(Assistant::getName, assistant.getName())
+                .ne(Assistant::getId, assistant.getId())
+                .eq(Assistant::getDeleteFlag, false));
+        assistantFrontResponse.setDuplicateName(Math.toIntExact(duplicateNameCount));
+
         return assistantFrontResponse;
     }
 
@@ -170,14 +189,14 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
 
     @Override
     public PageResult<AssistantFrontResponse> listPublicAssistants(Long userId, Integer pageIndex, Integer pageSize) {
-        IPage<Assistant> assistantPages = assistantMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
+        IPage<Assistant> assistantsPage = assistantMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Assistant>()
                 .ne(Assistant::getOwnerId, userId)
                 .eq(Assistant::getPublicFlag, true)
                 .eq(Assistant::getDeleteFlag, false)
         );
 
         PageResult<AssistantFrontResponse> pageResult = new PageResult<>();
-        pageResult.setList(assistantPages.getRecords().stream().map(assistant -> {
+        pageResult.setList(assistantsPage.getRecords().stream().map(assistant -> {
             AssistantFrontResponse assistantFrontResponse = new AssistantFrontResponse();
             BeanUtils.copyProperties(assistant, assistantFrontResponse);
 
@@ -199,9 +218,9 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                     .eq(Assistant::getDeleteFlag, false));
             assistantFrontResponse.setDuplicateName(Math.toIntExact(duplicateNameCount));
 
-            pageResult.setTotal(assistantPages.getTotal());
-            pageResult.setPageIndex(assistantPages.getCurrent());
-            pageResult.setPageSize(assistantPages.getSize());
+            pageResult.setTotal(assistantsPage.getTotal());
+            pageResult.setPageIndex(assistantsPage.getCurrent());
+            pageResult.setPageSize(assistantsPage.getSize());
 
             return assistantFrontResponse;
         }).collect(Collectors.toList()));

@@ -2,12 +2,14 @@ package org.mizoguchi.misaki.service.admin.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
 import org.mizoguchi.misaki.common.exception.ModelNotExistsException;
 import org.mizoguchi.misaki.common.exception.OptimisticLockFailedException;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.ModelMapper;
 import org.mizoguchi.misaki.pojo.dto.admin.AddModelAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.SearchModelAdminRequest;
@@ -18,7 +20,6 @@ import org.mizoguchi.misaki.service.admin.ModelAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,8 +35,8 @@ public class ModelAdminServiceImpl implements ModelAdminService {
     }
 
     @Override
-    public List<ModelAdminResponse> searchModels(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchModelAdminRequest searchModelAdminRequest) {
-        List<Model> models = modelMapper.selectList(new Page<>(pageIndex, pageSize), new QueryWrapper<Model>()
+    public PageResult<ModelAdminResponse> searchModels(Integer pageIndex, Integer pageSize, String sortField, String sortOrder, SearchModelAdminRequest searchModelAdminRequest) {
+        IPage<Model> models = modelMapper.selectPage(new Page<>(pageIndex, pageSize), new QueryWrapper<Model>()
                 .orderBy(sortField != null, sortOrder.equalsIgnoreCase(SqlConstant.ASC), sortField)
                 .lambda()
                 .like(searchModelAdminRequest.getId() != null, Model::getId, searchModelAdminRequest.getId())
@@ -45,13 +46,20 @@ public class ModelAdminServiceImpl implements ModelAdminService {
                 .like(searchModelAdminRequest.getCreateTime() != null, Model::getCreateTime, searchModelAdminRequest.getCreateTime())
         );
 
-        return models.stream()
+        PageResult<ModelAdminResponse> pageResult = new PageResult<>();
+        pageResult.setList(models.getRecords().stream()
                 .map(model -> {
                     ModelAdminResponse modelAdminResponse = new ModelAdminResponse();
                     BeanUtils.copyProperties(model, modelAdminResponse);
 
                     return modelAdminResponse;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(models.getTotal());
+        pageResult.setPageIndex(models.getCurrent());
+        pageResult.setPageSize(models.getSize());
+
+        return pageResult;
     }
 
     @Override
