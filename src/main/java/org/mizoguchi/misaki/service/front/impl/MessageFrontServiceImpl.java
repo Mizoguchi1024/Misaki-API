@@ -2,6 +2,11 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+
+import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.spec.McpSchema.Implementation;
+import io.modelcontextprotocol.spec.McpSchema.ListToolsResult;
+import io.modelcontextprotocol.spec.McpSchema.Tool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
@@ -14,6 +19,8 @@ import org.mizoguchi.misaki.common.exception.TokenNotEnoughException;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.*;
+import org.mizoguchi.misaki.pojo.vo.front.McpServerFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.McpToolFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,7 +29,8 @@ import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.ai.deepseek.DeepSeekChatOptions;
-import org.springframework.ai.deepseek.api.DeepSeekApi;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -42,6 +50,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageFrontServiceImpl implements MessageFrontService {
     private final ChatClient chatClient;
+    private final List<McpSyncClient> mcpSyncClients;
+    private final SyncMcpToolCallbackProvider toolProvider;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
     private final UserMapper userMapper;
@@ -64,8 +74,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
         if (sendMessageFrontRequest.getParentId() != null) {
             boolean parentMessageExistsFlag = messageMapper.exists(new LambdaQueryWrapper<Message>()
                     .eq(Message::getId, sendMessageFrontRequest.getParentId())
-                    .eq(Message::getChatId, chatId)
-            );
+                    .eq(Message::getChatId, chatId));
 
             if (!parentMessageExistsFlag) {
                 throw new MessageNotExistsException(FailMessageConstant.MESSAGE_NOT_EXISTS);
@@ -121,13 +130,14 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                         .build());
             }
         } else {
-            if (sendMessageFrontRequest.getTools() != null) {
-                List<DeepSeekApi.FunctionTool> functionTools = Arrays.stream(sendMessageFrontRequest.getTools())
-                        .map(DeepSeekApi.FunctionTool::new)
-                        .collect(Collectors.toList());
-
+            List<String> enabledTools = sendMessageFrontRequest.getTools();
+            if (enabledTools != null) {
+                ToolCallback[] toolCallbacks = toolProvider.getToolCallbacks();
+                ToolCallback[] filteredToolCallbacks = Arrays.stream(toolCallbacks)
+                        .filter(tc -> enabledTools.contains(tc.getToolDefinition().name()))
+                        .toArray(ToolCallback[]::new);
                 chatClientRequestSpec.options(DeepSeekChatOptions.builder()
-                        .tools(functionTools)
+                        .toolCallbacks(filteredToolCallbacks)
                         .build());
             }
             chatClientRequestSpec.messages(userMessage);
@@ -141,7 +151,7 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                 .doOnNext(chatResponse -> {
                     Usage usage = chatResponse.getMetadata().getUsage();
                     if (usage.getTotalTokens() > 0) {
-                        tokenCounter.addAndGet(usage.getTotalTokens());
+                        tokenCounter.set(usage.getTotalTokens());
                     }
                 })
                 .doOnComplete(() -> {
@@ -151,14 +161,12 @@ public class MessageFrontServiceImpl implements MessageFrontService {
                                 .eq(Chat::getId, chatId)
                                 .setIncrBy(Chat::getToken, tokens)
                                 .set(Chat::getUpdateTime, LocalDateTime.now())
-                                .setIncrBy(Chat::getVersion, 1)
-                        );
+                                .setIncrBy(Chat::getVersion, 1));
 
                         userMapper.update(new LambdaUpdateWrapper<User>()
                                 .eq(User::getId, userId)
                                 .setDecrBy(User::getToken, tokens)
-                                .setIncrBy(User::getVersion, 1)
-                        );
+                                .setIncrBy(User::getVersion, 1));
                     }
                 })
                 .mapNotNull(chatResponse -> chatResponse.getResult().getOutput().getText());
@@ -181,6 +189,21 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
             BeanUtils.copyProperties(message, messageFrontResponse);
             return messageFrontResponse;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<McpServerFrontResponse> listMcpServers() {
+        return mcpSyncClients.stream().map(mcpSyncClient -> {
+            McpServerFrontResponse mcpServerFrontResponse = new McpServerFrontResponse();
+            mcpServerFrontResponse.setName(mcpSyncClient.getServerInfo().name());
+            List<McpToolFrontResponse> tools = mcpSyncClient.listTools().tools().stream().map(tool -> {
+                McpToolFrontResponse mcpToolFrontResponse = new McpToolFrontResponse(tool.name(), tool.description());
+                return mcpToolFrontResponse;
+            }).collect(Collectors.toList());
+            mcpServerFrontResponse.setTools(tools);
+
+            return mcpServerFrontResponse;
         }).collect(Collectors.toList());
     }
 }

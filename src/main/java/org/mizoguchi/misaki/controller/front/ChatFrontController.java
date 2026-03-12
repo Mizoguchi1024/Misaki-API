@@ -10,6 +10,7 @@ import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
+import org.mizoguchi.misaki.pojo.vo.front.McpServerFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
@@ -36,6 +37,13 @@ public class ChatFrontController {
     @PostMapping()
     public Result<ChatFrontResponse> createChat(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(chatFrontService.addChat(Long.valueOf(userDetails.getUsername())));
+    }
+
+    @EnableRateLimit()
+    @Operation(summary = "获取MCP服务器")
+    @GetMapping("/mcp")
+    public Result<List<McpServerFrontResponse>> listMcpServers(){
+        return Result.success(messageFrontService.listMcpServers());
     }
 
     @EnableRateLimit()

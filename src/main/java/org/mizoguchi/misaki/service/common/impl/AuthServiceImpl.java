@@ -141,6 +141,7 @@ public class AuthServiceImpl implements AuthService {
         Assistant assistant = Assistant.builder()
                 .name("Misaki")
                 .personality("可爱")
+                .detail("拯救家里蹲男性的天使美少女")
                 .gender(GenderEnum.FEMALE.getCode())
                 .birthday(LocalDate.of(2004, 1, 2))
                 .modelId(1L)

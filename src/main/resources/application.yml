@@ -63,14 +63,43 @@ spring:
 
     mcp:
       client:
-        name: misaki-mcp-client
-        version: 1.0.0
-        type: async
-        sse:
+        stdio:
           connections:
-            server1:
-              url: http://localhost:8080
-        enabled: false
+            time:
+              command: docker
+              args:
+                - run
+                - -i
+                - --rm
+                - mcp/time
+            fetch:
+              command: docker
+              args:
+                - run
+                - -i
+                - --rm
+                - mcp/fetch
+            duckduckgo:
+              command: docker
+              args:
+                - run
+                - -i
+                - --rm
+                - mcp/duckduckgo
+            wikipedia:
+              command: docker
+              args:
+                - run
+                - -i
+                - --rm
+                - mcp/wikipedia-mcp
+            # context7:
+            #   command: docker
+            #   args:
+            #     - run
+            #     - -i
+            #     - --rm
+            #     - mcp/context7
 
 springdoc:
   api-docs:
@@ -100,7 +129,7 @@ minio:
 misaki:
   jwt:
     secret: kotoshi_nakahara_misaki_wa_kitto_kuru
-    expiration: 7200000
+    expiration: 86400000
   request:
     expiration: 60000
   business:

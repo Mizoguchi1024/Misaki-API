@@ -16,12 +16,10 @@ import org.mizoguchi.misaki.pojo.dto.admin.SearchAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.dto.admin.UpdateAssistantAdminRequest;
 import org.mizoguchi.misaki.pojo.entity.Assistant;
 import org.mizoguchi.misaki.pojo.vo.admin.AssistantAdminResponse;
-import org.mizoguchi.misaki.pojo.vo.front.AssistantFrontResponse;
 import org.mizoguchi.misaki.service.admin.AssistantAdminService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service

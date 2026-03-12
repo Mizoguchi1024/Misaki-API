@@ -1,6 +1,6 @@
 package org.mizoguchi.misaki.pojo.dto.front;
 
-import org.springframework.ai.deepseek.api.DeepSeekApi.FunctionTool.Function;
+import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -19,5 +19,5 @@ public class SendMessageFrontRequest {
     @Size(min = 1, max = 5000)
     private String content;
 
-    private Function[] tools;
+    private List<String> tools;
 }
