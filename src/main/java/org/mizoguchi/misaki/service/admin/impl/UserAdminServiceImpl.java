@@ -105,6 +105,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 
         User user = new User();
         BeanUtils.copyProperties(updateUserAdminRequest, user);
+        String encryptPassword = passwordEncoder.encode(updateUserAdminRequest.getPassword());
+        user.setPassword(encryptPassword);
         user.setId(userId);
         int affectedRows = userMapper.updateById(user);
 
@@ -112,7 +114,7 @@ public class UserAdminServiceImpl implements UserAdminService {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
 
-        if (StringUtils.hasText(originalAvatarPath) && StringUtils.hasText(updateUserAdminRequest.getAvatarPath())) {
+        if (StringUtils.hasText(originalAvatarPath) && StringUtils.hasText(updateUserAdminRequest.getAvatarPath())) { // TODO 检查
             String fileName = new File(originalAvatarPath).getName();
             fileService.deleteFile(fileName);
         }

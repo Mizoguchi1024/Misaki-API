@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkspaceDataAdminResponse {
+public class McpStatsAdminResponse {
+    private Integer totalServers;
 
-    private Integer newUsersToday;
-
-    private Integer usedTokensToday;
+    private Integer totalTools;
 }

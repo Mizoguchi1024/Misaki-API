@@ -20,8 +20,6 @@ public class UserAdminResponse {
 
     private String email;
 
-    private String password;
-
     private String username;
 
     private Integer gender;
