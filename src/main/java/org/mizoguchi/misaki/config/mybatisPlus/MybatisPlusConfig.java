@@ -13,7 +13,7 @@ public class MybatisPlusConfig {
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(DbType.MYSQL);
-        paginationInnerInterceptor.setMaxLimit(20L);
+        paginationInnerInterceptor.setMaxLimit(100L); // 最大单页限制100条
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         return interceptor;

@@ -50,7 +50,8 @@ public class UserAdminServiceImpl implements UserAdminService {
         user.setToken(10000);
         user.setCrystal(0);
         user.setStardust(0);
-        user.setStardust(0);
+        user.setPuzzle(0);
+        user.setDeletePendingFlag(false);
 
         userMapper.insert(user);
         // TODO 其他表的插入

@@ -35,7 +35,7 @@ public class UserAdminResponse {
 
     private Integer authRole;
 
-    private Long token;
+    private Integer token;
 
     private Integer crystal;
 

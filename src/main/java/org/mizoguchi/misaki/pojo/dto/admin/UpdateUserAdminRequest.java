@@ -30,10 +30,7 @@ public class UpdateUserAdminRequest {
 
     private Integer authRole;
 
-    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
-    private LocalDateTime lastLoginTime;
-
-    private String token;
+    private Integer token;
 
     private Integer crystal;
 
@@ -43,6 +40,11 @@ public class UpdateUserAdminRequest {
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     private LocalDate lastCheckInDate;
+
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
+    private LocalDateTime lastLoginTime;
+
+    private Boolean deletePendingFlag;
 
     private Boolean deleteFlag;
 

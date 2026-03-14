@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.SqlConstant;
+import org.mizoguchi.misaki.common.exception.CannotDeleteYourselfException;
+import org.mizoguchi.misaki.common.exception.CannotUpdateYourselfException;
 import org.mizoguchi.misaki.common.exception.InvalidSortParamsException;
 import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
@@ -16,6 +18,8 @@ import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.admin.UserAdminResponse;
 import org.mizoguchi.misaki.service.admin.UserAdminService;
 import org.springframework.data.util.ParsingUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +34,7 @@ public class UserAdminController {
 
     @Operation(summary = "创建用户")
     @PostMapping()
-    public Result<Void> createUser(@RequestBody @Validated AddUserAdminRequest addUserAdminRequest){
+    public Result<Void> createUser(@RequestBody @Validated AddUserAdminRequest addUserAdminRequest) {
         userAdminService.addUser(addUserAdminRequest);
         return Result.success();
     }
@@ -38,11 +42,11 @@ public class UserAdminController {
     @Operation(summary = "分页条件搜索用户")
     @PostMapping("/search")
     public Result<PageResult<UserAdminResponse>> searchUsers(@RequestParam @Positive Integer pageIndex,
-                                                       @RequestParam @Positive Integer pageSize,
-                                                       @RequestParam(required = false) String sortField,
-                                                       @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,
-                                                       @RequestBody @Validated SearchUserAdminRequest searchUserAdminRequest){
-        if (StringUtils.hasText(sortField)){
+            @RequestParam @Positive Integer pageSize,
+            @RequestParam(required = false) String sortField,
+            @RequestParam(defaultValue = SqlConstant.ASC) String sortOrder,
+            @RequestBody @Validated SearchUserAdminRequest searchUserAdminRequest) {
+        if (StringUtils.hasText(sortField)) {
             try {
                 User.class.getDeclaredField(sortField);
             } catch (NoSuchFieldException e) {
@@ -50,20 +54,28 @@ public class UserAdminController {
             }
             sortField = ParsingUtils.reconcatenateCamelCase(sortField, "_");
         }
-        return Result.success(userAdminService.searchUsers(pageIndex, pageSize, sortField, sortOrder, searchUserAdminRequest));
+        return Result.success(
+                userAdminService.searchUsers(pageIndex, pageSize, sortField, sortOrder, searchUserAdminRequest));
     }
 
     @Operation(summary = "修改用户")
     @PutMapping("/{id}")
-    public Result<Void> updateUser(@PathVariable Long id,
-                                   @RequestBody @Validated UpdateUserAdminRequest updateUserAdminRequest){
+    public Result<Void> updateUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
+            @RequestBody @Validated UpdateUserAdminRequest updateUserAdminRequest) {
+        if (Long.valueOf(userDetails.getUsername()) == id) {
+            throw new CannotUpdateYourselfException(FailMessageConstant.CANNOT_UPDATE_YOURSELF);
+        }
         userAdminService.updateUser(id, updateUserAdminRequest);
         return Result.success();
     }
 
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteUser(@PathVariable Long id){
+    public Result<Void> deleteUser(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        if (Long.valueOf(userDetails.getUsername()) == id) {
+            throw new CannotDeleteYourselfException(FailMessageConstant.CANNOT_DELETE_YOURSELF);
+        }
+
         userAdminService.deleteUser(id);
         return Result.success();
     }

@@ -26,6 +26,8 @@ public class FailMessageConstant {
 
     public static final String JWT_EXPIRED = "JWT expired";
     public static final String INVALID_JWT = "Invalid JWT";
+    public static final String CANNOT_DELETE_YOURSELF = "Cannot delete yourself";
+    public static final String CANNOT_UPDATE_YOURSELF = "Cannot update yourself";
 
 
     // ===== 业务资源不存在 =====
