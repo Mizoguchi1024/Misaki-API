@@ -62,9 +62,8 @@ public class UserFrontServiceImpl implements UserFrontService {
                 .set(User::getLastCheckInDate, LocalDate.now())
                 .setIncrBy(User::getToken, checkInTokenAmount)
                 .setIncrBy(User::getCrystal, checkInCrystalAmount)
-                .setIncrBy(User::getVersion, 1)
-        );
-        
+                .setIncrBy(User::getVersion, 1));
+
         return new CheckInFrontResponse(checkInTokenAmount, checkInCrystalAmount);
     }
 
@@ -105,7 +104,8 @@ public class UserFrontServiceImpl implements UserFrontService {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
 
-        if (StringUtils.hasText(originalAvatarPath) && updateUserFrontRequest.getAvatarPath() != null) {
+        if (StringUtils.hasText(originalAvatarPath) && updateUserFrontRequest.getAvatarPath() != null
+                && !originalAvatarPath.equals(updateUserFrontRequest.getAvatarPath())) {
             String fileName = new File(originalAvatarPath).getName();
             fileService.deleteFile(fileName);
         }
@@ -131,8 +131,7 @@ public class UserFrontServiceImpl implements UserFrontService {
             boolean isAssistantExists = assistantMapper.exists(new LambdaQueryWrapper<Assistant>()
                     .eq(Assistant::getId, updateSettingFrontRequest.getEnabledAssistantId())
                     .eq(Assistant::getOwnerId, userId)
-                    .eq(Assistant::getDeleteFlag, false)
-            );
+                    .eq(Assistant::getDeleteFlag, false));
             if (!isAssistantExists) {
                 throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
             }
@@ -149,7 +148,8 @@ public class UserFrontServiceImpl implements UserFrontService {
             throw new OptimisticLockFailedException(FailMessageConstant.OPTIMISTIC_LOCK_FAILED);
         }
 
-        if (StringUtils.hasText(originalBackgroundPath) && updateSettingFrontRequest.getBackgroundPath() != null) {
+        if (StringUtils.hasText(originalBackgroundPath) && updateSettingFrontRequest.getBackgroundPath() != null
+                && !originalBackgroundPath.equals(updateSettingFrontRequest.getBackgroundPath())) {
             String fileName = new File(originalBackgroundPath).getName();
             fileService.deleteFile(fileName);
         }
