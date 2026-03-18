@@ -2,6 +2,8 @@ package org.mizoguchi.misaki.service.front.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +15,7 @@ import org.mizoguchi.misaki.common.constant.JsonConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
 import org.mizoguchi.misaki.common.enumeration.GenderEnum;
 import org.mizoguchi.misaki.common.exception.*;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
@@ -73,18 +76,27 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     }
 
     @Override
-    public List<ChatFrontResponse> listChats(Long userId) {
-        List<Chat> chats = chatMapper.selectList(new LambdaQueryWrapper<Chat>()
+    public PageResult<ChatFrontResponse> listChats(Long userId, Integer pageIndex, Integer pageSize) {
+        IPage<Chat> chatsPage = chatMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
                 .orderByDesc(true, Chat::getUpdateTime)
         );
 
-        return chats.stream().map(chat -> {
-            ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
-            BeanUtils.copyProperties(chat, chatFrontResponse);
-            return chatFrontResponse;
-        }).collect(Collectors.toList());
+        PageResult<ChatFrontResponse>  pageResult = new PageResult<>();
+        pageResult.setList(chatsPage.getRecords().stream()
+                .map(chat -> {
+                    ChatFrontResponse chatFrontResponse = new ChatFrontResponse();
+                    BeanUtils.copyProperties(chat, chatFrontResponse);
+
+                    return chatFrontResponse;
+                }).collect(Collectors.toList()));
+
+        pageResult.setTotal(chatsPage.getTotal());
+        pageResult.setPageIndex(chatsPage.getCurrent());
+        pageResult.setPageSize(chatsPage.getSize());
+
+        return pageResult;
     }
 
     @Override

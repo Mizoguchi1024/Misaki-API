@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum LikesTargetTypeEnum {
     MISAKI(0),
     ASSISTANT(1),
-    SCRIPT(2);
+    MCP(2);
 
     private final int value;
 }

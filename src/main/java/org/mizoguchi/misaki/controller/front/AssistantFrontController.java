@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
+import org.mizoguchi.misaki.common.enumeration.LikesTargetTypeEnum;
 import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.AddAssistantFrontRequest;
@@ -82,7 +83,7 @@ public class AssistantFrontController {
     @Operation(summary = "为公开助手存档点赞")
     @PostMapping("/public/{id}/like")
     public Result<Void> likeAssistant(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        likesFrontService.likeAssistant(Long.valueOf(userDetails.getUsername()), id);
+        likesFrontService.likeObject(Long.valueOf(userDetails.getUsername()), LikesTargetTypeEnum.ASSISTANT.getValue(), id);
         return Result.success();
     }
 

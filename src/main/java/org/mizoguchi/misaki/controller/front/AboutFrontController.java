@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
+import org.mizoguchi.misaki.common.enumeration.LikesTargetTypeEnum;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.vo.front.AboutFrontResponse;
 import org.mizoguchi.misaki.service.front.LikesFrontService;
@@ -27,7 +28,7 @@ public class AboutFrontController {
     @Operation(summary = "为应用点赞")
     @PostMapping("/like")
     public Result<Void> likeMisaki(@AuthenticationPrincipal UserDetails userDetails) {
-        likesFrontService.likeMisaki(Long.valueOf(userDetails.getUsername()));
+        likesFrontService.likeObject(Long.valueOf(userDetails.getUsername()), LikesTargetTypeEnum.MISAKI.getValue(), null);
         return Result.success();
     }
 

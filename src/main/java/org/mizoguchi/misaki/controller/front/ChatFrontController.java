@@ -5,12 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.mizoguchi.misaki.annotation.EnableRateLimit;
+import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
-import org.mizoguchi.misaki.pojo.vo.front.McpServerFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
@@ -35,32 +35,27 @@ public class ChatFrontController {
     @EnableRateLimit()
     @Operation(summary = "新建会话")
     @PostMapping()
-    public Result<ChatFrontResponse> createChat(@AuthenticationPrincipal UserDetails userDetails){
+    public Result<ChatFrontResponse> createChat(@AuthenticationPrincipal UserDetails userDetails) {
         return Result.success(chatFrontService.addChat(Long.valueOf(userDetails.getUsername())));
-    }
-
-    @EnableRateLimit()
-    @Operation(summary = "获取MCP服务器")
-    @GetMapping("/mcp")
-    public Result<List<McpServerFrontResponse>> listMcpServers(){
-        return Result.success(messageFrontService.listMcpServers());
     }
 
     @EnableRateLimit()
     @Operation(summary = "生成提示词建议")
     @PostMapping("/{id}/prompts")
     public Result<List<String>> listPrompts(@AuthenticationPrincipal UserDetails userDetails,
-                                            @PathVariable Long id,
-                                            @RequestBody @Validated ListPromptsFrontRequest listPromptsFrontRequest){
-        return Result.success(chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, listPromptsFrontRequest));
+            @PathVariable Long id,
+            @RequestBody @Validated ListPromptsFrontRequest listPromptsFrontRequest) {
+        return Result.success(
+                chatFrontService.listPrompts(Long.valueOf(userDetails.getUsername()), id, listPromptsFrontRequest));
     }
 
     @EnableRateLimit()
     @Operation(summary = "发送消息")
-    @PostMapping(value = "/{id}/messages", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_EVENT_STREAM_VALUE})
+    @PostMapping(value = "/{id}/messages", produces = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.TEXT_EVENT_STREAM_VALUE })
     public Flux<String> sendMessage(@AuthenticationPrincipal UserDetails userDetails,
-                                    @PathVariable @Positive Long id,
-                                    @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
+            @PathVariable @Positive Long id,
+            @RequestBody @Validated SendMessageFrontRequest sendMessageFrontRequest) {
         return messageFrontService.sendMessage(Long.valueOf(userDetails.getUsername()), id,
                 sendMessageFrontRequest);
     }
@@ -77,23 +72,26 @@ public class ChatFrontController {
     @Operation(summary = "修改会话标题")
     @PutMapping(value = "/{id}/title")
     public Result<Void> updateChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
-                                        @RequestBody @Validated UpdateChatTitleFrontRequest updateChatTitleFrontRequest){
+            @RequestBody @Validated UpdateChatTitleFrontRequest updateChatTitleFrontRequest) {
         chatFrontService.updateChatTitle(Long.valueOf(userDetails.getUsername()), id, updateChatTitleFrontRequest);
         return Result.success();
     }
 
     @EnableRateLimit()
-    @Operation(summary = "获取历史会话")
-    @GetMapping()
-    public Result<List<ChatFrontResponse>> listChats(@AuthenticationPrincipal UserDetails userDetails){
-        return Result.success(chatFrontService.listChats(Long.valueOf(userDetails.getUsername())));
+    @Operation(summary = "搜索历史会话")
+    @GetMapping("/search")
+    public Result<PageResult<ChatFrontResponse>> searchChats(@AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam @Positive Integer pageIndex,
+            @RequestParam @Positive Integer pageSize,
+            @RequestParam(required = false) String keyword) {
+        return Result.success(chatFrontService.listChats(Long.valueOf(userDetails.getUsername()), pageIndex, pageSize));
     }
 
     @EnableRateLimit()
     @Operation(summary = "搜索会话")
     @GetMapping("/search")
     public Result<List<ChatFrontResponse>> searchChats(@AuthenticationPrincipal UserDetails userDetails,
-                                                       @RequestParam String keyword){
+            @RequestParam String keyword) {
         return Result.success(chatFrontService.searchChats(Long.valueOf(userDetails.getUsername()), keyword));
     }
 
@@ -101,14 +99,14 @@ public class ChatFrontController {
     @Operation(summary = "获取会话中的所有消息")
     @GetMapping("/{id}/messages")
     public Result<List<MessageFrontResponse>> listMessages(@AuthenticationPrincipal UserDetails userDetails,
-                                                           @PathVariable @Positive Long id){
+            @PathVariable @Positive Long id) {
         return Result.success(messageFrontService.listMessages(Long.valueOf(userDetails.getUsername()), id));
     }
 
     @EnableRateLimit()
     @Operation(summary = "删除会话")
     @DeleteMapping("/{id}")
-    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive Long id){
+    public Result<Void> deleteChat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable @Positive Long id) {
         chatFrontService.deleteChat(Long.valueOf(userDetails.getUsername()), id);
         return Result.success();
     }
@@ -116,7 +114,7 @@ public class ChatFrontController {
     @EnableRateLimit()
     @Operation(summary = "删除全部会话")
     @DeleteMapping()
-    public Result<Void> deleteAllChats(@AuthenticationPrincipal UserDetails userDetails){
+    public Result<Void> deleteAllChats(@AuthenticationPrincipal UserDetails userDetails) {
         chatFrontService.deleteAllChats(Long.valueOf(userDetails.getUsername()));
         return Result.success();
     }

@@ -20,73 +20,51 @@ public class LikesFrontServiceImpl implements LikesFrontService {
     private final AssistantMapper assistantMapper;
 
     @Override
-    public void likeMisaki(Long userId) {
-        Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
-                .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue())
-        );
+    public void likeObject(Long userId, Integer targetType, Long targetId) {
+        if (targetType.equals(LikesTargetTypeEnum.MISAKI.getValue())) {
+            targetId = null;
+        } else if (targetType.equals(LikesTargetTypeEnum.ASSISTANT.getValue())) {
+            Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
+                    .eq(Assistant::getId, targetId)
+                    .eq(Assistant::getOwnerId, userId)
+                    .or()
+                    .eq(Assistant::getId, targetId)
+                    .eq(Assistant::getPublicFlag, true)
+                    .eq(Assistant::getDeleteFlag, false));
 
-        if (existingLikes == null) {
-            Likes likes = Likes.builder()
-                    .userId(userId)
-                    .targetType(LikesTargetTypeEnum.MISAKI.getValue())
-                    .build();
-
-            likesMapper.insert(likes);
-        }else {
-            likesMapper.deleteById(existingLikes);
-        }
-    }
-
-    @Override
-    public void likeAssistant(Long userId, Long assistantId) {
-        Assistant assistant = assistantMapper.selectOne(new LambdaQueryWrapper<Assistant>()
-                .eq(Assistant::getId, assistantId)
-                .eq(Assistant::getOwnerId, userId)
-                .or()
-                .eq(Assistant::getId, assistantId)
-                .eq(Assistant::getPublicFlag, true)
-                .eq(Assistant::getDeleteFlag, false)
-        );
-
-        if (assistant == null) {
-            throw  new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+            if (assistant == null) {
+                throw new AssistantNotExistsException(FailMessageConstant.ASSISTANT_NOT_EXISTS);
+            }
+        } else if (targetType.equals(LikesTargetTypeEnum.MCP.getValue())) {
+            return;
         }
 
         Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, LikesTargetTypeEnum.ASSISTANT.getValue())
-                .eq(Likes::getTargetId, assistantId)
-        );
+                .eq(Likes::getTargetType, targetType)
+                .eq(Likes::getTargetId, targetId));
 
         if (existingLikes == null) {
             Likes likes = Likes.builder()
                     .userId(userId)
-                    .targetType(LikesTargetTypeEnum.ASSISTANT.getValue())
-                    .targetId(assistantId)
+                    .targetType(targetType)
+                    .targetId(targetId)
                     .build();
 
             likesMapper.insert(likes);
-        }else {
+        } else {
             likesMapper.deleteById(existingLikes);
         }
-    }
-
-    @Override
-    public void likeScript(Long userId, Long scriptId) {
-
     }
 
     @Override
     public AboutFrontResponse getMisakiLikes(Long userId) {
         Long likesCount = likesMapper.selectCount(new LambdaQueryWrapper<Likes>()
-                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue())
-        );
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue()));
 
         boolean likedFlag = likesMapper.exists(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
-                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue())
-        );
+                .eq(Likes::getTargetType, LikesTargetTypeEnum.MISAKI.getValue()));
 
         return AboutFrontResponse.builder()
                 .likes(Math.toIntExact(likesCount))

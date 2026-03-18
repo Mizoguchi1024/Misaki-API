@@ -3,7 +3,6 @@ package org.mizoguchi.misaki.service.front.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 
-import io.modelcontextprotocol.client.McpSyncClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mizoguchi.misaki.common.constant.ChatConstant;
@@ -16,8 +15,6 @@ import org.mizoguchi.misaki.common.exception.TokenNotEnoughException;
 import org.mizoguchi.misaki.mapper.*;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.*;
-import org.mizoguchi.misaki.pojo.vo.front.McpServerFrontResponse;
-import org.mizoguchi.misaki.pojo.vo.front.McpToolFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.MessageFrontService;
 import org.springframework.ai.chat.client.ChatClient;
@@ -47,7 +44,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MessageFrontServiceImpl implements MessageFrontService {
     private final ChatClient chatClient;
-    private final List<McpSyncClient> mcpSyncClients;
     private final SyncMcpToolCallbackProvider toolProvider;
     private final ChatMapper chatMapper;
     private final MessageMapper messageMapper;
@@ -186,21 +182,6 @@ public class MessageFrontServiceImpl implements MessageFrontService {
             MessageFrontResponse messageFrontResponse = new MessageFrontResponse();
             BeanUtils.copyProperties(message, messageFrontResponse);
             return messageFrontResponse;
-        }).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<McpServerFrontResponse> listMcpServers() {
-        return mcpSyncClients.stream().map(mcpSyncClient -> {
-            McpServerFrontResponse mcpServerFrontResponse = new McpServerFrontResponse();
-            mcpServerFrontResponse.setName(mcpSyncClient.getServerInfo().name());
-            List<McpToolFrontResponse> tools = mcpSyncClient.listTools().tools().stream().map(tool -> {
-                McpToolFrontResponse mcpToolFrontResponse = new McpToolFrontResponse(tool.name(), tool.description());
-                return mcpToolFrontResponse;
-            }).collect(Collectors.toList());
-            mcpServerFrontResponse.setTools(tools);
-
-            return mcpServerFrontResponse;
         }).collect(Collectors.toList());
     }
 }
