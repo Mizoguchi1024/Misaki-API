@@ -21,6 +21,8 @@ public class ChatFrontResponse {
 
     private Integer token;
 
+    private Boolean pinnedFlag;
+
     @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 

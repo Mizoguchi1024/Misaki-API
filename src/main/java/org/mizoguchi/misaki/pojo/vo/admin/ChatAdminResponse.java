@@ -23,6 +23,8 @@ public class ChatAdminResponse {
 
     private Integer token;
 
+    private Boolean pinnedFlag;
+
     private Boolean deleteFlag;
 
     @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)

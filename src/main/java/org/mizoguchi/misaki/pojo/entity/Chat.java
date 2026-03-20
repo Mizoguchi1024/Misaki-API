@@ -22,6 +22,9 @@ public class Chat {
 
     private Integer token;
 
+    @TableField(value = "pinned_flag")
+    private Boolean pinnedFlag;
+
     @TableField(value = "delete_flag", fill =  FieldFill.INSERT)
     private Boolean deleteFlag;
 

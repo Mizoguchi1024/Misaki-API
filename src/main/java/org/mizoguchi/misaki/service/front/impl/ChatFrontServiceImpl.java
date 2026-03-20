@@ -18,7 +18,7 @@ import org.mizoguchi.misaki.common.exception.*;
 import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.mapper.UserMapper;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
-import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateChatFrontRequest;
 import org.mizoguchi.misaki.pojo.entity.User;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.ChatTitleFrontResponse;
@@ -66,6 +66,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         Chat chat = Chat.builder()
                 .userId(userId)
                 .token(0)
+                .pinnedFlag(false)
                 .build();
 
         chatMapper.insert(chat);
@@ -295,7 +296,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
     }
 
     @Override
-    public void updateChatTitle(Long userId, Long chatId, UpdateChatTitleFrontRequest updateChatTitleFrontRequest) {
+    public void updateChat(Long userId, Long chatId, UpdateChatFrontRequest updateChatFrontRequest) {
         Chat chat = chatMapper.selectOne(new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getId, chatId)
                 .eq(Chat::getUserId, userId)
@@ -305,7 +306,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
             throw new ChatNotExistsException(FailMessageConstant.CHAT_NOT_EXISTS);
         }
 
-        BeanUtils.copyProperties(updateChatTitleFrontRequest, chat);
+        BeanUtils.copyProperties(updateChatFrontRequest, chat);
         int affectedRows = chatMapper.updateById(chat);
 
         if(affectedRows == 0) {

@@ -9,7 +9,7 @@ import org.mizoguchi.misaki.common.result.PageResult;
 import org.mizoguchi.misaki.common.result.Result;
 import org.mizoguchi.misaki.pojo.dto.front.ListPromptsFrontRequest;
 import org.mizoguchi.misaki.pojo.dto.front.SendMessageFrontRequest;
-import org.mizoguchi.misaki.pojo.dto.front.UpdateChatTitleFrontRequest;
+import org.mizoguchi.misaki.pojo.dto.front.UpdateChatFrontRequest;
 import org.mizoguchi.misaki.pojo.vo.front.ChatFrontResponse;
 import org.mizoguchi.misaki.pojo.vo.front.MessageFrontResponse;
 import org.mizoguchi.misaki.service.front.ChatFrontService;
@@ -69,21 +69,20 @@ public class ChatFrontController {
     }
 
     @EnableRateLimit()
-    @Operation(summary = "修改会话标题")
-    @PutMapping(value = "/{id}/title")
-    public Result<Void> updateChatTitle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
-            @RequestBody @Validated UpdateChatTitleFrontRequest updateChatTitleFrontRequest) {
-        chatFrontService.updateChatTitle(Long.valueOf(userDetails.getUsername()), id, updateChatTitleFrontRequest);
+    @Operation(summary = "修改会话")
+    @PutMapping(value = "/{id}")
+    public Result<Void> updateChat(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
+            @RequestBody @Validated UpdateChatFrontRequest updateChatFrontRequest) {
+        chatFrontService.updateChat(Long.valueOf(userDetails.getUsername()), id, updateChatFrontRequest);
         return Result.success();
     }
 
     @EnableRateLimit()
-    @Operation(summary = "搜索历史会话")
-    @GetMapping("/search")
-    public Result<PageResult<ChatFrontResponse>> searchChats(@AuthenticationPrincipal UserDetails userDetails,
+    @Operation(summary = "分页获取历史会话")
+    @GetMapping()
+    public Result<PageResult<ChatFrontResponse>> listChats(@AuthenticationPrincipal UserDetails userDetails,
             @RequestParam @Positive Integer pageIndex,
-            @RequestParam @Positive Integer pageSize,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam @Positive Integer pageSize) {
         return Result.success(chatFrontService.listChats(Long.valueOf(userDetails.getUsername()), pageIndex, pageSize));
     }
 

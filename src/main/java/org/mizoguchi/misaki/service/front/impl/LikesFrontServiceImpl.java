@@ -42,7 +42,8 @@ public class LikesFrontServiceImpl implements LikesFrontService {
         Likes existingLikes = likesMapper.selectOne(new LambdaQueryWrapper<Likes>()
                 .eq(Likes::getUserId, userId)
                 .eq(Likes::getTargetType, targetType)
-                .eq(Likes::getTargetId, targetId));
+                .eq(targetId != null, Likes::getTargetId, targetId)
+        );
 
         if (existingLikes == null) {
             Likes likes = Likes.builder()

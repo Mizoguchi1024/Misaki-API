@@ -1,6 +1,4 @@
-package org.mizoguchi.misaki.pojo.dto.admin;
-
-import lombok.Data;
+package org.mizoguchi.misaki.pojo.dto.front;
 
 import org.mizoguchi.misaki.common.constant.FailMessageConstant;
 import org.mizoguchi.misaki.common.constant.RegexConstant;
@@ -8,18 +6,15 @@ import org.mizoguchi.misaki.common.constant.RegexConstant;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Data
-public class UpdateChatAdminRequest {
+public class UpdateChatFrontRequest {
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 50)
     private String title;
 
-    private Integer token;
-
     private Boolean pinnedFlag;
-
-    private Boolean deleteFlag;
 
     @NotNull
     private Integer version;
