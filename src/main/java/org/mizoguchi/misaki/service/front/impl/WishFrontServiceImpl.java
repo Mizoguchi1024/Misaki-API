@@ -44,7 +44,7 @@ public class WishFrontServiceImpl implements WishFrontService {
     private Integer puzzleCrystal;
 
     @Value("${misaki.business.wish.exchange-rate.puzzle-stardust}")
-    private Integer stardust;
+    private Integer puzzleStardust;
 
     @Value("${misaki.business.wish.compensation.four-star}")
     private Integer fourStarCompensation;
@@ -83,13 +83,13 @@ public class WishFrontServiceImpl implements WishFrontService {
     public void buyPuzzleWithStardust(Long userId, Integer amount) {
         User user = userMapper.selectById(userId);
 
-        if (user.getStardust() <= amount * stardust) {
+        if (user.getStardust() <= amount * puzzleStardust) {
             throw new StardustNotEnoughException(FailMessageConstant.STARDUST_NOT_ENOUGH);
         }
 
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
-                .setDecrBy(User::getStardust, amount * stardust)
+                .setDecrBy(User::getStardust, amount * puzzleStardust)
                 .setIncrBy(User::getPuzzle, amount)
                 .setIncrBy(User::getVersion, 1));
     }

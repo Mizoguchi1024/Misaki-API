@@ -24,7 +24,7 @@ public class ModelFrontController {
     private final ModelFrontService modelFrontService;
 
     @EnableRateLimit()
-    @Operation(summary = "获取拥有的模型")
+    @Operation(summary = "获取全部模型 带有ownedFlag")
     @GetMapping()
     public Result<List<ModelFrontResponse>> listModels(@AuthenticationPrincipal UserDetails userDetails){
         return Result.success(modelFrontService.listModels(Long.valueOf(userDetails.getUsername())));

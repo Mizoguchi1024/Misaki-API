@@ -15,6 +15,8 @@ public class SearchChatAdminRequest {
 
     private String title;
 
+    private Boolean pinnedFlag;
+
     private Boolean deleteFlag;
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)

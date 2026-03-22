@@ -81,7 +81,7 @@ public class ChatFrontServiceImpl implements ChatFrontService {
         IPage<Chat> chatsPage = chatMapper.selectPage(new Page<>(pageIndex, pageSize), new LambdaQueryWrapper<Chat>()
                 .eq(Chat::getUserId, userId)
                 .eq(Chat::getDeleteFlag, false)
-                .orderByDesc(true, Chat::getUpdateTime)
+                .orderByDesc(true, List.of(Chat::getPinnedFlag ,Chat::getUpdateTime))
         );
 
         PageResult<ChatFrontResponse>  pageResult = new PageResult<>();

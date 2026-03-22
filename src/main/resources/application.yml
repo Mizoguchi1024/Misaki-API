@@ -145,7 +145,7 @@ misaki:
     wish:
       exchange-rate:
         puzzle-crystal: 160
-        puzzle-stardust: 20
+        puzzle-stardust: 75
       compensation:
         four-star: 50
         five-star: 100

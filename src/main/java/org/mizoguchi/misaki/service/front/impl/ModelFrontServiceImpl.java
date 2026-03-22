@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,18 +32,22 @@ public class ModelFrontServiceImpl implements ModelFrontService {
 
     @Override
     public List<ModelFrontResponse> listModels(Long userId) {
-        return modelMapper.selectList(new LambdaQueryWrapper<>()).stream()
+        List<Model> models = modelMapper.selectList(null);
+        
+        Set<Long> ownedModelIds = modelUserMapper.selectList(new LambdaQueryWrapper<ModelUser>()
+                .eq(ModelUser::getUserId, userId))
+                .stream()
+                .map(ModelUser::getModelId)
+                .collect(Collectors.toSet());
+
+        return models.stream()
                 .map(model -> {
-                    ModelFrontResponse modelFrontResponse = new ModelFrontResponse();
-                    BeanUtils.copyProperties(model, modelFrontResponse);
+                    ModelFrontResponse response = new ModelFrontResponse();
+                    BeanUtils.copyProperties(model, response);
 
-                    ModelUser existingModelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
-                            .eq(ModelUser::getUserId, userId)
-                            .eq(ModelUser::getModelId, model.getId()));
+                    response.setOwnedFlag(ownedModelIds.contains(model.getId()));
 
-                    modelFrontResponse.setOwnedFlag(existingModelUser != null);
-
-                    return modelFrontResponse;
+                    return response;
                 }).collect(Collectors.toList());
     }
 
@@ -50,7 +55,7 @@ public class ModelFrontServiceImpl implements ModelFrontService {
     public void buyModel(Long userId, Long modelId) {
         Model model = modelMapper.selectById(modelId);
 
-        if (model == null){
+        if (model == null) {
             throw new ModelNotExistsException(FailMessageConstant.MODEL_NOT_EXISTS);
         }
 
@@ -60,7 +65,8 @@ public class ModelFrontServiceImpl implements ModelFrontService {
 
         ModelUser existingModelUser = modelUserMapper.selectOne(new LambdaQueryWrapper<ModelUser>()
                 .eq(ModelUser::getUserId, userId)
-                .eq(ModelUser::getModelId, modelId));
+                .eq(ModelUser::getModelId, modelId)
+        );
 
         if (existingModelUser != null) {
             throw new ModelAlreadyOwnedException(FailMessageConstant.MODEL_ALREADY_OWNED);

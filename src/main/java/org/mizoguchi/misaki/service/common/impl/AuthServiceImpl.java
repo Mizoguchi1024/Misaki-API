@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -40,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final SettingsMapper settingsMapper;
     private final AssistantMapper assistantMapper;
-    private final ModelUserMapper  modelUserMapper;
+    private final ModelUserMapper modelUserMapper;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -63,8 +64,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, loginRequest.getEmail())
-                .eq(User::getDeleteFlag, false)
-        );
+                .eq(User::getDeleteFlag, false));
 
         if (user == null) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
@@ -84,8 +84,7 @@ public class AuthServiceImpl implements AuthService {
                 .eq(User::getId, user.getId())
                 .set(User::getLastLoginTime, LocalDateTime.now())
                 .set(User::getDeletePendingFlag, false)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
 
         return LoginResponse.builder()
                 .jwt(jwtUtil.generateToken(user.getId().toString(), user.getAuthRole()))
@@ -98,8 +97,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequest registerRequest) {
         User existingUser = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getEmail, registerRequest.getEmail())
-                .eq(User::getDeleteFlag, false)
-        );
+                .eq(User::getDeleteFlag, false));
 
         if (existingUser != null) {
             throw new UserAlreadyExistsException(FailMessageConstant.USER_ALREADY_EXISTS);
@@ -131,17 +129,13 @@ public class AuthServiceImpl implements AuthService {
 
         userMapper.insert(user);
 
-        ModelUser modelUser = ModelUser.builder()
-                .userId(user.getId())
-                .modelId(1L)
-                .build();
+        modelUserMapper.insert(List.of(new ModelUser(null, user.getId(), 1L, null),
+                new ModelUser(null, user.getId(), 2L, null)));
 
-        modelUserMapper.insert(modelUser);
-
-        Assistant assistant = Assistant.builder()
+        Assistant assistantMisaki = Assistant.builder()
                 .name("Misaki")
                 .personality("可爱")
-                .detail("拯救家里蹲男性的天使美少女")
+                .detail("拯救家里蹲男性的天使美少女。")
                 .gender(GenderEnum.FEMALE.getCode())
                 .birthday(LocalDate.of(2004, 1, 2))
                 .modelId(1L)
@@ -150,7 +144,19 @@ public class AuthServiceImpl implements AuthService {
                 .publicFlag(false)
                 .build();
 
-        assistantMapper.insert(assistant);
+        Assistant assistantHiyori = Assistant.builder()
+                .name("Hiyori")
+                .personality("治愈系")
+                .detail("学校园艺部的成员，在家里也喜欢家庭农庄，喜欢的食物是小番茄。")
+                .gender(GenderEnum.FEMALE.getCode())
+                .birthday(LocalDate.of(2004, 2, 26))
+                .modelId(2L)
+                .creatorId(user.getId())
+                .ownerId(user.getId())
+                .publicFlag(false)
+                .build();
+
+        assistantMapper.insert(List.of(assistantMisaki, assistantHiyori));
 
         Settings settings = Settings.builder()
                 .userId(user.getId())
@@ -159,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
                 .ttsAutoplay(false)
                 .backgroundOpacity(100)
                 .backgroundBlur(0)
-                .enabledAssistantId(assistant.getId())
+                .enabledAssistantId(assistantMisaki.getId())
                 .build();
 
         settingsMapper.insert(settings);
@@ -185,8 +191,7 @@ public class AuthServiceImpl implements AuthService {
                 .eq(User::getEmail, resetPasswordRequest.getEmail())
                 .eq(User::getDeleteFlag, false)
                 .set(User::getPassword, encryptPassword)
-                .setIncrBy(User::getVersion, 1)
-        );
+                .setIncrBy(User::getVersion, 1));
 
         if (affectedRows == 0) {
             throw new UserNotExistsException(FailMessageConstant.USER_NOT_EXISTS);
