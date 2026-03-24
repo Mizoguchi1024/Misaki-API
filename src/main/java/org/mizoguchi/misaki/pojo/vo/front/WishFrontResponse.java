@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WishFrontResponse {
+    private Long id;
+
     private Boolean hitFlag;
 
     private Boolean duplicateFlag;

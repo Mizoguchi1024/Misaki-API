@@ -93,9 +93,9 @@ public class ChatFrontServiceImpl implements ChatFrontService {
                     return chatFrontResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(chatsPage.getTotal());
-        pageResult.setPageIndex(chatsPage.getCurrent());
-        pageResult.setPageSize(chatsPage.getSize());
+        pageResult.setTotal(Math.toIntExact(chatsPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(chatsPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(chatsPage.getSize()));
 
         return pageResult;
     }

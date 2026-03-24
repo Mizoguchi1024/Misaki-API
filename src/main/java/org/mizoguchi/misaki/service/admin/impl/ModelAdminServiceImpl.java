@@ -55,9 +55,9 @@ public class ModelAdminServiceImpl implements ModelAdminService {
                     return modelAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(models.getTotal());
-        pageResult.setPageIndex(models.getCurrent());
-        pageResult.setPageSize(models.getSize());
+        pageResult.setTotal(Math.toIntExact(models.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(models.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(models.getSize()));
 
         return pageResult;
     }

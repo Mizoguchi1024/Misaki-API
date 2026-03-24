@@ -218,9 +218,9 @@ public class AssistantFrontServiceImpl implements AssistantFrontService {
                     .eq(Assistant::getDeleteFlag, false));
             assistantFrontResponse.setDuplicateName(Math.toIntExact(duplicateNameCount));
 
-            pageResult.setTotal(assistantsPage.getTotal());
-            pageResult.setPageIndex(assistantsPage.getCurrent());
-            pageResult.setPageSize(assistantsPage.getSize());
+            pageResult.setTotal(Math.toIntExact(assistantsPage.getTotal()));
+            pageResult.setPageIndex(Math.toIntExact(assistantsPage.getCurrent()));
+            pageResult.setPageSize(Math.toIntExact(assistantsPage.getSize()));
 
             return assistantFrontResponse;
         }).collect(Collectors.toList()));

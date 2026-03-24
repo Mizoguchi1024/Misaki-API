@@ -98,9 +98,9 @@ public class UserAdminServiceImpl implements UserAdminService {
                     return userAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(users.getTotal());
-        pageResult.setPageIndex(users.getCurrent());
-        pageResult.setPageSize(users.getSize());
+        pageResult.setTotal(Math.toIntExact(users.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(users.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(users.getSize()));
 
         return pageResult;
     }

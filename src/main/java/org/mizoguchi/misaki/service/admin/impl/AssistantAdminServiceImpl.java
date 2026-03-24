@@ -63,9 +63,9 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
                     return assistantAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(assistantsPage.getTotal());
-        pageResult.setPageIndex(assistantsPage.getCurrent());
-        pageResult.setPageSize(assistantsPage.getSize());
+        pageResult.setTotal(Math.toIntExact(assistantsPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(assistantsPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(assistantsPage.getSize()));
 
         return pageResult;
     }

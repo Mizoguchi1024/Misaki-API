@@ -152,6 +152,5 @@ misaki:
       token:
         limit: 10000
       probability:
-        base: 1000
-        token: 900
-        four-star: 994
+        four-star: 0.050
+        five-star: 0.006

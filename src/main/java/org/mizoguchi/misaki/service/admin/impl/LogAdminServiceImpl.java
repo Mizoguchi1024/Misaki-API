@@ -53,9 +53,9 @@ public class LogAdminServiceImpl implements LogAdminService {
                     return emailLogAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(emailLogsPage.getTotal());
-        pageResult.setPageIndex(emailLogsPage.getCurrent());
-        pageResult.setPageSize(emailLogsPage.getSize());
+        pageResult.setTotal(Math.toIntExact(emailLogsPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(emailLogsPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(emailLogsPage.getSize()));
 
         return pageResult;
     }
@@ -94,9 +94,9 @@ public class LogAdminServiceImpl implements LogAdminService {
                     return exceptionLogAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(exceptionLogsPage.getTotal());
-        pageResult.setPageIndex(exceptionLogsPage.getCurrent());
-        pageResult.setPageSize(exceptionLogsPage.getSize());
+        pageResult.setTotal(Math.toIntExact(exceptionLogsPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(exceptionLogsPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(exceptionLogsPage.getSize()));
 
         return pageResult;
     }

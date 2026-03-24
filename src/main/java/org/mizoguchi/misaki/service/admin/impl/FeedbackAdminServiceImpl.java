@@ -53,9 +53,9 @@ public class FeedbackAdminServiceImpl implements FeedbackAdminService {
                     return feedbackAdminResponse;
                 }).collect(Collectors.toList()));
         
-        pageResult.setTotal(feedbacksPage.getTotal());
-        pageResult.setPageIndex(feedbacksPage.getCurrent());
-        pageResult.setPageSize(feedbacksPage.getSize());
+        pageResult.setTotal(Math.toIntExact(feedbacksPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(feedbacksPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(feedbacksPage.getSize()));
 
         return pageResult;
     }

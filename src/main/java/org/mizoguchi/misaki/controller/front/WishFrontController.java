@@ -52,7 +52,7 @@ public class WishFrontController {
 
     @EnableRateLimit()
     @Operation(summary = "抽卡历史记录")
-    @GetMapping("/gacha/history")
+    @GetMapping("/gacha")
     public Result<PageResult<WishFrontResponse>> wishHistory(@AuthenticationPrincipal UserDetails userDetails,
                                                        @RequestParam @Positive Integer pageIndex,
                                                        @RequestParam @Positive Integer pageSize){

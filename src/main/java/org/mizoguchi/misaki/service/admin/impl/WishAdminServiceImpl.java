@@ -48,9 +48,9 @@ public class WishAdminServiceImpl implements WishAdminService {
                     return wishAdminResponse;
                 }).collect(Collectors.toList()));
 
-        pageResult.setTotal(wishes.getTotal());
-        pageResult.setPageIndex(wishes.getCurrent());
-        pageResult.setPageSize(wishes.getSize());
+        pageResult.setTotal(Math.toIntExact(wishes.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(wishes.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(wishes.getSize()));
 
         return pageResult;
     }

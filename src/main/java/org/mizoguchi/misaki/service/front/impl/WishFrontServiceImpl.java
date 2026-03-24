@@ -55,14 +55,11 @@ public class WishFrontServiceImpl implements WishFrontService {
     @Value("${misaki.business.wish.token.limit}")
     private Integer tokenLimit;
 
-    @Value("${misaki.business.wish.probability.base}")
-    private Integer baseProbability;
-
-    @Value("${misaki.business.wish.probability.token}")
-    private Integer tokenProbability;
-
     @Value("${misaki.business.wish.probability.four-star}")
-    private Integer fourStarProbability;
+    private double fourStarBaseProbability;
+
+    @Value("${misaki.business.wish.probability.five-star}")
+    private double fiveStarBaseProbability;
 
     @Override
     public void buyPuzzleWithCrystal(Long userId, Integer amount) {
@@ -106,21 +103,34 @@ public class WishFrontServiceImpl implements WishFrontService {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int i = 0; i < times; i++) {
-            int r = random.nextInt(baseProbability);
+            Integer countFromLastFourHit = wishMapper.countFromLastHit(userId, 4);
+            Integer countFromLastFiveHit = wishMapper.countFromLastHit(userId, 5);
 
-            if (r <= tokenProbability) {
-                result.add(drawToken(userId));
-            } else if (r <= fourStarProbability) {
+            double fourStarActualProbability = countFromLastFourHit <= 6
+                    ? fourStarBaseProbability
+                    : Math.min(1.0, fourStarBaseProbability + 10.0 * fourStarBaseProbability * (countFromLastFourHit - 6));
+
+            double fiveStarActualProbability = countFromLastFiveHit <= 72
+                    ? fiveStarBaseProbability
+                    : Math.min(1.0, fiveStarBaseProbability + 10.0 * fiveStarBaseProbability * (countFromLastFiveHit - 72));
+
+            boolean hitFourStar = random.nextDouble() < fourStarActualProbability;
+            boolean hitFiveStar = random.nextDouble() < fiveStarActualProbability;
+
+            if (hitFiveStar) {
+                result.add(drawModel(userId, 5, fiveStarCompensation));
+            } else if (hitFourStar) {
                 result.add(drawModel(userId, 4, fourStarCompensation));
             } else {
-                result.add(drawModel(userId, 5, fiveStarCompensation));
+                result.add(drawToken(userId));
             }
         }
 
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
                 .setDecrBy(User::getPuzzle, times)
-                .setIncrBy(User::getVersion, 1));
+                .setIncrBy(User::getVersion, 1)
+        );
 
         return result;
     }
@@ -138,9 +148,9 @@ public class WishFrontServiceImpl implements WishFrontService {
             return wishFrontResponse;
         }).collect(Collectors.toList()));
 
-        pageResult.setTotal(wishesPage.getTotal());
-        pageResult.setPageIndex(wishesPage.getCurrent());
-        pageResult.setPageSize(wishesPage.getSize());
+        pageResult.setTotal(Math.toIntExact(wishesPage.getTotal()));
+        pageResult.setPageIndex(Math.toIntExact(wishesPage.getCurrent()));
+        pageResult.setPageSize(Math.toIntExact(wishesPage.getSize()));
 
         return pageResult;
     }
