@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -99,32 +101,34 @@ public class WishFrontServiceImpl implements WishFrontService {
             throw new PuzzleNotEnoughException(FailMessageConstant.PUZZLE_NOT_ENOUGH);
         }
 
-        List<WishFrontResponse> result = new ArrayList<>();
+        List<Wish> wishes = new ArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
+        int countFromLastFourHit = wishMapper.countFromLastHit(userId, 4);
+        int countFromLastFiveHit = wishMapper.countFromLastHit(userId, 5);
 
         for (int i = 0; i < times; i++) {
-            Integer countFromLastFourHit = wishMapper.countFromLastHit(userId, 4);
-            Integer countFromLastFiveHit = wishMapper.countFromLastHit(userId, 5);
-
-            double fourStarActualProbability = countFromLastFourHit <= 6
-                    ? fourStarBaseProbability
-                    : Math.min(1.0, fourStarBaseProbability + 10.0 * fourStarBaseProbability * (countFromLastFourHit - 6));
-
-            double fiveStarActualProbability = countFromLastFiveHit <= 72
-                    ? fiveStarBaseProbability
-                    : Math.min(1.0, fiveStarBaseProbability + 10.0 * fiveStarBaseProbability * (countFromLastFiveHit - 72));
+            double fourStarActualProbability = calculateActualProbability(countFromLastFourHit, 6, fourStarBaseProbability);
+            double fiveStarActualProbability = calculateActualProbability(countFromLastFiveHit, 72, fiveStarBaseProbability);
 
             boolean hitFourStar = random.nextDouble() < fourStarActualProbability;
             boolean hitFiveStar = random.nextDouble() < fiveStarActualProbability;
 
             if (hitFiveStar) {
-                result.add(drawModel(userId, 5, fiveStarCompensation));
+                wishes.add(drawModel(userId, 5, fiveStarCompensation));
+                countFromLastFiveHit = 0;
+                countFromLastFourHit = 0;
             } else if (hitFourStar) {
-                result.add(drawModel(userId, 4, fourStarCompensation));
+                wishes.add(drawModel(userId, 4, fourStarCompensation));
+                countFromLastFourHit = 0;
+                countFromLastFiveHit++;
             } else {
-                result.add(drawToken(userId));
+                wishes.add(drawToken(userId));
+                countFromLastFourHit++;
+                countFromLastFiveHit++;
             }
         }
+
+        wishMapper.insert(wishes);
 
         userMapper.update(new LambdaUpdateWrapper<User>()
                 .eq(User::getId, userId)
@@ -132,7 +136,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                 .setIncrBy(User::getVersion, 1)
         );
 
-        return result;
+        return buildWishFrontResponses(wishes);
     }
 
     @Override
@@ -142,11 +146,7 @@ public class WishFrontServiceImpl implements WishFrontService {
                 .orderBy(true, false, Wish::getCreateTime));
 
         PageResult<WishFrontResponse> pageResult = new PageResult<>();
-        pageResult.setList(wishesPage.getRecords().stream().map(wish -> {
-            WishFrontResponse wishFrontResponse = new WishFrontResponse();
-            BeanUtils.copyProperties(wish, wishFrontResponse);
-            return wishFrontResponse;
-        }).collect(Collectors.toList()));
+        pageResult.setList(buildWishFrontResponses(wishesPage.getRecords()));
 
         pageResult.setTotal(Math.toIntExact(wishesPage.getTotal()));
         pageResult.setPageIndex(Math.toIntExact(wishesPage.getCurrent()));
@@ -155,7 +155,15 @@ public class WishFrontServiceImpl implements WishFrontService {
         return pageResult;
     }
 
-    private WishFrontResponse drawToken(Long userId) {
+    private double calculateActualProbability(int missCount, int softPityThreshold, double baseProbability) {
+        if (missCount <= softPityThreshold) {
+            return baseProbability;
+        }
+
+        return Math.min(1.0, baseProbability + 10.0 * baseProbability * (missCount - softPityThreshold));
+    }
+
+    private Wish drawToken(Long userId) {
         int token = ThreadLocalRandom.current().nextInt(tokenLimit);
 
         userMapper.update(new LambdaUpdateWrapper<User>()
@@ -170,15 +178,10 @@ public class WishFrontServiceImpl implements WishFrontService {
                 .amount(token)
                 .build();
 
-        wishMapper.insert(wish);
-
-        WishFrontResponse wishFrontResponse = new WishFrontResponse();
-        BeanUtils.copyProperties(wish, wishFrontResponse);
-
-        return wishFrontResponse;
+        return wish;
     }
 
-    private WishFrontResponse drawModel(Long userId, int grade, int compensation) {
+    private Wish drawModel(Long userId, int grade, int compensation) {
         List<Model> models = modelMapper.selectList(
                 new LambdaQueryWrapper<Model>().eq(Model::getGrade, grade));
         if (models.isEmpty()) {
@@ -222,12 +225,34 @@ public class WishFrontServiceImpl implements WishFrontService {
                     .build();
         }
 
-        wishMapper.insert(wish);
+        return wish;
+    }
 
-        WishFrontResponse wishFrontResponse = new WishFrontResponse();
-        BeanUtils.copyProperties(wish, wishFrontResponse);
+    private List<WishFrontResponse> buildWishFrontResponses(List<Wish> wishes) {
+        List<Long> modelIds = wishes.stream()
+                .map(Wish::getModelId)
+                .filter(modelId -> modelId != null)
+                .distinct()
+                .collect(Collectors.toList());
 
-        return wishFrontResponse;
+        Map<Long, Model> modelMap = modelIds.isEmpty()
+                ? Collections.emptyMap()
+                : modelMapper.selectByIds(modelIds).stream()
+                .collect(Collectors.toMap(Model::getId, model -> model));
+
+        return wishes.stream().map(wish -> {
+            WishFrontResponse wishFrontResponse = new WishFrontResponse();
+            BeanUtils.copyProperties(wish, wishFrontResponse);
+
+            Model model = modelMap.get(wish.getModelId());
+            if (model != null) {
+                wishFrontResponse.setModelName(model.getName());
+                wishFrontResponse.setModelGrade(model.getGrade());
+                wishFrontResponse.setModelAvatarPath(model.getAvatarPath());
+            }
+
+            return wishFrontResponse;
+        }).collect(Collectors.toList());
     }
 
 }

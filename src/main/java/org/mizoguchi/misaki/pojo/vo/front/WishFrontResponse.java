@@ -22,6 +22,12 @@ public class WishFrontResponse {
 
     private Long modelId;
 
+    private String modelName;
+
+    private Integer modelGrade;
+
+    private String modelAvatarPath;
+
     private Integer amount;
 
     @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)

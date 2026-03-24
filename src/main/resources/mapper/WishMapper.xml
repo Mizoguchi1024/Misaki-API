@@ -4,7 +4,8 @@
     <select id="countFromLastHit" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM wish w
-        WHERE w.id &gt; (
+        WHERE w.user_id = #{userId}
+        AND w.id &gt; COALESCE((
             SELECT w2.id
             FROM wish w2
             JOIN model m2 ON w2.model_id = m2.id
@@ -12,7 +13,7 @@
             AND m2.grade = #{grade}
             ORDER BY w2.id DESC
             LIMIT 1
-        )
+        ), 0)
         AND w.hit_flag = 0
     </select>
 </mapper>
