@@ -9,5 +9,5 @@ ${AnsiColor.BLUE}
   \/_|     /___/    ##    `###'    ##  ##  aa    ]#I  ##,    ,##  ##`"Yba,   ##
      /     \___\    ##     `#'     ##  ##  `"YbbdP"'  `"#bbdP"Y#  ##   `Y#a  ##
      \  /\_/___/
-      \/___/        Developed by Mizoguchi                    Version 1.0.0-Dev
+      \/___/        Developed by Mizoguchi                        Version 1.0.0
 ${AnsiColor.DEFAULT}

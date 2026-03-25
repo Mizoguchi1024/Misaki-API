@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
                 .gender(GenderEnum.UNKNOWN.getCode())
                 .token(100000)
                 .crystal(0)
-                .puzzle(0)
+                .puzzle(100)  // 送100抽
                 .stardust(0)
                 .deletePendingFlag(false)
                 .build();
