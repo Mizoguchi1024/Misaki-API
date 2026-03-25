@@ -15,8 +15,6 @@ public class UpdateChatAdminRequest {
     @Size(max = 50)
     private String title;
 
-    private Integer token;
-
     private Boolean pinnedFlag;
 
     private Boolean deleteFlag;
