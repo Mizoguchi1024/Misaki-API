@@ -32,6 +32,9 @@ public class ModelAdminResponse {
     @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern = JsonConstant.DATE_TIME_FORMAT)
+    private LocalDateTime updateTime;
+
     @Version
     private Integer version;
 }

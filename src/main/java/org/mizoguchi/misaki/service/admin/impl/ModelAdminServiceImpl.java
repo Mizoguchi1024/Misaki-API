@@ -44,6 +44,7 @@ public class ModelAdminServiceImpl implements ModelAdminService {
                 .eq(searchModelAdminRequest.getGrade() != null, Model::getGrade, searchModelAdminRequest.getGrade())
                 .eq(searchModelAdminRequest.getPrice() != null, Model::getPrice, searchModelAdminRequest.getPrice())
                 .like(searchModelAdminRequest.getCreateTime() != null, Model::getCreateTime, searchModelAdminRequest.getCreateTime())
+                .like(searchModelAdminRequest.getUpdateTime() != null, Model::getUpdateTime, searchModelAdminRequest.getUpdateTime())
         );
 
         PageResult<ModelAdminResponse> pageResult = new PageResult<>();

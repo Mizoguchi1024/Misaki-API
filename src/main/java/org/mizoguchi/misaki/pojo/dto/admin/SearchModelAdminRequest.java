@@ -20,4 +20,8 @@ public class SearchModelAdminRequest {
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     @PastOrPresent
     private LocalDate createTime;
+
+    @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
+    @PastOrPresent
+    private LocalDate updateTime;
 }
