@@ -16,5 +16,15 @@ public class McpServerFrontResponse {
 
     private String version;
 
-    private List<McpToolFrontResponse> tools;
+    private List<McpTool> tools;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class McpTool {
+        private String name;
+
+        private String description;
+    }
 }

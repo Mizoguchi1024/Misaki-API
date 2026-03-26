@@ -16,5 +16,15 @@ public class McpServerAdminResponse {
 
     private String version;
 
-    private List<McpToolAdminResponse> tools;
+    private List<McpTool> tools;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class McpTool {
+        private String name;
+
+        private String description;
+    }
 }

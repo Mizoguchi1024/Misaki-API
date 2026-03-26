@@ -10,13 +10,77 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkspaceAdminResponse {
-    private McpStatsAdminResponse mcpStats;
+    private McpStats mcpStats;
 
-    private UserStatsAdminResponse userStats;
+    private UserStats userStats;
 
-    private AssistantStatsAdminResponse assistantStats;
+    private AssistantStats assistantStats;
 
-    private ChatStatsAdminResponse chatStats;
-    
-    private FeedbackStatsAdminResponse feedbackStats;
+    private ChatStats chatStats;
+
+    private FeedbackStats feedbackStats;
+
+    private AiBalance aiBalance;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class McpStats {
+        private Integer totalServers;
+
+        private Integer totalTools;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserStats {
+        private Integer totalUsers;
+
+        private Integer newUsers;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AssistantStats {
+        private Integer totalAssistants;
+
+        private Integer newAssistants;
+
+        private Integer totalPublicAssistants;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatStats {
+        private Integer totalChats;
+
+        private Integer newChats;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FeedbackStats {
+        private Integer newFeedbacks;
+
+        private Integer processingFeedbacks;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AiBalance {
+        private Boolean isAvailable;
+
+        private String balance;
+    }
 }
