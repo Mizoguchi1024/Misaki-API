@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.mizoguchi</groupId>
     <artifactId>Misaki</artifactId>
-    <version>1.0.0-Dev</version>
+    <version>1.0.0</version>
     <name>Misaki</name>
     <description>Misaki backend project.</description>
     <url/>
