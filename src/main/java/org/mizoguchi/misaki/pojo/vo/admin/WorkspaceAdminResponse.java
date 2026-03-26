@@ -82,5 +82,7 @@ public class WorkspaceAdminResponse {
         private Boolean isAvailable;
 
         private String balance;
+
+        private String currency;
     }
 }

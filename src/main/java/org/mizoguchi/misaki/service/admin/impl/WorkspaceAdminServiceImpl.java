@@ -33,7 +33,7 @@ public class WorkspaceAdminServiceImpl implements WorkspaceAdminService {
     @Value("${misaki.ai.api-key}")
     private String apiKey;
 
-    private WebClient.Builder webClientBuilder;
+    private final WebClient.Builder webClientBuilder;
 
     private final UserMapper userMapper;
     private final AssistantMapper assistantMapper;
@@ -97,6 +97,7 @@ public class WorkspaceAdminServiceImpl implements WorkspaceAdminService {
                         .build())
                 .aiBalance(WorkspaceAdminResponse.AiBalance.builder().isAvailable(aiBalanceResponse.isAvailable())
                         .balance(aiBalanceResponse.getBalanceInfos().getFirst().getTotalBalance())
+                        .currency(aiBalanceResponse.getBalanceInfos().getFirst().getCurrency())
                         .build())
                 .build();
     }
