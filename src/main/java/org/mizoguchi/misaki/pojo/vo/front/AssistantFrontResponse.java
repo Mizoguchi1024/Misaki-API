@@ -22,7 +22,7 @@ public class AssistantFrontResponse {
 
     private String personality;
 
-    private String detail;
+    private String details;
 
     private Integer gender;
 

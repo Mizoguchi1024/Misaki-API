@@ -33,7 +33,7 @@ public class User {
 
     private String occupation;
 
-    private String detail;
+    private String details;
 
     private Integer token;
 

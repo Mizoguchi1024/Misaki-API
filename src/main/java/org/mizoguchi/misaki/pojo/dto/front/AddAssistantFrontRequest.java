@@ -20,8 +20,8 @@ public class AddAssistantFrontRequest {
     private String personality;
 
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
-    @Size(min = 1, max = 100)
-    private String detail;
+    @Size(min = 1, max = 255)
+    private String details;
 
     @NotNull
     @Min(0)

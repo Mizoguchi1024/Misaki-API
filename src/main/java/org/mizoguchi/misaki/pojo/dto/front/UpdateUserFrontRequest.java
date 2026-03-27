@@ -29,7 +29,7 @@ public class UpdateUserFrontRequest {
     private String occupation;
 
     @Size(max = 255)
-    private String detail;
+    private String details;
 
     @NotNull
     private Integer version;

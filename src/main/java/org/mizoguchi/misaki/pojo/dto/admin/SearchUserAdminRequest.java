@@ -25,7 +25,7 @@ public class SearchUserAdminRequest {
 
     private String occupation;
 
-    private String detail;
+    private String details;
 
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     @PastOrPresent

@@ -8,13 +8,13 @@ public class ChatConstant {
             AssistantGender: {assistantGender}
             AssistantBirthday: {assistantBirthday}
             AssistantPersonality: {assistantPersonality}
-            AssistantDetail: {assistantDetail}
+            AssistantDetails: {assistantDetails}
             
             UserName: {userName}
             UserGender: {userGender}
             UserBirthday: {userBirthday}
             UserOccupation: {userOccupation}
-            UserDetail: {userDetail}
+            UserDetails: {userDetails}
 
             Additional:
             - Always reply in the same language as the user's latest message.
@@ -25,12 +25,12 @@ public class ChatConstant {
     public static final String ASSISTANT_GENDER = "assistantGender";
     public static final String ASSISTANT_BIRTHDAY = "assistantBirthday";
     public static final String ASSISTANT_PERSONALITY = "assistantPersonality";
-    public static final String ASSISTANT_DETAIL = "assistantDetail";
+    public static final String ASSISTANT_DETAILS = "assistantDetails";
     public static final String USER_NAME = "userName";
     public static final String USER_GENDER = "userGender";
     public static final String USER_BIRTHDAY = "userBirthday";
     public static final String USER_OCCUPATION = "userOccupation";
-    public static final String USER_DETAIL = "userDetail";
+    public static final String USER_DETAILS = "userDetails";
     public static final String SYSTEM_GENERATE_PROMPTS = """
             Generate {size} user prompt suggestions as the user reply for the last assistant message, output in JSON format.
             The following information defines the assistant and the user. Some fields could not be set.
@@ -39,13 +39,13 @@ public class ChatConstant {
             AssistantGender: {assistantGender}
             AssistantBirthday: {assistantBirthday}
             AssistantPersonality: {assistantPersonality}
-            AssistantDetail: {assistantDetail}
+            AssistantDetails: {assistantDetails}
             
             UserName: {userName}
             UserGender: {userGender}
             UserBirthday: {userBirthday}
             UserOccupation: {userOccupation}
-            UserDetail: {userDetail}
+            UserDetails: {userDetails}
 
             Additional:
             - If the AssistantName is "Misaki", it's the alias of "中原岬".

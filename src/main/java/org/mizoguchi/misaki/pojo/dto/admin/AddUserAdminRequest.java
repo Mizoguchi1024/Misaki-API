@@ -46,5 +46,5 @@ public class AddUserAdminRequest {
 
     @Pattern(regexp = RegexConstant.NOT_BLANK, message = FailMessageConstant.INVALID_FIELD_PATTERN)
     @Size(max = 255)
-    private String detail;
+    private String details;
 }

@@ -17,8 +17,8 @@ public class UpdateAssistantFrontRequest {
     @Size(max = 20)
     private String personality;
 
-    @Size(max = 100)
-    private String detail;
+    @Size(max = 255)
+    private String details;
 
     @Min(0)
     @Max(2)

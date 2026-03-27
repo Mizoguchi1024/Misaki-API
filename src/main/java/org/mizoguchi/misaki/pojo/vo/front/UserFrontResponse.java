@@ -31,7 +31,7 @@ public class UserFrontResponse {
 
     private String occupation;
 
-    private String detail;
+    private String details;
 
     private Integer token;
 
