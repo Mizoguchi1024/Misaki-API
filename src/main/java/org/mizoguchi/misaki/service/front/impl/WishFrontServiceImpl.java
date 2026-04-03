@@ -116,7 +116,6 @@ public class WishFrontServiceImpl implements WishFrontService {
             if (hitFiveStar) {
                 wishes.add(drawModel(userId, 5, fiveStarCompensation));
                 countFromLastFiveHit = 0;
-                countFromLastFourHit = 0;
             } else if (hitFourStar) {
                 wishes.add(drawModel(userId, 4, fourStarCompensation));
                 countFromLastFourHit = 0;

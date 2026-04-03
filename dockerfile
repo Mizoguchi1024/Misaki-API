@@ -15,7 +15,9 @@ COPY target/*.jar app.jar
 # 暴露端口（根据你的项目端口）
 EXPOSE 8080
 
+ENV JAVA_OPTS="-Duser.timezone=Asia/Shanghai"
+
 # 启动命令
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 
 # docker build -t misaki-api .

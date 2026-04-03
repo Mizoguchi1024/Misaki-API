@@ -11,12 +11,11 @@ import org.mizoguchi.misaki.mapper.EmailLogMapper;
 import org.mizoguchi.misaki.pojo.entity.EmailLog;
 import org.mizoguchi.misaki.service.common.EmailService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 @Slf4j
@@ -49,8 +48,8 @@ public class EmailServiceImpl implements EmailService {
                 helper.setSubject(subject);
                 helper.setText(body.formatted(code), true);
 
-                FileSystemResource res = new FileSystemResource(new File("src/main/resources/static/Misaki_logo.svg"));
-                helper.addInline(EmailConstant.LOGO_CONTENT_ID, res);
+                ClassPathResource logoResource = new ClassPathResource("static/Misaki_logo.svg");
+                helper.addInline(EmailConstant.LOGO_CONTENT_ID, logoResource, "image/svg+xml");
             }
 
             mailSender.send(message);
