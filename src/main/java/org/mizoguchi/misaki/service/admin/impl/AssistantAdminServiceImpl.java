@@ -44,7 +44,7 @@ public class AssistantAdminServiceImpl implements AssistantAdminService {
                 .like(searchAssistantAdminRequest.getPersonality() != null, Assistant::getPersonality, searchAssistantAdminRequest.getPersonality())
                 .like(searchAssistantAdminRequest.getDetails() != null, Assistant::getDetails, searchAssistantAdminRequest.getDetails())
                 .eq(searchAssistantAdminRequest.getGender() != null, Assistant::getGender, searchAssistantAdminRequest.getGender())
-                .eq(searchAssistantAdminRequest.getBirthday() != null, Assistant::getBirthday, searchAssistantAdminRequest.getBirthday())
+                .like(searchAssistantAdminRequest.getBirthday() != null, Assistant::getBirthday, searchAssistantAdminRequest.getBirthday())
                 .like(searchAssistantAdminRequest.getModelId() != null, Assistant::getModelId, searchAssistantAdminRequest.getModelId())
                 .like(searchAssistantAdminRequest.getCreatorId() != null, Assistant::getCreatorId, searchAssistantAdminRequest.getCreatorId())
                 .like(searchAssistantAdminRequest.getOwnerId() != null, Assistant::getOwnerId, searchAssistantAdminRequest.getOwnerId())

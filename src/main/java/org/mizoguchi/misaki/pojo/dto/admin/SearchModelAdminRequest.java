@@ -17,6 +17,10 @@ public class SearchModelAdminRequest {
 
     private Integer price;
 
+    private String path;
+
+    private Boolean onSaleFlag;
+
     @JsonFormat(pattern = JsonConstant.DATE_FORMAT)
     @PastOrPresent
     private LocalDate createTime;

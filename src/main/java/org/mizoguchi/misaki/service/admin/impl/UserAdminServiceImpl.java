@@ -71,7 +71,7 @@ public class UserAdminServiceImpl implements UserAdminService {
                 .like(searchUserAdminRequest.getUsername() != null, User::getUsername,
                         searchUserAdminRequest.getUsername())
                 .eq(searchUserAdminRequest.getGender() != null, User::getGender, searchUserAdminRequest.getGender())
-                .eq(searchUserAdminRequest.getBirthday() != null, User::getBirthday,
+                .like(searchUserAdminRequest.getBirthday() != null, User::getBirthday,
                         searchUserAdminRequest.getBirthday())
                 .like(searchUserAdminRequest.getOccupation() != null, User::getOccupation,
                         searchUserAdminRequest.getOccupation())

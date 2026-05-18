@@ -42,7 +42,9 @@ public class ModelAdminServiceImpl implements ModelAdminService {
                 .like(searchModelAdminRequest.getId() != null, Model::getId, searchModelAdminRequest.getId())
                 .like(searchModelAdminRequest.getName() != null, Model::getName, searchModelAdminRequest.getName())
                 .eq(searchModelAdminRequest.getGrade() != null, Model::getGrade, searchModelAdminRequest.getGrade())
-                .eq(searchModelAdminRequest.getPrice() != null, Model::getPrice, searchModelAdminRequest.getPrice())
+                .like(searchModelAdminRequest.getPrice() != null, Model::getPrice, searchModelAdminRequest.getPrice())
+                .like(searchModelAdminRequest.getPath() != null, Model::getPath, searchModelAdminRequest.getPath())
+                .eq(searchModelAdminRequest.getOnSaleFlag() != null, Model::getOnSaleFlag, searchModelAdminRequest.getOnSaleFlag())
                 .like(searchModelAdminRequest.getCreateTime() != null, Model::getCreateTime, searchModelAdminRequest.getCreateTime())
                 .like(searchModelAdminRequest.getUpdateTime() != null, Model::getUpdateTime, searchModelAdminRequest.getUpdateTime())
         );
