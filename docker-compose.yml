@@ -8,7 +8,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=admin
     volumes:
-      - misaki-mysql-data:/var/lib/mysql
+      - /Users/mizoguchi/Documents/docker-container-data/misaki-mysql-data:/var/lib/mysql
 
   redis:
     image: redis:latest
@@ -25,7 +25,7 @@ services:
       - MINIO_ROOT_USER=misaki
       - MINIO_ROOT_PASSWORD=nakahara
     volumes:
-      - misaki-minio-data:/data
+      - /Users/mizoguchi/Documents/docker-container-data/misaki-minio-data:/data
 
   # 后端应用
   misaki-api:
@@ -54,9 +54,3 @@ services:
       - /Users/mizoguchi/Documents/docker-container-data/misaki-nginx-data/dist:/usr/share/nginx/html
     depends_on:
       - misaki-api
-
-volumes:
-  misaki-mysql-data:
-    external: true
-  misaki-minio-data:
-    external: true
